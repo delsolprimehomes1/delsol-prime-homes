@@ -42,20 +42,18 @@ const HeroSection = () => {
         <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
           {/* Headlines */}
           <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight tracking-tight px-2 sm:px-0">
-              <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_200%] block sm:inline">
+            <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-7xl font-heading font-bold leading-[1.1] tracking-tight px-1 sm:px-0 max-w-full break-words">
+              <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_200%] block">
                 Looking for Luxury Homes
               </span>
-              <br className="hidden xs:block" />
-              <span className="text-white block sm:inline">in Costa Del Sol?</span>
+              <span className="text-white block">in Costa Del Sol?</span>
             </h1>
             
-            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-heading font-semibold leading-relaxed px-2 sm:px-0">
-              <span className="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent block sm:inline">
+            <h2 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-heading font-semibold leading-[1.3] px-1 sm:px-0 max-w-full">
+              <span className="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent block">
                 We help you buy exclusive Marbella, Estepona, and Fuengirola villas
               </span>
-              <br className="hidden sm:block" />
-              <span className="text-white/90 block sm:inline">
+              <span className="text-white/90 block">
                 with pools, ocean views, and gated security.
               </span>
             </h2>

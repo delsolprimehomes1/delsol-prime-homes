@@ -298,11 +298,13 @@
     box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
   }
 
-  /* Mobile Optimizations */
+  /* Mobile Optimizations - Prevent text overflow */
   @media (max-width: 640px) {
     .container {
       padding-left: 0.75rem;
       padding-right: 0.75rem;
+      max-width: 100%;
+      overflow-x: hidden;
     }
     
     /* Mobile-specific hero section */
@@ -311,6 +313,7 @@
       min-height: 100svh;
       padding-top: 1rem;
       padding-bottom: 1rem;
+      overflow-x: hidden;
     }
     
     /* Improve mobile touch targets */
@@ -319,15 +322,28 @@
       min-width: 44px;
     }
     
-    /* Mobile typography optimizations */
+    /* Mobile typography optimizations - prevent overflow */
     h1, .heading-display {
       line-height: 1.1;
       letter-spacing: -0.02em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+      max-width: 100%;
     }
     
     h2, .heading-xl {
       line-height: 1.2;
       letter-spacing: -0.01em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+    }
+    
+    /* Ensure all text content fits within viewport */
+    * {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
     
     /* Optimize mobile video performance */
