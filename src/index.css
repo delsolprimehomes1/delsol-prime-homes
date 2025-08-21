@@ -130,7 +130,7 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
-  /* Animations */
+  /* Enhanced Animations */
   .animate-fade-in-up {
     animation: fadeInUp 0.8s ease-out forwards;
   }
@@ -141,7 +141,12 @@
   }
   
   .animate-scale-in {
-    animation: scaleIn 0.6s ease-out forwards;
+    animation: scaleIn 0.6s ease-out 0.6s forwards;
+    opacity: 0;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out infinite;
   }
 
   @keyframes fadeInUp {
@@ -158,11 +163,11 @@
   @keyframes scaleIn {
     from {
       opacity: 0;
-      transform: scale(0.95);
+      transform: scale(0.95) translateY(20px);
     }
     to {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateY(0);
     }
   }
 
@@ -193,6 +198,35 @@
     background: var(--gold-gradient);
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  /* Improved touch targets for mobile */
+  @media (max-width: 768px) {
+    button, a {
+      min-height: 44px;
+    }
+  }
+
+  /* Better video performance on mobile */
+  @media (max-width: 768px) {
+    video {
+      object-position: center center;
+    }
+  }
+
+  /* Fix for mobile viewport units */
+  @supports (height: 100dvh) {
+    .min-h-screen {
+      min-height: 100dvh;
+    }
   }
 }
 
