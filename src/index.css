@@ -112,7 +112,44 @@
     @apply text-base md:text-lg leading-relaxed;
   }
 
-  /* Modern 3D Components */
+  /* Modern Sleek Components */
+  .sleek-card {
+    @apply relative;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .sleek-dropdown {
+    @apply bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-xl;
+  }
+
+  /* Minimal Hover Effects */
+  .minimal-hover {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .minimal-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 8px 24px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Professional Button Hover */
+  .professional-hover {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .professional-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
+  }
+
+  /* Enhanced 3D Components (keeping existing for other sections) */
   .field-3d {
     @apply relative transform-gpu transition-all duration-300 ease-out;
     transform: perspective(1000px) rotateX(2deg) translateY(-4px);

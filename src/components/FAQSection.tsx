@@ -32,43 +32,40 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-white"></div>
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-6">
-            <HelpCircle className="w-8 h-8 text-primary" />
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12 animate-fade-in-up">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-xl mb-4">
+            <HelpCircle className="w-6 h-6 text-primary" />
           </div>
-          <h2 className="heading-xl mb-6 text-secondary">Frequently Asked Questions</h2>
-          <p className="body-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="heading-lg mb-4 text-secondary">Frequently Asked Questions</h2>
+          <p className="body-md text-muted-foreground max-w-xl mx-auto">
             Get answers to common questions about buying luxury real estate in Costa Del Sol
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-3">
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
               <AccordionItem 
                 key={index} 
                 value={`item-${index}`}
-                className="border-0 mb-4"
+                className="border-0"
               >
-                <div className="faq-card-3d bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden group">
-                  <AccordionTrigger className="text-left hover:no-underline transition-all duration-300 p-8 hover:bg-primary/5">
+                <div className="sleek-card rounded-xl overflow-hidden group minimal-hover">
+                  <AccordionTrigger className="text-left hover:no-underline transition-all duration-200 p-6 hover:bg-muted/20">
                     <div className="flex items-start gap-4 text-left w-full">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center mt-1 group-hover:bg-primary/20 transition-colors duration-300">
-                        <Plus className="w-4 h-4 text-primary transition-transform duration-300 group-data-[state=open]:rotate-45" />
+                      <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center mt-0.5 group-hover:bg-primary/15 transition-colors duration-200">
+                        <Plus className="w-3 h-3 text-primary transition-transform duration-200 group-data-[state=open]:rotate-45" />
                       </div>
-                      <h3 className="text-lg font-semibold text-secondary leading-relaxed pr-4">
+                      <h3 className="text-base font-semibold text-secondary leading-relaxed pr-4">
                         {faq.question}
                       </h3>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-8 pb-8">
-                    <div className="ml-12 pt-4 border-l-2 border-primary/10 pl-6">
-                      <p className="text-muted-foreground leading-relaxed text-base">
+                  <AccordionContent className="px-6 pb-6">
+                    <div className="ml-10 pt-2 border-l border-border/30 pl-4">
+                      <p className="text-muted-foreground leading-relaxed text-sm">
                         {faq.answer}
                       </p>
                     </div>
@@ -79,18 +76,18 @@ const FAQSection = () => {
           </Accordion>
         </div>
 
-        {/* Modern CTA Section */}
-        <div className="text-center mt-16">
-          <div className="field-3d bg-gradient-to-br from-primary/5 to-accent/10 backdrop-blur-sm p-12 rounded-3xl max-w-2xl mx-auto">
-            <h3 className="heading-md mb-4 text-secondary">Still have questions?</h3>
-            <p className="body-md text-muted-foreground mb-8">
+        {/* Compact CTA Section */}
+        <div className="text-center mt-12">
+          <div className="sleek-card p-8 rounded-2xl max-w-xl mx-auto">
+            <h3 className="heading-sm mb-3 text-secondary">Still have questions?</h3>
+            <p className="text-sm text-muted-foreground mb-6">
               Our expert team is here to help you find your perfect property in Costa Del Sol.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 gold-gradient text-secondary font-semibold rounded-xl hover-gold transition-all duration-300 shadow-lg hover:shadow-xl">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg professional-hover text-sm">
                 Schedule Consultation
               </button>
-              <button className="px-8 py-4 bg-white/80 border-2 border-primary/20 rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 text-secondary font-semibold shadow-lg hover:shadow-xl">
+              <button className="px-6 py-3 bg-muted/50 border border-border/50 rounded-lg hover:bg-muted/70 transition-all duration-200 text-secondary font-medium text-sm">
                 Contact Our Experts
               </button>
             </div>
