@@ -44,12 +44,12 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-white/95 via-white/90 to-primary/20 backdrop-blur-md border-b border-white/20 shadow-lg">
-      <div className="container mx-auto px-3 sm:px-4">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center">
             <a href="#" className="group">
-              <h1 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
+              <h1 className="font-heading text-2xl lg:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
                 DelSolPrimeHomes
               </h1>
             </a>
@@ -128,13 +128,13 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-t border-primary/20 shadow-lg animate-fade-in">
-            <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-              <div className="flex flex-col space-y-3 sm:space-y-4">
+            <div className="container mx-auto px-4 py-6">
+              <div className="flex flex-col space-y-4">
                 {navigationItems.map((item) => (
                   <a
                     key={item.name}
                     href={item.href}
-                    className="text-secondary hover:text-primary font-medium py-2 px-3 sm:px-4 rounded-md hover:bg-primary/10 transition-colors min-h-[44px] flex items-center"
+                    className="text-secondary hover:text-primary font-medium py-2 px-4 rounded-md hover:bg-primary/10 transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.name}
@@ -142,8 +142,8 @@ const Navbar = () => {
                 ))}
                 
                 {/* Mobile Language Selection */}
-                <div className="pt-3 sm:pt-4 border-t border-primary/20">
-                  <p className="text-sm text-secondary/70 mb-2 sm:mb-3 px-3 sm:px-4">Language</p>
+                <div className="pt-4 border-t border-primary/20">
+                  <p className="text-sm text-secondary/70 mb-3">Language</p>
                   <div className="grid grid-cols-2 gap-2">
                     {languages.map((language) => (
                       <button
@@ -153,21 +153,21 @@ const Navbar = () => {
                           setIsMobileMenuOpen(false);
                         }}
                         className={cn(
-                          "flex items-center gap-2 p-2 sm:p-3 rounded-md transition-colors text-left min-h-[44px]",
+                          "flex items-center gap-2 p-3 rounded-md transition-colors text-left",
                           selectedLanguage.code === language.code
                             ? "bg-primary/20 text-secondary"
                             : "hover:bg-primary/10 text-secondary/80"
                         )}
                       >
-                        <span className="text-base sm:text-lg">{language.flag}</span>
-                        <span className="text-xs sm:text-sm font-medium">{language.name}</span>
+                        <span>{language.flag}</span>
+                        <span className="text-sm">{language.name}</span>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Mobile CTA */}
-                <Button className="gold-gradient text-secondary font-semibold w-full mt-3 sm:mt-4 hover-gold min-h-[48px] text-sm sm:text-base">
+                <Button className="gold-gradient text-secondary font-semibold w-full mt-4 hover-gold">
                   Book Viewing
                 </Button>
               </div>
