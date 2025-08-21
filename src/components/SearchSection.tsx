@@ -19,7 +19,7 @@ const SearchSection = () => {
   };
 
   return (
-    <section className="py-8 sm:py-12 md:py-16 bg-white">
+    <section className="py-8 sm:py-12 md:py-16 bg-white" data-section="search">
       {/* FAQ Schema for SERP Optimization */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
