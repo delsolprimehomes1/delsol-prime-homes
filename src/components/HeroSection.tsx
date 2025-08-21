@@ -42,16 +42,19 @@ const HeroSection = () => {
         <div className="max-w-5xl mx-auto">
           {/* Main Headlines */}
           <h1 className="heading-display mb-6 animate-fade-in-up">
-            Buy Luxury Homes in Costa Del Sol
+            Looking for Luxury Homes in Costa Del Sol?
           </h1>
           <h2 className="heading-lg mb-8 text-white/90 animate-fade-in-delay">
-            Marbella, Estepona & Fuengirola Real Estate Experts
+            We help you buy exclusive Marbella, Estepona, and Fuengirola villas with pools, ocean views, and gated security.
           </h2>
           
-          {/* Expertise Statement */}
-          <p className="body-lg mb-12 text-white/80 max-w-3xl mx-auto animate-fade-in-delay">
-            With 15+ years of expertise, we match you with Marbella, Estepona & Fuengirola's finest properties.
-          </p>
+          {/* Supporting Q&A */}
+          <div className="mb-12 text-left max-w-3xl mx-auto animate-fade-in-delay">
+            <h3 className="text-xl font-semibold text-white mb-4">Where can I buy luxury homes in Costa Del Sol?</h3>
+            <p className="body-lg text-white/80">
+              With 15+ years of expertise, Del Sol Prime Homes connects you to Marbella, Estepona, Fuengirola, and Benalmádena's finest properties.
+            </p>
+          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
