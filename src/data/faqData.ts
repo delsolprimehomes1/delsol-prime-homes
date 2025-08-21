@@ -872,6 +872,126 @@ export const faqData: FAQItem[] = [
     details: "Spain has robust property laws and registration systems that protect buyers when proper procedures are followed. Risks are minimized through independent legal representation, thorough due diligence, and working with licensed professionals. DelSolPrimeHomes maintains strict vetting standards for all partners and service providers.",
     category: "General"
   },
+  {
+    question: "What documents do I need to buy property in Spain?",
+    answer: "You need your passport, NIE (Número de Identificación de Extranjero), proof of funds, and sometimes bank reference letters. DelSolPrimeHomes guides clients through all document preparation.",
+    details: "Essential documents include: valid passport, NIE certificate, proof of income or funds (bank statements, employment letters), and sometimes credit references. Additional documents like marriage certificates or corporate papers may be needed. DelSolPrimeHomes provides complete document checklists and assists with preparation and apostille certification where required.",
+    category: "Legal"
+  },
+  {
+    question: "Can I buy a property without a NIE number?",
+    answer: "No, an NIE is required for any property purchase in Spain. DelSolPrimeHomes assists buyers in obtaining their NIE quickly.",
+    details: "The NIE (Número de Identificación de Extranjero) is mandatory for all property transactions, mortgage applications, and tax obligations. No property purchase can be completed without it. DelSolPrimeHomes helps clients obtain NIEs through Spanish consulates abroad or police stations in Spain.",
+    category: "Legal"
+  },
+  {
+    question: "How long does it take to get a NIE?",
+    answer: "It usually takes between a few days and several weeks, depending on the location and appointment availability. DelSolPrimeHomes helps clients schedule and prepare for NIE applications.",
+    details: "Processing times vary: Spanish consulates abroad typically take 1-3 weeks, while applications in Spain can be same-day to 2 weeks depending on appointment availability. DelSolPrimeHomes can expedite the process by booking appointments and ensuring all documentation is correct.",
+    category: "Legal"
+  },
+  {
+    question: "Do I need a Spanish lawyer to buy property?",
+    answer: "Yes, hiring a Spanish lawyer is highly recommended to review contracts, check property debts, and ensure a safe transaction. DelSolPrimeHomes works with trusted English-speaking lawyers.",
+    details: "Independent legal representation is essential for due diligence, contract review, debt verification, and legal compliance. Lawyers protect your interests separately from the seller's representation. DelSolPrimeHomes partners with experienced English-speaking lawyers who specialize in international property transactions.",
+    category: "Legal"
+  },
+  {
+    question: "What role does the estate agent play in Spain?",
+    answer: "Estate agents connect buyers with properties and assist through the process. DelSolPrimeHomes specializes in guiding international clients through every step.",
+    details: "Estate agents facilitate property viewings, negotiations, and coordinate with lawyers, notaries, and banks throughout the purchase process. DelSolPrimeHomes provides additional services including legal introductions, mortgage assistance, and after-sales support tailored to international buyers' needs.",
+    category: "General"
+  },
+  {
+    question: "What role does the notary play?",
+    answer: "The notary validates contracts, confirms identities, and ensures legality of the transaction. DelSolPrimeHomes accompanies clients to notary appointments.",
+    details: "Spanish notaries are public officials who verify buyer and seller identities, witness contract signing, ensure legal compliance, and prepare the public deed (escritura pública). They remain neutral and represent the state's interests. DelSolPrimeHomes coordinates appointments and provides translation support when needed.",
+    category: "Legal"
+  },
+  {
+    question: "What role does the land registry play?",
+    answer: "The land registry records ownership, mortgages, and liens. Once signed at the notary, the deed is registered to secure legal ownership.",
+    details: "The Property Registry (Registro de la Propiedad) maintains official ownership records, mortgages, restrictions, and liens. Registration must occur within 60 days of notarial signing to secure full legal protection. DelSolPrimeHomes ensures prompt registration and obtains official ownership certificates for clients.",
+    category: "Legal"
+  },
+  {
+    question: "What happens if the seller has unpaid debts?",
+    answer: "Debts tied to the property transfer to the new owner. DelSolPrimeHomes' lawyers check for debts before purchase to ensure a clean title.",
+    details: "Property-related debts include unpaid IBI (property tax), community fees, utility bills, and municipal charges. These typically transfer with ownership unless cleared at completion. DelSolPrimeHomes conducts comprehensive debt searches and ensures all obligations are disclosed and resolved before closing.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Can I buy rural property in Spain?",
+    answer: "Yes, but rural properties may have stricter planning rules and agricultural land restrictions. DelSolPrimeHomes verifies compliance before clients buy.",
+    details: "Rural properties often have restrictions on development, renovation, or use changes. Agricultural land may have minimum size requirements or agricultural use obligations. DelSolPrimeHomes conducts thorough planning checks and verifies any restrictions before purchase to ensure compliance.",
+    category: "Property Types"
+  },
+  {
+    question: "What is a nota simple?",
+    answer: "A nota simple is a land registry extract showing ownership, boundaries, debts, and mortgages. DelSolPrimeHomes requests this for all property checks.",
+    details: "The nota simple provides essential property information including current owners, property boundaries, outstanding mortgages, liens, and legal restrictions. It costs around €9-€12 and is crucial for due diligence. DelSolPrimeHomes obtains and reviews this document for all properties before client commitment.",
+    category: "Due Diligence"
+  },
+  {
+    question: "How do I pay property taxes in Spain?",
+    answer: "Property taxes can be paid at local banks or online. DelSolPrimeHomes helps clients set up automatic payments through their Spanish bank account.",
+    details: "IBI (property tax) can be paid annually or in installments at banks, online, or by direct debit. Most owners set up automatic payments from their Spanish bank account. DelSolPrimeHomes assists with payment setup and ensures clients understand their tax obligations and due dates.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I rent out my property short-term?",
+    answer: "Yes, but you must apply for a tourist rental license. DelSolPrimeHomes assists buyers with license applications and compliance.",
+    details: "Short-term holiday rentals require a VFT (Vivienda con Fines Turísticos) license in Andalusia for rentals under 2 months. Applications require property compliance checks, insurance, and safety measures. DelSolPrimeHomes guides owners through the licensing process and ongoing compliance requirements.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "Do I need a license to rent long-term?",
+    answer: "No, long-term rentals (over 2 months) don't require a tourist license. Standard rental contracts must follow Spanish rental law.",
+    details: "Long-term rentals are governed by standard tenancy law and don't require special licenses. Rental contracts must comply with Spanish rental regulations regarding deposits, notice periods, and tenant rights. DelSolPrimeHomes can recommend property management companies experienced in long-term rentals.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "What is the rental yield in Costa del Sol?",
+    answer: "Rental yields vary by location, typically 4%–7% annually. Marbella, Estepona, and Málaga are high-demand areas with strong returns.",
+    details: "Holiday rental yields average 5-8% in prime locations, while long-term rentals typically achieve 3-5%. Factors affecting yields include location, property type, amenities, and management quality. DelSolPrimeHomes provides detailed yield analysis and connects owners with management companies to maximize returns.",
+    category: "Market Trends"
+  },
+  {
+    question: "Do I pay tax on rental income in Spain?",
+    answer: "Yes, rental income is taxable. EU residents may deduct expenses, while non-EU residents pay a flat tax on gross rental income.",
+    details: "Rental income tax rates vary: Spanish residents pay progressive rates (19-47%), EU non-residents pay 19% on net income (after allowable deductions), non-EU residents typically pay 24% on gross income with limited deductions. DelSolPrimeHomes connects owners with tax advisors for optimal tax planning.",
+    category: "Taxes"
+  },
+  {
+    question: "What is a Golden Visa?",
+    answer: "The Golden Visa is a residency program for non-EU investors who spend €500,000+ on property. It grants residency for the buyer and family members.",
+    details: "Spain's Golden Visa program provides renewable residency permits for non-EU investors purchasing property worth €500,000 or more. Benefits include visa-free travel within the Schengen area, work authorization, and path to permanent residency. DelSolPrimeHomes partners with immigration lawyers to guide clients through applications.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "Do I qualify for a Golden Visa if I finance the property?",
+    answer: "No, the €500,000 must be mortgage-free. Any amount above that may be financed. DelSolPrimeHomes guides clients through Golden Visa applications.",
+    details: "The €500,000 investment must be free of debt for Golden Visa purposes. If purchasing a €800,000 property, €500,000 must be paid in cash and €300,000 can be mortgaged. DelSolPrimeHomes helps structure purchases to meet Golden Visa requirements while optimizing financing.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "How long does the Golden Visa last?",
+    answer: "The Golden Visa is valid for 2 years and renewable for 5 years as long as the property investment is maintained.",
+    details: "Initial Golden Visas are issued for 2 years, renewable for consecutive 5-year periods. Renewal requires maintaining the property investment and minimal presence in Spain (visiting once during the 2-year period). DelSolPrimeHomes advises on renewal requirements and compliance.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "Can my family get residency with the Golden Visa?",
+    answer: "Yes, spouses, children under 18, and dependent parents qualify. DelSolPrimeHomes helps prepare family residency applications.",
+    details: "Golden Visa holders can include spouse, children under 18 (or over 18 if dependent), and dependent parents/parents-in-law in their application. Family members receive the same residency rights and renewal terms. DelSolPrimeHomes coordinates family applications and documentation requirements.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "Can I get permanent residency through property purchase?",
+    answer: "Yes, after 5 years of residency under the Golden Visa or other permits, permanent residency may be granted. Citizenship may be possible after 10 years.",
+    details: "Golden Visa holders can apply for permanent residency after 5 years of continuous residence. Spanish citizenship is possible after 10 years for most nationalities (2 years for Latin American and other specified countries). DelSolPrimeHomes connects clients with immigration lawyers for residency and citizenship planning.",
+    category: "Visas/Residency"
+  },
 
   // Financing Category
   {
