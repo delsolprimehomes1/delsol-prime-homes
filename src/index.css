@@ -269,12 +269,19 @@
     }
   }
 
+  /* Fixed shimmer - no text movement */
   @keyframes shimmer {
     0% {
-      background-position: -200% 0;
+      opacity: 1;
+      filter: brightness(1);
+    }
+    50% {
+      opacity: 0.8;
+      filter: brightness(1.2);
     }
     100% {
-      background-position: 200% 0;
+      opacity: 1;
+      filter: brightness(1);
     }
   }
 
@@ -298,26 +305,64 @@
     box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
   }
 
-  /* Mobile Optimizations */
+  /* Enhanced Mobile, Tablet & Desktop Responsive System */
   @media (max-width: 640px) {
     .container {
       padding-left: 1rem;
       padding-right: 1rem;
     }
-  }
-
-  /* Improved touch targets for mobile */
-  @media (max-width: 768px) {
-    button, a {
+    
+    .heading-lg {
+      font-size: 2rem;
+      line-height: 1.2;
+    }
+    
+    /* Mobile-specific optimizations */
+    .mobile-touch-target {
       min-height: 44px;
+      min-width: 44px;
+    }
+
+    video {
+      object-position: center;
+      filter: brightness(0.8);
     }
   }
 
-  /* Better video performance on mobile */
-  @media (max-width: 768px) {
-    video {
-      object-position: center center;
+  @media (min-width: 641px) and (max-width: 1024px) {
+    /* Tablet optimizations */
+    .tablet-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
+  }
+
+  @media (min-width: 1025px) {
+    /* Desktop enhancements */
+    .desktop-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .desktop-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  /* Performance optimizations */
+  .will-change-auto { will-change: auto; }
+  .will-change-transform { will-change: transform; }
+  .will-change-scroll { will-change: scroll-position; }
+
+  /* Intersection Observer animations */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+  }
+
+  .animate-on-scroll.animate-in {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* Fix for mobile viewport units */

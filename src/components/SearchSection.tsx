@@ -19,7 +19,7 @@ const SearchSection = () => {
   };
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 sm:py-12 md:py-16 bg-white">
       {/* FAQ Schema for SERP Optimization */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
@@ -54,10 +54,10 @@ const SearchSection = () => {
         })
       }} />
 
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12 animate-fade-in-up">
-          <h2 className="heading-lg mb-4 text-secondary">Looking for a Luxury Home in Costa Del Sol?</h2>
-          <p className="body-md text-muted-foreground max-w-xl mx-auto mb-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-4 text-secondary">Looking for a Luxury Home in Costa Del Sol?</h2>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Search villas, apartments, and beachfront homes in Marbella, Estepona, Fuengirola, and beyond.
           </p>
           
@@ -74,19 +74,19 @@ const SearchSection = () => {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          {/* Unified Search Container */}
-          <div className="sleek-card p-6 rounded-2xl mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-              {/* Location Field */}
-              <div className="xl:col-span-2 group">
+        <div className="max-w-7xl mx-auto">
+          {/* Enhanced Mobile-First Search Container */}
+          <div className="sleek-card p-4 sm:p-6 lg:p-8 rounded-2xl mb-6 sm:mb-8 desktop-hover">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+              {/* Enhanced Location Field */}
+              <div className="sm:col-span-2 xl:col-span-2 group">
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, location: value})}>
-                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium" itemProp="location">
-                      <SelectValue placeholder="Location" />
+                    <SelectTrigger className="h-12 sm:h-14 pl-10 border-0 bg-muted/30 hover:bg-muted/50 focus:bg-muted/60 minimal-hover rounded-lg text-sm font-medium mobile-touch-target transition-all duration-200" itemProp="location">
+                      <SelectValue placeholder="Select Location" />
                     </SelectTrigger>
-                    <SelectContent className="sleek-dropdown">
+                    <SelectContent className="sleek-dropdown z-50 bg-white/95 backdrop-blur-md">
                       <SelectItem value="marbella-golden-mile">Marbella Golden Mile</SelectItem>
                       <SelectItem value="puerto-banus">Puerto Banús</SelectItem>
                       <SelectItem value="marbella">Marbella Centro</SelectItem>
@@ -158,15 +158,16 @@ const SearchSection = () => {
                 </div>
               </div>
 
-              {/* Search Button */}
-              <div className="flex items-end">
+              {/* Enhanced Search Button */}
+              <div className="sm:col-span-2 lg:col-span-1 flex items-end">
                 <Button 
                   onClick={handleSearch}
-                  className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg professional-hover"
+                  className="w-full h-12 sm:h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg professional-hover mobile-touch-target transition-all duration-300 hover:scale-105"
                   aria-label="Search luxury properties in Costa Del Sol"
                 >
                   <Search className="w-4 h-4 mr-2" />
-                  Search Properties
+                  <span className="hidden sm:inline">Search Properties</span>
+                  <span className="sm:hidden">Search</span>
                 </Button>
               </div>
             </div>
@@ -202,19 +203,19 @@ const SearchSection = () => {
             </div>
           </div>
 
-          {/* Inline FAQ Section for SERP */}
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
-            <div className="sleek-card p-4 rounded-xl">
-              <h3 className="font-semibold text-secondary mb-2 text-sm">Average Villa Prices in Marbella?</h3>
-              <p className="text-xs text-muted-foreground">€1.5M-€10M in Golden Mile, depending on size and amenities.</p>
+          {/* Enhanced Mobile-Responsive FAQ Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            <div className="sleek-card p-4 sm:p-5 rounded-xl desktop-hover animate-on-scroll">
+              <h3 className="font-bold text-secondary mb-2 text-sm sm:text-base">Average Villa Prices in Marbella?</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">€1.5M-€10M in Golden Mile, depending on size and amenities.</p>
             </div>
-            <div className="sleek-card p-4 rounded-xl">
-              <h3 className="font-semibold text-secondary mb-2 text-sm">Best Areas for Beachfront Properties?</h3>
-              <p className="text-xs text-muted-foreground">Estepona, Puerto Banús, and Fuengirola offer prime coastal locations.</p>
+            <div className="sleek-card p-4 sm:p-5 rounded-xl desktop-hover animate-on-scroll">
+              <h3 className="font-bold text-secondary mb-2 text-sm sm:text-base">Best Areas for Beachfront Properties?</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Estepona, Puerto Banús, and Fuengirola offer prime coastal locations.</p>
             </div>
-            <div className="sleek-card p-4 rounded-xl">
-              <h3 className="font-semibold text-secondary mb-2 text-sm">Investment Opportunities Available?</h3>
-              <p className="text-xs text-muted-foreground">New developments and off-plan properties offer excellent ROI potential.</p>
+            <div className="sleek-card p-4 sm:p-5 rounded-xl desktop-hover animate-on-scroll">
+              <h3 className="font-bold text-secondary mb-2 text-sm sm:text-base">Investment Opportunities Available?</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">New developments and off-plan properties offer excellent ROI potential.</p>
             </div>
           </div>
         </div>

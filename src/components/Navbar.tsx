@@ -43,14 +43,15 @@ const Navbar = () => {
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-white/95 via-white/90 to-primary/20 backdrop-blur-md border-b border-white/20 shadow-lg">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-white/96 via-white/94 to-primary/15 backdrop-blur-md border-b border-white/30 shadow-lg will-change-scroll">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Enhanced Responsive Logo */}
           <div className="flex items-center">
             <a href="#" className="group">
-              <h1 className="font-heading text-2xl lg:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
-                DelSolPrimeHomes
+              <h1 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 will-change-transform">
+                <span className="sm:hidden">DelSol</span>
+                <span className="hidden sm:inline">DelSolPrimeHomes</span>
               </h1>
             </a>
           </div>
@@ -102,9 +103,10 @@ const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* CTA Button */}
-            <Button className="gold-gradient text-secondary font-semibold px-6 hover-gold">
-              Book Viewing
+            {/* Enhanced CTA Button */}
+            <Button className="gold-gradient text-secondary font-semibold px-4 sm:px-6 py-2 hover-gold transition-all duration-300 hover:scale-105 will-change-transform">
+              <span className="hidden sm:inline">Book Viewing</span>
+              <span className="sm:hidden text-xs">Book</span>
             </Button>
           </div>
 
@@ -125,10 +127,10 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Enhanced Mobile Menu with Better Performance */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-t border-primary/20 shadow-lg animate-fade-in">
-            <div className="container mx-auto px-4 py-6">
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white/96 backdrop-blur-md border-t border-primary/30 shadow-xl animate-fade-in will-change-transform">
+            <div className="container mx-auto px-4 sm:px-6 py-6">
               <div className="flex flex-col space-y-4">
                 {navigationItems.map((item) => (
                   <a
@@ -166,9 +168,9 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                {/* Mobile CTA */}
-                <Button className="gold-gradient text-secondary font-semibold w-full mt-4 hover-gold">
-                  Book Viewing
+                {/* Enhanced Mobile CTA */}
+                <Button className="gold-gradient text-secondary font-semibold w-full mt-4 hover-gold mobile-touch-target py-3 transition-all duration-300">
+                  Book Your Viewing
                 </Button>
               </div>
             </div>
