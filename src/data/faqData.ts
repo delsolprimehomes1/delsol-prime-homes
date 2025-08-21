@@ -1232,6 +1232,186 @@ export const faqData: FAQItem[] = [
     details: "While not always legally required, fiscal representatives help non-residents comply with Spanish tax obligations including annual returns, quarterly declarations, and correspondence with tax authorities. They're particularly valuable for rental property owners. DelSolPrimeHomes can recommend qualified fiscal representatives.",
     category: "Taxes"
   },
+  {
+    question: "What is NIE and why do I need it?",
+    answer: "The NIE (Número de Identificación de Extranjero) is a foreigner's identification number in Spain. It is required for any property purchase, opening a bank account, paying taxes, and other official transactions.",
+    details: "The NIE is mandatory for all financial transactions in Spain including property purchases, bank account opening, mortgage applications, and tax filings. It's obtained from Spanish police stations or consulates abroad. DelSolPrimeHomes guides clients through the NIE application process to ensure readiness for property transactions.",
+    category: "Legal"
+  },
+  {
+    question: "How long does it take to get an NIE?",
+    answer: "The process usually takes a few days to a few weeks depending on the local police station's availability. Applying early is recommended to avoid delays in the property purchase process.",
+    details: "NIE processing times vary by location and appointment availability. Spanish consulates abroad typically take 1-3 weeks, while applications in Spain can be same-day to 2 weeks. DelSolPrimeHomes recommends obtaining NIE early in the property search process to avoid purchase delays.",
+    category: "Legal"
+  },
+  {
+    question: "Do I need a lawyer when buying property in Spain?",
+    answer: "While not legally required, hiring a lawyer is highly recommended. A lawyer ensures contracts are correct, verifies property ownership, checks for debts, and protects your interests during the transaction.",
+    details: "Independent legal representation provides essential protection including contract review, due diligence, debt searches, and legal compliance verification. Lawyers protect buyer interests separately from seller representation. DelSolPrimeHomes partners with experienced English-speaking property lawyers.",
+    category: "Legal"
+  },
+  {
+    question: "What is the role of a notary in Spain?",
+    answer: "A notary is a public official who certifies property purchase documents, ensures compliance with Spanish law, and officially registers the transaction. Their presence is mandatory for all property purchases.",
+    details: "Spanish notaries are neutral public officials who verify identity, witness signatures, ensure legal compliance, and prepare the public deed (escritura pública). They represent the state's interests, not buyers or sellers. DelSolPrimeHomes coordinates notary appointments and arranges translation when needed.",
+    category: "Legal"
+  },
+  {
+    question: "What is the land registry in Spain?",
+    answer: "The land registry (Registro de la Propiedad) is the official government record where property ownership, mortgages, and liens are registered. It ensures your ownership rights are legally protected.",
+    details: "The Property Registry maintains official records of ownership, mortgages, restrictions, and liens. Registration within 60 days of notarial signing provides full legal protection. DelSolPrimeHomes ensures prompt registration and obtains official ownership certificates for all clients.",
+    category: "Legal"
+  },
+  {
+    question: "How can I transfer funds to buy property in Spain?",
+    answer: "Funds are typically transferred via international bank transfer to your Spanish account or directly to the seller's account. Banks may request proof of source of funds to comply with anti-money laundering laws.",
+    details: "International transfers require source documentation for anti-money laundering compliance. Options include bank transfers, currency specialists, or direct notarial payments. DelSolPrimeHomes partners with currency specialists offering competitive rates and secure transfer methods for property purchases.",
+    category: "Legal"
+  },
+  {
+    question: "What are the typical additional costs when buying property?",
+    answer: "Additional costs usually total between 10–15% of the property price. These include taxes, notary fees, registration fees, legal fees, and sometimes bank or mortgage-related costs.",
+    details: "Total additional costs include: transfer tax/VAT (7-10%), notary fees (€600-1,200), registration (€300-600), legal fees (1-2%), survey costs, and mortgage fees if applicable. DelSolPrimeHomes provides detailed cost breakdowns for all properties before commitment.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Can I buy property in Spain as a non-resident?",
+    answer: "Yes, foreigners can legally buy property in Spain without restrictions. You will, however, need an NIE number, a Spanish bank account, and must comply with tax obligations.",
+    details: "Spain welcomes international property investment with no nationality restrictions. Non-residents have the same property rights as Spanish nationals, though they may face different tax implications and mortgage terms. DelSolPrimeHomes specializes in guiding non-resident buyers through the complete process.",
+    category: "Legal"
+  },
+  {
+    question: "What is the Golden Visa program?",
+    answer: "The Golden Visa program allows non-EU investors who purchase property worth €500,000 or more to gain residency rights in Spain. It also extends to their immediate family members.",
+    details: "Spain's Golden Visa provides renewable residency for non-EU investors and their families, allowing visa-free Schengen area travel and work authorization. The property must be free of mortgage for the qualifying amount. DelSolPrimeHomes partners with immigration lawyers for Golden Visa applications.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "Can I rent out my property in Spain?",
+    answer: "Yes, you can rent out your property. However, short-term rentals often require a tourist rental license depending on the region. Long-term rentals generally require only a rental agreement.",
+    details: "Rental rights are the same for foreign and Spanish owners. Short-term holiday rentals require VFT licenses, while long-term rentals are governed by standard tenancy law. DelSolPrimeHomes assists with rental licensing and property management services for international owners.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "What is IBI tax?",
+    answer: "IBI (Impuesto sobre Bienes Inmuebles) is Spain's annual property tax paid to the local town hall. The rate depends on the location and cadastral value of the property.",
+    details: "IBI is municipal property tax calculated on cadastral value (typically 50-70% of market value). Rates vary by municipality from 0.4-1.1% annually. Payment can be annual or quarterly, often by direct debit. DelSolPrimeHomes provides IBI estimates for all properties.",
+    category: "Taxes"
+  },
+  {
+    question: "What are community fees?",
+    answer: "Community fees are contributions paid by property owners in a shared development (like apartments or gated communities) to cover maintenance of shared facilities such as pools, gardens, and security.",
+    details: "Community fees fund maintenance of common areas, facilities, insurance, and services. Costs vary based on property size (participation quota) and available amenities. Fees are legally mandatory for all development owners. DelSolPrimeHomes explains community obligations before purchase.",
+    category: "Property Management"
+  },
+  {
+    question: "What is the plusvalía tax?",
+    answer: "The plusvalía tax is a municipal tax paid when selling a property. It is based on the increase in the value of the land since the property was last sold.",
+    details: "Plusvalía tax (Impuesto Municipal sobre el Incremento de Valor de los Terrenos) is calculated on theoretical land value increase. Recent legal changes allow challenges if no actual gain occurred. Contract terms should specify whether buyer or seller pays this tax.",
+    category: "Taxes"
+  },
+  {
+    question: "Do I pay income tax on rental income?",
+    answer: "Yes. Rental income from Spanish property is subject to income tax. EU residents may deduct expenses, while non-EU residents pay a flat tax rate on gross income.",
+    details: "Rental income tax varies by residency: Spanish residents pay progressive rates (19-47%), EU non-residents pay 19% on net income with deductions, non-EU residents pay 24% on gross income with limited deductions. DelSolPrimeHomes connects owners with tax specialists.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I get a mortgage as a foreigner?",
+    answer: "Yes, Spanish banks provide mortgages to foreigners, typically covering 60–70% of the property's value. Terms, rates, and eligibility vary depending on residency and financial profile.",
+    details: "Foreign buyer mortgages offer 60-80% loan-to-value depending on residency status. EU residents often qualify for better terms than non-EU buyers. DelSolPrimeHomes works with banks specializing in international client financing to secure competitive terms.",
+    category: "Mortgages"
+  },
+  {
+    question: "How long does the buying process take?",
+    answer: "The process usually takes between 6–12 weeks, depending on financing, legal checks, and administrative processes such as obtaining an NIE and preparing contracts.",
+    details: "Timeline depends on complexity: cash purchases 4-8 weeks, mortgage purchases 8-12 weeks. Key stages include reservation, legal due diligence, mortgage approval, and completion. DelSolPrimeHomes coordinates all parties to minimize delays and ensure smooth completion.",
+    category: "Buying Process"
+  },
+  {
+    question: "What happens on completion day?",
+    answer: "On completion day, you and the seller (or representatives) meet at the notary. Payment is transferred, contracts are signed, and the keys are handed over. The property is then officially registered in your name.",
+    details: "Completion involves identity verification, deed signing, fund transfer, and key handover at the notary office. The buyer becomes legal owner upon signing the public deed. DelSolPrimeHomes coordinates completion appointments and provides translation support when needed.",
+    category: "Buying Process"
+  },
+  {
+    question: "Do I need insurance for my property?",
+    answer: "While not legally required, home insurance is highly recommended. Mortgage lenders often require it. Insurance typically covers fire, theft, water damage, and liability.",
+    details: "Property insurance covers building damage, contents, civil liability, and legal expenses. Annual costs typically 0.2-0.5% of property value. Mortgage lenders usually require insurance to protect their security. DelSolPrimeHomes connects clients with competitive insurance providers.",
+    category: "After-Sale"
+  },
+  {
+    question: "What is the role of the real estate agent?",
+    answer: "A real estate agent helps you find properties, negotiates with sellers, assists with paperwork, and guides you through the buying process. Choosing a reputable agent is essential for a smooth purchase.",
+    details: "Estate agents facilitate property search, viewings, negotiations, and coordinate with lawyers, notaries, and banks. DelSolPrimeHomes provides comprehensive services including legal introductions, mortgage assistance, and after-sales support specifically for international buyers.",
+    category: "General"
+  },
+  {
+    question: "Can I resell my property easily?",
+    answer: "Yes, property resale is possible. The ease of resale depends on the location, property type, and market conditions. Coastal properties in high-demand areas like Costa del Sol generally resell more quickly.",
+    details: "Resale success depends on location, property condition, pricing, and market conditions. Prime Costa del Sol locations maintain strong demand and liquidity. DelSolPrimeHomes provides market analysis and resale guidance to optimize selling strategies when clients are ready to sell.",
+    category: "General"
+  },
+  {
+    question: "Are property prices negotiable?",
+    answer: "Yes, property prices in Spain are often negotiable. The extent of negotiation depends on the market, seller's circumstances, and property demand in the area.",
+    details: "Negotiation potential varies by market conditions, property type, and seller motivation. Discounts of 5-15% are common in certain circumstances. DelSolPrimeHomes provides market analysis and negotiation strategies based on comparable sales and local conditions.",
+    category: "Buying Process"
+  },
+  {
+    question: "What is the cadastral value?",
+    answer: "The cadastral value is the government-assigned value of a property used for tax purposes. It is usually lower than the market value and is the basis for calculating IBI and other taxes.",
+    details: "Cadastral value is set by local authorities and typically represents 50-70% of market value. It's used to calculate IBI property tax, wealth tax, and capital gains tax. Understanding this value is crucial for accurate tax planning. DelSolPrimeHomes provides cadastral information for all properties.",
+    category: "Taxes"
+  },
+  {
+    question: "What currency is used for property purchases?",
+    answer: "All property transactions in Spain are completed in euros (€). Buyers may need to convert funds if their home currency differs, which is why using an FX specialist can save money on transfers.",
+    details: "Spanish property transactions must be completed in euros for legal and tax purposes. International buyers benefit from currency specialists who offer better exchange rates than traditional banks, especially for large property purchases. DelSolPrimeHomes partners with trusted FX specialists.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Can I inherit property in Spain?",
+    answer: "Yes, Spanish inheritance law applies to property in Spain, even for foreign owners. Heirs may be subject to inheritance tax, which varies by region and relationship to the deceased.",
+    details: "Spanish inheritance law governs property in Spain regardless of owner nationality. Inheritance tax rates vary by autonomous community and family relationship. Spanish wills can simplify the inheritance process. DelSolPrimeHomes connects clients with inheritance specialists for proper estate planning.",
+    category: "Legal"
+  },
+  {
+    question: "What documents are needed to buy property?",
+    answer: "Key documents include your NIE, passport, proof of funds, property title deed, energy certificate, and seller's compliance documents. A lawyer ensures all documents are correct before signing.",
+    details: "Essential documents include: NIE certificate, passport, proof of funds, property title deed, energy certificate, nota simple, and seller compliance certificates. DelSolPrimeHomes provides complete document checklists and coordinates with lawyers to ensure all paperwork is correct.",
+    category: "Legal"
+  },
+  {
+    question: "What is a reservation contract?",
+    answer: "A reservation contract is a preliminary agreement between buyer and seller where a deposit is paid (usually €3,000–€6,000) to remove the property from the market while contracts are prepared.",
+    details: "Reservation contracts secure properties during due diligence with deposits of €3,000-€10,000 depending on property value. This provides 2-4 weeks exclusivity while conducting legal checks and arranging financing. DelSolPrimeHomes ensures fair reservation terms and client protection.",
+    category: "Buying Process"
+  },
+  {
+    question: "What is a private purchase contract?",
+    answer: "The private purchase contract is the main legal contract signed between buyer and seller before completion. It outlines the purchase terms, payment schedule, and responsibilities of each party.",
+    details: "Private contracts detail all sale terms including price, completion date, conditions, and responsibilities. Deposits typically 10-20% of purchase price are paid at signing. This legally binding document precedes notarial completion. DelSolPrimeHomes ensures contracts protect client interests.",
+    category: "Buying Process"
+  },
+  {
+    question: "What happens if I back out of the purchase?",
+    answer: "If you back out after signing the private purchase contract, you typically forfeit your deposit. If the seller backs out, they may be required to pay you double the deposit amount.",
+    details: "Contract withdrawal penalties are typically specified in the private purchase contract. Buyer withdrawal usually results in deposit forfeiture, while seller withdrawal may require double deposit payment. DelSolPrimeHomes ensures clear withdrawal terms are established before signing.",
+    category: "Buying Process"
+  },
+  {
+    question: "Can I live in Spain permanently after buying property?",
+    answer: "Owning property does not automatically grant residency. However, the Golden Visa program and other residency permits are available if you meet investment or income requirements.",
+    details: "Property ownership doesn't automatically provide residency rights, but can support Golden Visa applications for investments of €500,000+. Other residency options include work permits, family reunification, or retirement visas. DelSolPrimeHomes partners with immigration lawyers for residency guidance.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "Is buying property in Spain a good investment?",
+    answer: "Yes, Spain offers strong long-term investment opportunities, especially in popular coastal areas like Costa del Sol. Properties generate rental income and tend to appreciate in value over time.",
+    details: "Costa del Sol properties have shown consistent appreciation of 3-6% annually with strong rental demand from international visitors. Factors include location, property type, market conditions, and management quality. DelSolPrimeHomes provides investment analysis and yield projections for different property types.",
+    category: "Market Trends"
+  },
 
   // Financing Category
   {
