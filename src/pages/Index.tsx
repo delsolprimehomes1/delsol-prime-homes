@@ -8,48 +8,95 @@ import FAQSection from '@/components/FAQSection';
 const Index = () => {
   return (
     <div className="min-h-screen">
-      {/* SEO Meta Tags */}
-      <title>Buy Luxury Homes in Costa Del Sol – Marbella, Estepona & Fuengirola Real Estate Experts | DelSolPrimeHomes</title>
+      {/* Enhanced SEO Meta Tags */}
+      <title>Costa Del Sol Luxury Homes | Marbella, Estepona & Fuengirola Villas for Sale | DelSolPrimeHomes</title>
       <meta 
         name="description" 
-        content="Discover luxury real estate in Costa Del Sol with 15+ years expertise. Premium properties in Marbella, Estepona & Fuengirola. Book private viewings today." 
+        content="Buy luxury homes in Costa Del Sol. Expert guidance across Marbella, Estepona, Fuengirola, Benalmádena & Mijas. Private viewings, virtual tours, €2M+ inventory." 
       />
       <meta 
         name="keywords" 
         content="luxury homes Costa Del Sol, Marbella real estate, Estepona properties, Fuengirola luxury villas, Spain property investment" 
       />
-      <meta property="og:title" content="DelSolPrimeHomes - Luxury Costa Del Sol Real Estate" />
-      <meta property="og:description" content="Expert real estate services for luxury properties in Marbella, Estepona & Fuengirola with 15+ years experience." />
+      
+      {/* Open Graph Tags */}
+      <meta property="og:title" content="Costa Del Sol Luxury Homes | Marbella, Estepona & Fuengirola Villas for Sale" />
+      <meta property="og:description" content="Buy luxury homes in Costa Del Sol. Expert guidance across Marbella, Estepona, Fuengirola, Benalmádena & Mijas. Private viewings, virtual tours, €2M+ inventory." />
       <meta property="og:type" content="website" />
+      <meta property="og:video" content="https://storage.googleapis.com/msgsndr/9m2UBN29nuaCWceOgW2Z/media/68a69bbece523c31db0bb311.mp4" />
+      <meta property="og:image" content="/placeholder.svg" />
+      
+      {/* Twitter Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Costa Del Sol Luxury Homes | DelSolPrimeHomes" />
+      <meta name="twitter:description" content="Buy luxury homes in Costa Del Sol. Expert guidance across Marbella, Estepona, Fuengirola, Benalmádena & Mijas." />
+      <meta name="twitter:image" content="/placeholder.svg" />
+      
+      {/* Geo Tags */}
       <meta name="geo.region" content="ES-AN" />
       <meta name="geo.placename" content="Costa Del Sol, Spain" />
       <meta name="geo.position" content="36.5105;-4.8803" />
       <meta name="ICBM" content="36.5105, -4.8803" />
 
-      {/* Schema Markup for Organization */}
+      {/* Organization Schema */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "RealEstateAgent",
-          "name": "DelSolPrimeHomes",
-          "description": "Luxury real estate experts in Costa Del Sol specializing in Marbella, Estepona, and Fuengirola properties",
+          "@type": ["Organization", "RealEstateAgent"],
+          "name": "Del Sol Prime Homes",
           "url": "https://delsolprimehomes.com",
-          "areaServed": [
-            {
-              "@type": "City",
-              "name": "Marbella"
-            },
-            {
-              "@type": "City", 
-              "name": "Estepona"
-            },
-            {
-              "@type": "City",
-              "name": "Fuengirola"
-            }
+          "logo": "https://delsolprimehomes.com/assets/logo.png",
+          "sameAs": [
+            "https://www.linkedin.com/company/delsolprimehomes",
+            "https://www.youtube.com/@delsolprimehomes"
           ],
-          "serviceType": "Luxury Real Estate Sales",
-          "yearsInOperation": "15+"
+          "areaServed": [
+            {"@type": "City", "name": "Marbella"},
+            {"@type": "City", "name": "Estepona"},
+            {"@type": "City", "name": "Fuengirola"},
+            {"@type": "City", "name": "Benalmádena"},
+            {"@type": "City", "name": "Mijas"}
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Marbella",
+            "addressRegion": "Andalusia",
+            "addressCountry": "ES"
+          }
+        })
+      }} />
+
+      {/* Place Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Place",
+          "name": "Del Sol Prime Homes",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Marbella",
+            "addressRegion": "Andalusia",
+            "addressCountry": "ES"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 36.5099,
+            "longitude": -4.8850
+          }
+        })
+      }} />
+
+      {/* Website Search Action Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "url": "https://delsolprimehomes.com",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://delsolprimehomes.com/search?query={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
         })
       }} />
 
