@@ -34,57 +34,76 @@ const HeroSection = () => {
         </video>
       </div>
 
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 hero-overlay z-10"></div>
+      {/* Enhanced Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-transparent z-10"></div>
 
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 text-center text-white">
         <div className="max-w-5xl mx-auto">
-          {/* Main Headlines */}
+          {/* Animated Gradient Headlines */}
           <h1 className="heading-display mb-6 animate-fade-in-up">
-            Looking for Luxury Homes in Costa Del Sol?
+            <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent animate-pulse bg-[length:200%_200%] animate-[shimmer_3s_ease-in-out_infinite]">
+              Looking for Luxury Homes
+            </span>
+            <br />
+            <span className="text-white">in Costa Del Sol?</span>
           </h1>
-          <h2 className="heading-lg mb-8 text-white/90 animate-fade-in-delay">
-            We help you buy exclusive Marbella, Estepona, and Fuengirola villas with pools, ocean views, and gated security.
+          
+          <h2 className="heading-lg mb-8 animate-fade-in-delay">
+            <span className="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
+              We help you buy exclusive Marbella, Estepona, and Fuengirola villas
+            </span>
+            <br />
+            <span className="text-white/90">
+              with pools, ocean views, and gated security.
+            </span>
           </h2>
           
           {/* Supporting Q&A */}
           <div className="mb-12 text-left max-w-3xl mx-auto animate-fade-in-delay">
-            <h3 className="text-xl font-semibold text-white mb-4">Where can I buy luxury homes in Costa Del Sol?</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              <span className="bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
+                Where can I buy luxury homes in Costa Del Sol?
+              </span>
+            </h3>
             <p className="body-lg text-white/80">
               With 15+ years of expertise, Del Sol Prime Homes connects you to Marbella, Estepona, Fuengirola, and Benalmádena's finest properties.
             </p>
           </div>
 
-          {/* CTA Buttons */}
+          {/* Modern CTA Buttons with Brand Colors */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button 
               size="lg" 
-              className="gold-gradient text-secondary font-semibold px-8 py-4 hover-gold group"
+              className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-8 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 border-0"
             >
-              <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+              <Calendar className="w-5 h-5 mr-2" />
               Book Your Private Viewing
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 hover:border-white/50 px-8 py-4 transition-all duration-300"
+              className="bg-white/95 text-black border-2 border-white hover:bg-white hover:shadow-lg px-8 py-4 transition-all duration-300 font-semibold"
             >
               <Eye className="w-5 h-5 mr-2" />
               Explore Virtual Tours
             </Button>
           </div>
 
-          {/* Quick Links */}
+          {/* Enhanced Quick Links */}
           <div className="animate-scale-in">
-            <p className="text-white/70 mb-6 font-medium">Explore Premium Locations</p>
+            <p className="text-white/70 mb-6 font-medium text-lg">
+              <span className="bg-gradient-to-r from-yellow-300 to-white bg-clip-text text-transparent">
+                Explore Premium Locations
+              </span>
+            </p>
             <div className="flex flex-wrap justify-center gap-4">
               {quickLinks.map((link, index) => {
                 const IconComponent = link.icon;
                 return (
                   <button
                     key={index}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white/90 hover:bg-white/20 hover:border-white/40 transition-all duration-300 hover-lift text-sm"
+                    className="flex items-center gap-2 px-6 py-3 bg-white/15 backdrop-blur-md rounded-full border border-white/30 text-white hover:bg-gradient-to-r hover:from-yellow-400/20 hover:to-white/20 hover:border-yellow-300/50 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm font-medium"
                   >
                     <IconComponent className="w-4 h-4" />
                     {link.name}
