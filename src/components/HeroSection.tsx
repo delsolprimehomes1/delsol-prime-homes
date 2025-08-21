@@ -1,16 +1,9 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar, Eye, MapPin } from 'lucide-react';
+import { Calendar, Eye } from 'lucide-react';
 
 const HeroSection = () => {
-  const quickLinks = [
-    { name: 'Marbella Luxury Homes', icon: MapPin },
-    { name: 'Estepona Luxury Homes', icon: MapPin },
-    { name: 'Mijas Luxury Homes', icon: MapPin },
-    { name: 'Fuengirola Luxury Homes', icon: MapPin },
-    { name: 'Benalmádena Luxury Homes', icon: MapPin },
-  ];
 
   return (
     <section className="relative min-h-dvh flex items-center justify-center overflow-hidden">
@@ -45,8 +38,8 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40 sm:from-black/70 sm:via-black/50 sm:to-black/30 z-10"></div>
 
       {/* Responsive Content Container */}
-      <div className="relative z-20 container mx-auto px-4 pt-24 pb-8 sm:pt-20 sm:pb-12 md:py-16 text-center text-white safe-area-inset-top">
-        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 md:space-y-10">
+      <div className="relative z-20 container mx-auto px-4 py-8 sm:py-12 md:py-16 text-center text-white safe-area-inset-top flex items-center justify-center min-h-dvh">
+        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
           {/* Enhanced Headlines with Better Mobile Typography */}
           <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight tracking-tight">
@@ -81,7 +74,7 @@ const HeroSection = () => {
           </div>
 
           {/* Enhanced Mobile-First CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto pt-6 sm:pt-8 px-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto pt-4 sm:pt-6 px-4">
             <Button 
               size="lg" 
               className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transition-all duration-300 border-0 min-h-[48px] sm:min-h-[56px] mobile-touch-target will-change-transform"
@@ -97,29 +90,6 @@ const HeroSection = () => {
               <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
               Explore Virtual Tours
             </Button>
-          </div>
-
-          {/* Enhanced Mobile-Optimized Quick Links */}
-          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8">
-            <p className="text-white/80 font-medium text-base sm:text-lg">
-              <span className="bg-gradient-to-r from-yellow-300 to-white bg-clip-text text-transparent drop-shadow-sm">
-                Explore Premium Locations
-              </span>
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 max-w-5xl mx-auto px-2">
-              {quickLinks.map((link, index) => {
-                const IconComponent = link.icon;
-                return (
-                  <button
-                    key={index}
-                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/20 backdrop-blur-md rounded-full border border-white/40 text-white hover:bg-gradient-to-r hover:from-yellow-400/30 hover:to-white/25 hover:border-yellow-300/60 transition-all duration-300 hover:scale-105 hover:shadow-lg text-xs sm:text-sm font-medium mobile-touch-target will-change-transform"
-                  >
-                    <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span className="whitespace-nowrap">{link.name}</span>
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </div>
       </div>
