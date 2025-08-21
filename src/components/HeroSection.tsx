@@ -50,7 +50,7 @@ const HeroSection = () => {
           {/* Enhanced Headlines with Better Mobile Typography */}
           <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight tracking-tight">
-              <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent animate-shimmer">
+              <span className="text-white drop-shadow-[0_0_20px_rgba(255,215,0,0.6)] md:bg-gradient-to-r md:from-white md:via-yellow-200 md:to-yellow-400 md:bg-clip-text md:text-transparent md:animate-shimmer">
                 Looking for Luxury Homes
               </span>
               <br />
