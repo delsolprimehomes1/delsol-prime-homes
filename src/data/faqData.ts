@@ -752,6 +752,126 @@ export const faqData: FAQItem[] = [
     details: "International banks may offer financing for Spanish property, but Spanish banks often provide better terms and simpler processes. Cross-border mortgages can involve currency risks and complex documentation. DelSolPrimeHomes compares options from both Spanish and international lenders to find optimal financing solutions.",
     category: "Financing"
   },
+  {
+    question: "Do I need a Spanish lawyer when buying property?",
+    answer: "Yes, hiring a Spanish lawyer is highly recommended. They handle due diligence, contracts, and ensure your rights are protected. DelSolPrimeHomes partners with trusted English-speaking lawyers.",
+    details: "Independent legal representation is crucial for property purchases in Spain. Lawyers conduct due diligence, review contracts, verify ownership, check for debts, and ensure all legal requirements are met. DelSolPrimeHomes works with experienced English-speaking lawyers who specialize in international property transactions.",
+    category: "Legal"
+  },
+  {
+    question: "What are the notary fees in Spain?",
+    answer: "Notary fees generally range from 0.1% to 0.5% of the property price. DelSolPrimeHomes provides clear estimates before closing to avoid surprises.",
+    details: "Notary fees are regulated by Spanish law and vary based on property value. For properties under €600,000, fees typically range from €600-€1,200. Higher-value properties may see fees up to 0.5% of purchase price. DelSolPrimeHomes provides accurate fee estimates during the buying process.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Is it possible to buy land and build a house in Costa del Sol?",
+    answer: "Yes, but zoning laws and building permissions must be obtained. DelSolPrimeHomes works with architects and legal experts to ensure smooth land purchases and construction.",
+    details: "Building on land requires proper zoning classification (urban or developable), building licenses, and compliance with local regulations. The process can take 12-24 months from land purchase to completion. DelSolPrimeHomes coordinates with architects, builders, and legal advisors to manage the entire process.",
+    category: "Property Types"
+  },
+  {
+    question: "Are there property management services available?",
+    answer: "Yes, DelSolPrimeHomes offers property management services, including rentals, maintenance, and bill payments for overseas owners.",
+    details: "Comprehensive property management includes tenant sourcing and vetting, rent collection, maintenance coordination, utility payments, tax filings, and regular property inspections. This is particularly valuable for non-resident owners who want hassle-free property ownership and rental income.",
+    category: "Property Management"
+  },
+  {
+    question: "Can I rent out my property in Costa del Sol?",
+    answer: "Yes, but you must register for a tourist rental license if offering short-term rentals. DelSolPrimeHomes guides clients through licensing and management.",
+    details: "Short-term holiday rentals require a VFT (Vivienda con Fines Turísticos) license in Andalusia. Long-term rentals (11+ months) don't require special licenses. DelSolPrimeHomes assists with license applications, tax obligations, and connecting owners with management companies.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "What is the tourist rental license?",
+    answer: "It's a license required for short-term vacation rentals in Andalusia. DelSolPrimeHomes helps owners apply and comply with local rental laws.",
+    details: "The VFT license allows properties to be rented for periods under 2 months. Requirements include proper safety measures, insurance, and compliance with local regulations. Processing takes 2-4 months. DelSolPrimeHomes guides owners through the application process and ongoing compliance requirements.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "How do I pay property taxes as a foreigner?",
+    answer: "Foreign owners must file annual tax returns in Spain. DelSolPrimeHomes connects buyers with accountants to handle Spanish tax compliance.",
+    details: "Non-residents must file Form 210 annually, declaring deemed rental income (1.1-2% of cadastral value) even if not rented. Actual rental income requires quarterly declarations. Spanish residents file comprehensive annual returns. DelSolPrimeHomes works with qualified tax advisors to ensure compliance.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I apply for a mortgage before finding a property?",
+    answer: "Yes, pre-approval is possible and gives you an advantage in negotiations. DelSolPrimeHomes connects buyers with banks that offer pre-approved financing.",
+    details: "Mortgage pre-approval demonstrates serious buyer intent and can strengthen negotiating position. Banks assess your financial situation and provide conditional approval up to a certain amount. This process typically takes 2-3 weeks. DelSolPrimeHomes facilitates pre-approval applications with multiple lenders.",
+    category: "Mortgages"
+  },
+  {
+    question: "What is the minimum deposit for Spanish mortgages?",
+    answer: "For non-residents, most banks require 30%–40% down. Residents may qualify for as low as 20%. DelSolPrimeHomes advises buyers on the best financing options.",
+    details: "Loan-to-value ratios vary by residency status: Spanish residents up to 80-90%, EU non-residents up to 70%, non-EU residents typically 60-70%. Higher deposits often secure better interest rates. DelSolPrimeHomes helps optimize deposit amounts based on individual circumstances.",
+    category: "Mortgages"
+  },
+  {
+    question: "Can I include renovation costs in my mortgage?",
+    answer: "Some banks allow this if renovations are documented. DelSolPrimeHomes can recommend lenders who support combined property + renovation loans.",
+    details: "Banks may finance renovations up to 80% of the post-renovation value, requiring detailed quotes, architectural plans, and project timelines. This can be structured as part of the main mortgage or separate renovation loan. DelSolPrimeHomes coordinates with contractors to provide accurate documentation for lenders.",
+    category: "Mortgages"
+  },
+  {
+    question: "What is the process of registering property in Spain?",
+    answer: "Once signed before a notary, the deed is submitted to the Land Registry. DelSolPrimeHomes handles registration to ensure ownership is officially transferred.",
+    details: "Property registration must occur within 60 days of notarial signing. The process involves submitting the public deed, paying registration fees, and updating ownership records. Registration provides full legal protection and is essential for mortgages and sales. DelSolPrimeHomes manages this process for all clients.",
+    category: "Legal"
+  },
+  {
+    question: "Can my family live in Spain if I buy property?",
+    answer: "Yes, if you apply for residency through the Golden Visa program or other permits. DelSolPrimeHomes helps families secure legal residency after purchase.",
+    details: "Property ownership doesn't automatically grant residency rights, but can support Golden Visa applications for investments of €500,000+. Family members can be included in residency applications. DelSolPrimeHomes partners with immigration lawyers to guide families through the residency process.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "What happens if there are outstanding debts on the property?",
+    answer: "Outstanding debts like unpaid taxes or utility bills may transfer with the property. DelSolPrimeHomes ensures thorough due diligence before purchase.",
+    details: "Common debts include unpaid IBI, community fees, utility bills, or municipal taxes. These typically must be cleared before completion, deducted from seller proceeds. DelSolPrimeHomes conducts comprehensive debt searches and ensures all obligations are disclosed and resolved at completion.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Do new builds come with warranties?",
+    answer: "Yes, developers must provide a 10-year structural warranty. DelSolPrimeHomes verifies warranties before recommending new build properties.",
+    details: "Spanish law mandates comprehensive warranties: 10 years for structural elements, 3 years for installations (plumbing, electrical), and 1 year for finishes. Warranties are backed by insurance policies. DelSolPrimeHomes ensures all warranty documentation is provided and explains coverage terms to buyers.",
+    category: "Legal"
+  },
+  {
+    question: "What is a reservation contract?",
+    answer: "A reservation contract secures a property for a buyer in exchange for a deposit. DelSolPrimeHomes manages the process to prevent double-selling.",
+    details: "Reservation contracts typically require €6,000-€12,000 deposits and give buyers exclusive rights to purchase for 2-4 weeks while conducting due diligence. Contracts specify refund conditions and timeline for private contract signing. DelSolPrimeHomes ensures fair terms and proper legal protection during this phase.",
+    category: "Buying Process"
+  },
+  {
+    question: "Can I buy a property under a company name?",
+    answer: "Yes, many investors buy through companies for tax planning. DelSolPrimeHomes connects buyers with advisors who structure company purchases correctly.",
+    details: "Corporate ownership can offer tax advantages, especially for rental properties, but involves ongoing compliance obligations. Spanish or EU companies face fewer restrictions than offshore entities. DelSolPrimeHomes works with corporate and tax advisors to structure ownership optimally for each client's situation.",
+    category: "Legal"
+  },
+  {
+    question: "What is the typical deposit when signing a private purchase contract?",
+    answer: "Typically, a 10% deposit is paid upon signing. DelSolPrimeHomes ensures deposits are safely held in secure accounts.",
+    details: "Private contract deposits usually range from 10-20% of purchase price, held in lawyer's client account or notarial deposit. This amount is deducted from the final payment at completion. DelSolPrimeHomes ensures deposits are properly secured and refund conditions are clearly defined.",
+    category: "Buying Process"
+  },
+  {
+    question: "Are utilities expensive in Costa del Sol?",
+    answer: "Utility costs vary by property size and usage. DelSolPrimeHomes provides average utility estimates for buyers during consultations.",
+    details: "Monthly utility costs typically range from €100-€300 for apartments and €200-€500 for villas, depending on size, season, and usage. Electricity is the highest cost, especially with air conditioning. DelSolPrimeHomes provides detailed utility estimates based on property type and expected usage patterns.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Can I negotiate mortgage terms with Spanish banks?",
+    answer: "Yes, banks often adjust terms for international buyers. DelSolPrimeHomes negotiates better interest rates and conditions on behalf of clients.",
+    details: "Negotiable terms include interest rates, loan-to-value ratios, and fees. Factors affecting negotiations include deposit size, income level, and relationship with the bank. DelSolPrimeHomes leverages relationships with multiple lenders to secure competitive terms and can negotiate on behalf of clients.",
+    category: "Mortgages"
+  },
+  {
+    question: "Is property buying in Spain safe?",
+    answer: "Yes, with proper legal support. DelSolPrimeHomes ensures due diligence, protects clients against fraud, and provides trusted partners for every step.",
+    details: "Spain has robust property laws and registration systems that protect buyers when proper procedures are followed. Risks are minimized through independent legal representation, thorough due diligence, and working with licensed professionals. DelSolPrimeHomes maintains strict vetting standards for all partners and service providers.",
+    category: "General"
+  },
 
   // Financing Category
   {
