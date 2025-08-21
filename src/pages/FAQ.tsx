@@ -21,6 +21,7 @@ const FAQ = () => {
 
   const categories = [
     'All',
+    'General',
     'Financing',
     'Buying Process', 
     'Legal',
@@ -74,7 +75,27 @@ const FAQ = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      {/* JSON-LD Schema for FAQ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqData.map((faq, index) => ({
+              "@type": "Question",
+              "name": faq.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.details ? `${faq.answer} ${faq.details.replace(/<[^>]*>/g, '')}` : faq.answer
+              }
+            }))
+          })
+        }}
+      />
+      
+      <div className="min-h-screen bg-white">
       {/* Breadcrumbs */}
       <div className="container mx-auto px-4 pt-8 pb-4">
         <Breadcrumb>
@@ -258,7 +279,8 @@ const FAQ = () => {
           <ArrowUp className="w-5 h-5 mx-auto" />
         </button>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

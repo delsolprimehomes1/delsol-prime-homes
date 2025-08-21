@@ -7,6 +7,128 @@ export interface FAQItem {
 }
 
 export const faqData: FAQItem[] = [
+  // DelSolPrimeHomes General Information
+  {
+    question: "What is DelSolPrimeHomes?",
+    answer: "A premier real estate platform for luxury properties in Costa del Sol.",
+    details: "DelSolPrimeHomes is a specialized real estate brand dedicated to showcasing and selling modern, high-end homes in Costa del Sol. We connect international buyers with exclusive listings, expert insights, and concierge-level service to simplify the property-buying experience.",
+    category: "General"
+  },
+  {
+    question: "Where is DelSolPrimeHomes located?",
+    answer: "Based in Costa del Sol, Spain.",
+    details: "Our operations are centered in the Costa del Sol region of Spain. This allows us to stay deeply connected to the market, local culture, and community while offering international buyers personalized expertise in securing the best properties.",
+    category: "General"
+  },
+  {
+    question: "What types of properties does DelSolPrimeHomes offer?",
+    answer: "Luxury homes, villas, and modern apartments.",
+    details: "We focus on high-quality residential properties such as waterfront villas, modern luxury apartments, penthouses, and investment-friendly homes. Every property is hand-selected for its design, location, and lifestyle appeal.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes assist international buyers?",
+    answer: "Yes, we specialize in helping international clients.",
+    details: "Absolutely. Many of our clients are from the UK, Northern Europe, and other global markets. We provide end-to-end support including property tours, legal guidance, and financing options to make the process seamless for international buyers.",
+    category: "Buying Process"
+  },
+  {
+    question: "Can I schedule a virtual tour?",
+    answer: "Yes, we offer live and recorded virtual tours.",
+    details: "If you cannot visit in person, DelSolPrimeHomes provides immersive virtual property tours using 4K video and interactive walkthroughs. Our agents can also host live video calls to personally guide you through homes in real-time.",
+    category: "Viewing & Offers"
+  },
+  {
+    question: "How does DelSolPrimeHomes vet properties?",
+    answer: "Each property is thoroughly reviewed.",
+    details: "Before listing, every property undergoes a thorough review for quality, location, documentation, and market value. This ensures that clients only see verified, high-standard properties when browsing through DelSolPrimeHomes.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Is financing available for international buyers?",
+    answer: "Yes, financing options exist.",
+    details: "DelSolPrimeHomes partners with local and international banks that provide mortgage solutions tailored to foreign buyers. We guide clients through financing options, legal compliance, and documentation requirements.",
+    category: "Financing"
+  },
+  {
+    question: "Do you provide legal assistance?",
+    answer: "Yes, we connect you with real estate lawyers.",
+    details: "We work closely with trusted legal professionals in Spain who specialize in property law. Our clients receive guidance on contracts, taxes, permits, and legal ownership transfers.",
+    category: "Legal"
+  },
+  {
+    question: "What languages does your team speak?",
+    answer: "English, Spanish, and other European languages.",
+    details: "Our multilingual team ensures smooth communication for international clients. We commonly work in English, Spanish, French, and German, making the process seamless regardless of language barriers.",
+    category: "General"
+  },
+  {
+    question: "Why choose Costa del Sol for real estate?",
+    answer: "It's a top global destination for lifestyle and investment.",
+    details: "Costa del Sol combines year-round sunshine, Mediterranean beaches, cultural attractions, and strong property appreciation potential. It attracts retirees, investors, and families seeking both lifestyle and financial security.",
+    category: "Locations"
+  },
+  {
+    question: "Does DelSolPrimeHomes work with local sellers?",
+    answer: "Yes, we collaborate with trusted local sellers.",
+    details: "We partner with property owners and developers in Costa del Sol to ensure our portfolio represents the best selection of modern homes and luxury estates.",
+    category: "General"
+  },
+  {
+    question: "Can DelSolPrimeHomes help me sell my property?",
+    answer: "Yes, we offer property listing services.",
+    details: "If you own property in Costa del Sol, our team will help market it with professional photography, international exposure, and targeted digital campaigns to attract qualified buyers.",
+    category: "After-Sale"
+  },
+  {
+    question: "Does DelSolPrimeHomes provide relocation support?",
+    answer: "Yes, relocation assistance is available.",
+    details: "We assist clients not just with buying property, but also with relocating to Costa del Sol. This includes school recommendations, local registrations, and lifestyle integration.",
+    category: "After-Sale"
+  },
+  {
+    question: "Are investment properties available?",
+    answer: "Yes, we specialize in investment homes.",
+    details: "DelSolPrimeHomes identifies properties with high rental potential and strong appreciation, making them ideal for investors seeking both short-term rental income and long-term equity growth.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes offer after-sale services?",
+    answer: "Yes, we provide ongoing support.",
+    details: "Our services don't stop after purchase. We assist with property management, renovations, and ongoing client needs to ensure peace of mind after buying.",
+    category: "After-Sale"
+  },
+  {
+    question: "Can I view properties in person?",
+    answer: "Yes, in-person tours are available.",
+    details: "Clients are welcome to visit Costa del Sol and view properties with one of our agents. We arrange transportation, scheduling, and private tours of available listings.",
+    category: "Viewing & Offers"
+  },
+  {
+    question: "Does DelSolPrimeHomes charge buyer fees?",
+    answer: "No, buyers don't pay service fees.",
+    details: "Our fees are typically covered by the property seller. Buyers benefit from full support and guidance at no additional cost.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "How do I get started with DelSolPrimeHomes?",
+    answer: "Contact our team for a consultation.",
+    details: "You can begin your journey by browsing our listings online or contacting us directly. We'll schedule a consultation to understand your needs and match you with the right properties.",
+    category: "General"
+  },
+  {
+    question: "Are properties move-in ready?",
+    answer: "Many are, but some may need upgrades.",
+    details: "Several homes are fully furnished and turnkey, while others may require renovations or customization. We'll advise you on the best options based on your preferences.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes assist with rentals?",
+    answer: "Yes, rental properties are available.",
+    details: "We help clients secure both long-term and holiday rentals in Costa del Sol. This is ideal for those who want to test the market before committing to a purchase.",
+    category: "Short-Term Rentals"
+  },
+
   // Financing Category
   {
     question: "Can I get a mortgage as a foreign buyer in Spain?",
