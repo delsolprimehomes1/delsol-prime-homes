@@ -13,7 +13,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-dvh flex items-center justify-center overflow-hidden">
       {/* Optimized Video Background with responsive sources */}
       <div className="absolute inset-0 z-0">
         <video
@@ -45,7 +45,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40 sm:from-black/70 sm:via-black/50 sm:to-black/30 z-10"></div>
 
       {/* Responsive Content Container */}
-      <div className="relative z-20 container mx-auto px-4 py-8 sm:py-12 md:py-16 text-center text-white hero-mobile-spacing sm:hero-tablet-spacing">
+      <div className="relative z-20 container mx-auto px-4 pt-16 pb-8 sm:py-12 md:py-16 text-center text-white safe-area-inset-top">
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 md:space-y-10">
           {/* Enhanced Headlines with Better Mobile Typography */}
           <div className="space-y-4 sm:space-y-6 animate-fade-in-up">

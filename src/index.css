@@ -373,5 +373,18 @@
   }
 }
 
+/* Mobile viewport fixes and safe area support */
+@media screen and (max-width: 768px) {
+  .safe-area-inset-top {
+    padding-top: max(env(safe-area-inset-top), 2rem);
+  }
+  
+  /* Ensure mobile headlines are properly spaced and visible */
+  .mobile-headline-fix {
+    padding-top: max(env(safe-area-inset-top), 3rem);
+    padding-bottom: 2rem;
+  }
+}
+
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
