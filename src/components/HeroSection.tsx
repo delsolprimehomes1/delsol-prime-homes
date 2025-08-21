@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, MapPin, Calendar, Eye } from 'lucide-react';
+import { Calendar, Eye, MapPin } from 'lucide-react';
 
 const HeroSection = () => {
   const quickLinks = [
