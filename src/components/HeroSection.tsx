@@ -13,7 +13,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
         <video
@@ -39,10 +39,10 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 py-8 text-center text-white">
-        <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
-          {/* Animated Gradient Headlines */}
-          <div className="space-y-4 md:space-y-6 animate-fade-in-up">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight tracking-tight">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Headlines */}
+          <div className="space-y-6 animate-fade-in-up">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold leading-tight tracking-tight">
               <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_200%]">
                 Looking for Luxury Homes
               </span>
@@ -50,7 +50,7 @@ const HeroSection = () => {
               <span className="text-white">in Costa Del Sol?</span>
             </h1>
             
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-heading font-semibold leading-relaxed animate-fade-in-delay">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-heading font-semibold leading-relaxed">
               <span className="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
                 We help you buy exclusive Marbella, Estepona, and Fuengirola villas
               </span>
@@ -62,52 +62,52 @@ const HeroSection = () => {
           </div>
           
           {/* Supporting Q&A */}
-          <div className="max-w-4xl mx-auto text-left animate-fade-in-delay">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 md:mb-4">
+          <div className="max-w-4xl mx-auto text-left">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-4">
               <span className="bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
                 Where can I buy luxury homes in Costa Del Sol?
               </span>
             </h3>
-            <p className="text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
+            <p className="text-lg sm:text-xl text-white/80 leading-relaxed">
               With 15+ years of expertise, Del Sol Prime Homes connects you to Marbella, Estepona, Fuengirola, and Benalmádena's finest properties.
             </p>
           </div>
 
-          {/* Modern CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto animate-scale-in">
+          {/* CTA Buttons - Enhanced Visibility */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto pt-8">
             <Button 
               size="lg" 
-              className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-6 sm:px-8 py-3 sm:py-4 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 border-0 text-sm sm:text-base"
+              className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-8 py-4 text-lg shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transition-all duration-300 border-0 min-h-[56px]"
             >
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <Calendar className="w-5 h-5 mr-3" />
               Book Your Private Viewing
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              className="w-full sm:w-auto bg-white/95 text-black border-2 border-white hover:bg-white hover:shadow-xl px-6 sm:px-8 py-3 sm:py-4 transition-all duration-300 font-semibold text-sm sm:text-base"
+              className="w-full sm:w-auto bg-white text-black border-2 border-white hover:bg-white/90 hover:shadow-xl px-8 py-4 text-lg transition-all duration-300 font-semibold min-h-[56px]"
             >
-              <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <Eye className="w-5 h-5 mr-3" />
               Explore Virtual Tours
             </Button>
           </div>
 
-          {/* Enhanced Quick Links */}
-          <div className="animate-scale-in space-y-4 md:space-y-6">
-            <p className="text-white/70 font-medium text-base sm:text-lg md:text-xl">
+          {/* Quick Links */}
+          <div className="space-y-6 pt-8">
+            <p className="text-white/70 font-medium text-lg">
               <span className="bg-gradient-to-r from-yellow-300 to-white bg-clip-text text-transparent">
                 Explore Premium Locations
               </span>
             </p>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 max-w-4xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
               {quickLinks.map((link, index) => {
                 const IconComponent = link.icon;
                 return (
                   <button
                     key={index}
-                    className="flex items-center gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-white/15 backdrop-blur-md rounded-full border border-white/30 text-white hover:bg-gradient-to-r hover:from-yellow-400/20 hover:to-white/20 hover:border-yellow-300/50 transition-all duration-300 hover:scale-105 hover:shadow-lg text-xs sm:text-sm md:text-base font-medium"
+                    className="flex items-center gap-2 px-4 py-3 bg-white/15 backdrop-blur-md rounded-full border border-white/30 text-white hover:bg-gradient-to-r hover:from-yellow-400/20 hover:to-white/20 hover:border-yellow-300/50 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm font-medium"
                   >
-                    <IconComponent className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <IconComponent className="w-4 h-4" />
                     <span className="whitespace-nowrap">{link.name}</span>
                   </button>
                 );
