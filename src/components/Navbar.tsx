@@ -43,10 +43,10 @@ const Navbar = () => {
   }, []);
 
   const navigationItems = [
-    { name: 'Home', href: '#' },
+    { name: 'Home', href: '/' },
     { name: 'Properties', href: '#properties' },
-    { name: 'Blog', href: '#blog' },
-    { name: 'FAQ', href: '#faq' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'FAQ', href: '/faq' },
   ];
 
   const languages = [

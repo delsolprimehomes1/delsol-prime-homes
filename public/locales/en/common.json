@@ -14,14 +14,15 @@
     "viewAllFaqs": "See all FAQs (275)",
     "backToTop": "Back to Top"
   },
-  "nav": {
-    "home": "Home",
-    "properties": "Properties",
-    "about": "About",
-    "contact": "Contact",
-    "faq": "FAQ",
-    "language": "Language"
-  },
+    "nav": {
+      "home": "Home",
+      "properties": "Properties",
+      "about": "About",
+      "blog": "Blog",
+      "contact": "Contact",
+      "faq": "FAQ",
+      "language": "Language"
+    },
   "search": {
     "title": "Find Your Dream Home in Costa Del Sol in 60 Seconds",
     "subtitle": "Our AI-powered search connects you with perfect properties across Marbella, Estepona, Fuengirola & beyond",
@@ -90,6 +91,22 @@
     "stillQuestions": "Still Have Questions?",
     "stillQuestionsText": "Can't find what you're looking for? Our Costa del Sol experts are here to help with personalized advice.",
     "speakToExpert": "Speak to an Expert"
+  },
+  "blog": {
+    "sectionTitle": "Latest Insights",
+    "sectionSubtitle": "Expert guidance and market updates for luxury property buyers on the Costa del Sol",
+    "readMore": "Read More",
+    "viewAllArticles": "View All Articles",
+    "heroTitle": "Costa del Sol Property Insights",
+    "heroSubtitle": "Expert analysis, buying guides, and market updates for luxury real estate on the Costa del Sol",
+    "pageTitle": "Property Blog & Market Insights",
+    "pageDescription": "Expert insights on Costa del Sol luxury real estate. Market updates, buying guides, and investment analysis for Marbella, Estepona, and surrounding areas.",
+    "searchPlaceholder": "Search articles...",
+    "allCategories": "All Categories",
+    "noPosts": "No articles found",
+    "noPostsDescription": "Try adjusting your search or category filter.",
+    "previous": "Previous",
+    "next": "Next"
   },
   "locations": {
     "marbella": "Marbella Luxury Homes",
