@@ -20,12 +20,58 @@ const SearchSection = () => {
 
   return (
     <section className="py-12 bg-white">
+      {/* FAQ Schema for SERP Optimization */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What's the average price of a villa in Marbella Golden Mile?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Prices range from €1.5M to €10M depending on size, location, and amenities. The Golden Mile is Marbella's most prestigious area with luxury beachfront and golf course properties."
+              }
+            },
+            {
+              "@type": "Question", 
+              "name": "Where can I find beachfront apartments in Estepona?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Use our search filters under 'Location' and 'Type' to browse beachfront apartments in Estepona's prime coastal areas. Estepona offers excellent value with new developments and sea views."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are there luxury penthouses available in Puerto Banús?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Puerto Banús offers exclusive penthouses with marina views, luxury amenities, and prime locations. Filter by 'Penthouse' type and 'Marbella' location to see available properties."
+              }
+            }
+          ]
+        })
+      }} />
+
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in-up">
-          <h2 className="heading-lg mb-4 text-secondary">Find Your Dream Property</h2>
-          <p className="body-md text-muted-foreground max-w-xl mx-auto">
-            Search through our exclusive collection of luxury properties in Costa Del Sol's most prestigious locations.
+          <h2 className="heading-lg mb-4 text-secondary">Looking for a Luxury Home in Costa Del Sol?</h2>
+          <p className="body-md text-muted-foreground max-w-xl mx-auto mb-6">
+            Search villas, apartments, and beachfront homes in Marbella, Estepona, Fuengirola, and beyond.
           </p>
+          
+          {/* Conversational AEO Layer */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="sleek-card p-4 rounded-xl bg-accent/20 border border-primary/20">
+              <p className="text-sm text-secondary font-medium">
+                💬 Ask us: "Where can I find a sea-view villa in Marbella under €2M?" 
+                <span className="text-muted-foreground font-normal ml-1">
+                  Use the filters below to discover your perfect match.
+                </span>
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -37,14 +83,17 @@ const SearchSection = () => {
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, location: value})}>
-                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium">
+                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium" itemProp="location">
                       <SelectValue placeholder="Location" />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
-                      <SelectItem value="marbella">Marbella</SelectItem>
+                      <SelectItem value="marbella-golden-mile">Marbella Golden Mile</SelectItem>
+                      <SelectItem value="puerto-banus">Puerto Banús</SelectItem>
+                      <SelectItem value="marbella">Marbella Centro</SelectItem>
+                      <SelectItem value="estepona-beachfront">Estepona Beachfront</SelectItem>
                       <SelectItem value="estepona">Estepona</SelectItem>
                       <SelectItem value="fuengirola">Fuengirola</SelectItem>
-                      <SelectItem value="mijas">Mijas</SelectItem>
+                      <SelectItem value="mijas-golf">Mijas Golf</SelectItem>
                       <SelectItem value="benalmadena">Benalmádena</SelectItem>
                     </SelectContent>
                   </Select>
@@ -56,14 +105,16 @@ const SearchSection = () => {
                 <div className="relative">
                   <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, propertyType: value})}>
-                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium">
-                      <SelectValue placeholder="Type" />
+                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium" itemProp="propertyType">
+                      <SelectValue placeholder="Property Type" />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
-                      <SelectItem value="villa">Villa</SelectItem>
-                      <SelectItem value="apartment">Apartment</SelectItem>
+                      <SelectItem value="luxury-villa">Luxury Villa</SelectItem>
+                      <SelectItem value="beachfront-apartment">Beachfront Apartment</SelectItem>
                       <SelectItem value="penthouse">Penthouse</SelectItem>
+                      <SelectItem value="golf-property">Golf Course Property</SelectItem>
                       <SelectItem value="townhouse">Townhouse</SelectItem>
+                      <SelectItem value="new-development">New Development</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -74,14 +125,15 @@ const SearchSection = () => {
                 <div className="relative">
                   <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, priceRange: value})}>
-                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium">
-                      <SelectValue placeholder="Price" />
+                    <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium" itemProp="priceRange">
+                      <SelectValue placeholder="Price Range" />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
-                      <SelectItem value="500-1m">€500K - €1M</SelectItem>
+                      <SelectItem value="500k-1m">€500K - €1M</SelectItem>
                       <SelectItem value="1-2m">€1M - €2M</SelectItem>
                       <SelectItem value="2-5m">€2M - €5M</SelectItem>
-                      <SelectItem value="5m+">€5M+</SelectItem>
+                      <SelectItem value="5-10m">€5M - €10M</SelectItem>
+                      <SelectItem value="10m+">€10M+</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -93,14 +145,14 @@ const SearchSection = () => {
                   <Bed className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, bedrooms: value})}>
                     <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium">
-                      <SelectValue placeholder="Beds" />
+                      <SelectValue placeholder="Bedrooms" />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
-                      <SelectItem value="4">4+</SelectItem>
-                      <SelectItem value="5">5+</SelectItem>
+                      <SelectItem value="1">1+ Bedroom</SelectItem>
+                      <SelectItem value="2">2+ Bedrooms</SelectItem>
+                      <SelectItem value="3">3+ Bedrooms</SelectItem>
+                      <SelectItem value="4">4+ Bedrooms</SelectItem>
+                      <SelectItem value="5">5+ Bedrooms</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -111,9 +163,10 @@ const SearchSection = () => {
                 <Button 
                   onClick={handleSearch}
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg professional-hover"
+                  aria-label="Search luxury properties in Costa Del Sol"
                 >
                   <Search className="w-4 h-4 mr-2" />
-                  Search
+                  Search Properties
                 </Button>
               </div>
             </div>
@@ -121,28 +174,47 @@ const SearchSection = () => {
             {/* Divider */}
             <div className="h-px bg-border/50 my-6"></div>
 
-            {/* Quick Filters */}
+            {/* Enhanced Popular Searches with GEO Targeting */}
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">
-                Popular Searches
+                Popular Property Searches in Costa Del Sol
               </p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  'Luxury Villas Marbella',
-                  'Beachfront Apartments',
-                  'Golf Properties',
-                  'New Developments',
-                  'Sea View Properties',
-                  'Investment Opportunities'
+                  'Luxury Villas Marbella Golden Mile',
+                  'Estepona Golf Course Properties', 
+                  'Puerto Banús Beachfront Apartments',
+                  'Fuengirola Sea View Penthouses',
+                  'New Developments Costa Del Sol',
+                  'Investment Properties Marbella',
+                  'Benalmádena Marina Apartments',
+                  'Mijas Golf Villas'
                 ].map((filter, index) => (
                   <button
                     key={index}
                     className="px-4 py-2 text-xs bg-muted/50 text-muted-foreground rounded-full hover:bg-primary hover:text-primary-foreground minimal-hover font-medium border border-border/30"
+                    aria-label={`Search for ${filter}`}
                   >
                     {filter}
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Inline FAQ Section for SERP */}
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <div className="sleek-card p-4 rounded-xl">
+              <h3 className="font-semibold text-secondary mb-2 text-sm">Average Villa Prices in Marbella?</h3>
+              <p className="text-xs text-muted-foreground">€1.5M-€10M in Golden Mile, depending on size and amenities.</p>
+            </div>
+            <div className="sleek-card p-4 rounded-xl">
+              <h3 className="font-semibold text-secondary mb-2 text-sm">Best Areas for Beachfront Properties?</h3>
+              <p className="text-xs text-muted-foreground">Estepona, Puerto Banús, and Fuengirola offer prime coastal locations.</p>
+            </div>
+            <div className="sleek-card p-4 rounded-xl">
+              <h3 className="font-semibold text-secondary mb-2 text-sm">Investment Opportunities Available?</h3>
+              <p className="text-xs text-muted-foreground">New developments and off-plan properties offer excellent ROI potential.</p>
             </div>
           </div>
         </div>
