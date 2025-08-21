@@ -356,6 +356,42 @@ export const faqData: FAQItem[] = [
     details: "For homeowners, we manage valuations, marketing, negotiations, and closing, ensuring maximum exposure and a profitable sale.",
     category: "After-Sale"
   },
+  {
+    question: "What are the specific advantages of buying new-build property on the Costa del Sol for international buyers?",
+    answer: "New-build properties on the Costa del Sol offer hassle-free quality, energy efficiency, and modern luxury—with flexible staged payments. It's a smart choice for international buyers seeking lifestyle, investment value, and peace of mind.",
+    details: "Modern construction standards (EPC A/B) and a 10-year structural warranty reduce maintenance surprises. Energy features like aerothermal systems and solar can cut energy costs by up to ~40%. Staged payments typically mean 20–30% during construction and ~60% on completion, improving cash flow. Amenities and smart-home features drive higher rental and resale demand (often 15–20% higher than older stock). Lifestyle benefits—Málaga flight connectivity, 300+ days of sun, golf, healthcare—add long-term appeal. DelSolPrimeHomes provides VIP tours and multilingual guidance from reservation to key handover, with clear tax treatment (10% VAT on new builds vs ~7% ITP on resales).",
+    category: "New-build vs Resale"
+  },
+  {
+    question: "What is the step-by-step process of buying a new-build property in Spain?",
+    answer: "The process runs from selection and reservation, legal due diligence, and private purchase contract, through construction updates, to notarial signing, key handover, and registration—each with defined payment stages.",
+    details: "(1) Selection & Reservation: choose a project with DelSolPrimeHomes; typical refundable reservation €6,000–€10,000 pending legal checks. (2) Legal due diligence: an independent lawyer verifies permits, contracts, floorplans, and developer track record. (3) Private Purchase Contract: pay ~20–30% in one to three instalments. (4) Construction phase: receive progress updates, photos, and potential upgrade options. (5) Notarial signing: pay the remaining ~60%, sign the public deed, and receive keys; DelSolPrimeHomes can support NIE, bank account, and sworn translation. (6) After-sales: title registration, utilities setup, furniture, rentals, and ongoing support.",
+    category: "Buying Process"
+  },
+  {
+    question: "What legal guarantees apply when buying new-build property in Spain?",
+    answer: "Deposits are protected by a legally required bank guarantee or insurance; new builds include a 10-year structural warranty (plus shorter guarantees for finishes). Notarial oversight and permit verification ensure transparency.",
+    details: "(1) Bank guarantee/insurance on all advance payments until delivery; refundable if the project is not delivered or cancelled. (2) 10-year structural warranty (foundation, roof, stability); typical 1–3 years for functional elements (plumbing, windows, finishes). (3) Permit verification: your lawyer confirms building license and First Occupancy Certificate before handover. (4) Public deed before a Spanish notary confirms legality and obligations; the property is then registered in your name.",
+    category: "Legal"
+  },
+  {
+    question: "What is a bank guarantee when buying new-build property in Spain?",
+    answer: "A bank guarantee (or insurance bond) legally protects your instalment payments (typically 20–30% during construction). If the developer fails to deliver or legalize the project, you can recover 100% of your funds.",
+    details: "Spain's Law 38/1999 (LOE) requires developers to secure buyers' payments with a bank guarantee or insurance until delivery. The document lists your name, the amount paid, the reserved unit, and the refund clause. Your independent lawyer—coordinated by DelSolPrimeHomes—verifies it before you sign and before the first instalment after reservation. If triggered (e.g., cancellation or non-compliance), refunds are typically processed within ~30–90 days by the issuing bank/insurer.",
+    category: "Legal"
+  },
+  {
+    question: "Is it possible to view a new-build project before it is fully completed?",
+    answer: "Yes. You can usually tour show homes or completed phases, arrange guided site visits during construction, and access virtual tours before final delivery.",
+    details: "Developers often prepare a furnished show apartment or model villa to preview layouts and finishes. Guided site visits (with safety gear) are coordinated by DelSolPrimeHomes and the developer. In later phases, finished units may be viewable by appointment. Many projects offer 360º virtual tours or 3D walkthroughs. Serious buyers can opt for a VIP viewing experience (private transport, hotel, multilingual guidance) to compare several developments efficiently.",
+    category: "Viewing & Offers"
+  },
+  {
+    question: "What is the average construction time for a new-build villa or apartment in the Málaga region?",
+    answer: "Most Costa del Sol projects complete ~16–24 months after the building license is granted—apartments often 16–20 months; bespoke villas ~18–24 months.",
+    details: "Timings vary by property type, scale, and permitting. The clock starts only after the official building license (Licencia de Obra). Buying at pre-launch can secure better prices and unit choice, with delivery typically in 18–24 months. DelSolPrimeHomes provides transparent planning, photo updates, and safeguards. Some standardized or turnkey concepts can deliver in ~12–15 months.",
+    category: "New-build vs Resale"
+  },
 
   // Financing Category
   {
