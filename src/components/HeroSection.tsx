@@ -43,7 +43,7 @@ const HeroSection = () => {
           {/* Headlines */}
           <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
             <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-7xl font-heading font-bold leading-[1.1] tracking-tight px-1 sm:px-0 max-w-full break-words">
-              <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent sm:animate-shimmer sm:bg-[length:200%_200%] block">
+              <span className="bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent sm:animate-shimmer sm:bg-[length:100%_100%] block">
                 Looking for Luxury Homes
               </span>
               <span className="text-white block">in Costa Del Sol?</span>
