@@ -512,6 +512,126 @@ export const faqData: FAQItem[] = [
     details: "Energy efficiency is mandated by EU and Spanish building codes. Features include double glazing, insulation, aerothermal systems, and solar panels. Result: ~30–40% lower running costs than older properties. DelSolPrimeHomes emphasizes energy ratings in buyer comparisons.",
     category: "Property Types"
   },
+  {
+    question: "What is the process for transferring funds internationally when purchasing a property with DelSolPrimeHomes?",
+    answer: "Buyers typically work with their bank or a currency exchange service to transfer funds internationally. DelSolPrimeHomes can recommend reliable services that offer secure transactions and competitive rates to ensure a smooth transfer process.",
+    details: "DelSolPrimeHomes partners with trusted currency exchange specialists who offer better rates than traditional banks and secure transfer methods. They can guide you through wire transfers, SWIFT payments, and currency hedging options to protect against exchange rate fluctuations during the purchase process.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Are there any tax incentives for purchasing a second home in Spain?",
+    answer: "Spain does not offer direct tax incentives for second homes, but certain expenses like mortgage interest may be deductible. A tax advisor can provide personalized guidance based on your residency status and investment goals.",
+    details: "While there are no specific incentives for second homes, property-related expenses such as mortgage interest, community fees, and maintenance costs may be deductible if the property generates rental income. DelSolPrimeHomes can connect you with tax advisors specializing in Spanish property taxation.",
+    category: "Taxes"
+  },
+  {
+    question: "What is a nota simple and why is it important?",
+    answer: "A nota simple is a legal property report from the Land Registry that outlines ownership details, debts, mortgages, and encumbrances. DelSolPrimeHomes recommends obtaining it early to confirm the property's legal standing.",
+    details: "This document provides crucial information about the property's legal status, including current owners, outstanding mortgages, liens, or legal restrictions. It's essential for due diligence and typically costs around €9-€12. DelSolPrimeHomes ensures this is obtained and reviewed before any commitment.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Does DelSolPrimeHomes help clients set up Spanish wills?",
+    answer: "Yes, DelSolPrimeHomes can connect you with trusted legal professionals who specialize in Spanish inheritance laws to ensure your assets are properly protected and your wishes are legally recognized.",
+    details: "Spanish property should ideally be covered by a Spanish will to avoid complications for heirs. DelSolPrimeHomes works with experienced inheritance lawyers who can draft wills that comply with both Spanish and your home country's laws, potentially saving significant time and costs for your beneficiaries.",
+    category: "Legal"
+  },
+  {
+    question: "What are the costs of registering property in Spain?",
+    answer: "Property registration fees typically range from 0.5% to 1% of the property value. DelSolPrimeHomes assists clients by coordinating with registrars to ensure accurate and timely registration.",
+    details: "Registration costs include Land Registry fees (around 0.5-1% of property value), document preparation, translations if needed, and administrative fees. DelSolPrimeHomes ensures all documentation is properly prepared and submitted to avoid delays or additional costs.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "How does the reservation contract work?",
+    answer: "The reservation contract secures the property by removing it from the market once a deposit is paid. DelSolPrimeHomes ensures the contract includes clear conditions and that your interests are legally protected.",
+    details: "The reservation typically requires a deposit of €6,000-€12,000 and gives you exclusive rights to purchase for 2-4 weeks while legal checks are completed. DelSolPrimeHomes reviews all terms, including refund conditions, to protect your investment during this crucial period.",
+    category: "Buying Process"
+  },
+  {
+    question: "Can I finance renovations through a Spanish bank?",
+    answer: "Yes, many Spanish banks offer renovation loans or allow additional financing on your property mortgage. DelSolPrimeHomes can introduce you to banking partners with renovation loan options.",
+    details: "Renovation financing can be structured as part of your main mortgage or as a separate loan. Banks typically lend up to 80% of the post-renovation value. DelSolPrimeHomes helps coordinate with contractors to provide accurate renovation quotes for loan applications.",
+    category: "Financing"
+  },
+  {
+    question: "Are there restrictions on renting out my Spanish property?",
+    answer: "Yes, short-term rentals may require a tourist license depending on the region. DelSolPrimeHomes advises clients on local regulations to ensure compliance with rental laws.",
+    details: "Each municipality has different rules for short-term rentals. Some areas require specific licenses, limit rental days, or restrict locations. Long-term rentals (over 11 months) have different regulations. DelSolPrimeHomes provides up-to-date guidance on local rental laws and licensing requirements.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "What happens if the seller has outstanding debts?",
+    answer: "Any debts tied to the property, such as unpaid taxes or community fees, must be settled before completion. DelSolPrimeHomes coordinates with legal professionals to confirm a clean title before purchase.",
+    details: "Common debts include unpaid IBI (property tax), community fees, utility bills, or mortgages. These must be cleared at completion, typically deducted from the seller's proceeds. DelSolPrimeHomes ensures comprehensive searches are conducted and all debts are disclosed and resolved.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Does Spain offer property insurance for international buyers?",
+    answer: "Yes, international buyers can obtain comprehensive property insurance covering damage, theft, and liability. DelSolPrimeHomes can recommend insurers with tailored packages for foreign buyers.",
+    details: "Insurance typically costs 0.2-0.5% of property value annually and covers building damage, contents, civil liability, and legal expenses. Some policies include worldwide coverage for personal belongings. DelSolPrimeHomes partners with insurers offering English-language service and competitive rates.",
+    category: "After-Sale"
+  },
+  {
+    question: "How long does the Spanish property purchase process take?",
+    answer: "The process typically takes 6–12 weeks, depending on legal checks, financing, and paperwork. DelSolPrimeHomes expedites the process by coordinating with notaries, lawyers, and banks.",
+    details: "Timeline factors include mortgage approval (4-8 weeks), legal searches (1-2 weeks), and notary scheduling (1-2 weeks). Cash purchases can complete in 4-6 weeks. DelSolPrimeHomes manages the timeline proactively, coordinating all parties to prevent delays.",
+    category: "Buying Process"
+  },
+  {
+    question: "What are the benefits of hiring a gestor?",
+    answer: "A gestor is an administrative professional who helps manage paperwork, taxes, and official procedures. DelSolPrimeHomes often works with trusted gestores to simplify the buying process for clients.",
+    details: "Gestores handle bureaucratic tasks like tax returns, NIE applications, utility connections, and ongoing administrative needs. They're particularly valuable for non-residents who need local representation. DelSolPrimeHomes can recommend experienced gestores with English-speaking capabilities.",
+    category: "General"
+  },
+  {
+    question: "Can I purchase agricultural land through DelSolPrimeHomes?",
+    answer: "Yes, agricultural land can be purchased, though specific zoning restrictions may apply. DelSolPrimeHomes advises on the legal use of the land before purchase.",
+    details: "Agricultural land purchases may have restrictions on development, minimum plot sizes, or agricultural use requirements. EU citizens have full rights; non-EU buyers may face additional conditions. DelSolPrimeHomes ensures full due diligence on land classification and permitted uses.",
+    category: "Property Types"
+  },
+  {
+    question: "What is the difference between urban and rustic land in Spain?",
+    answer: "Urban land is zoned for residential or commercial development, while rustic land is primarily for agriculture or countryside use. DelSolPrimeHomes ensures buyers understand the land classification before investing.",
+    details: "Urban land allows construction of homes and businesses according to local planning rules. Rustic land typically prohibits development except for agricultural buildings. Some rustic land may have building rights from before zoning laws. DelSolPrimeHomes verifies classification and development potential before purchase.",
+    category: "Property Types"
+  },
+  {
+    question: "Do I need a Spanish bank account to pay utilities?",
+    answer: "Yes, utility bills are usually set up as direct debits from a Spanish bank account. DelSolPrimeHomes helps buyers open accounts and set up payments during the purchase process.",
+    details: "Most Spanish utility companies require local bank accounts for direct debit payments. This includes electricity, water, gas, internet, and community fees. DelSolPrimeHomes assists with bank account opening and can coordinate initial utility connections and payment setups.",
+    category: "Legal"
+  },
+  {
+    question: "Can DelSolPrimeHomes assist with obtaining an NIE number?",
+    answer: "Yes, DelSolPrimeHomes guides clients through the NIE application process, including paperwork, appointments, and translation support.",
+    details: "DelSolPrimeHomes helps prepare NIE applications, book appointments at police stations or consulates, and provide translation services. They can also arrange power of attorney for NIE applications if you cannot visit Spain personally. Processing typically takes 1-3 weeks.",
+    category: "Legal"
+  },
+  {
+    question: "What is the plusvalía tax in Spain?",
+    answer: "Plusvalía is a municipal tax on the increase in land value since the property was last transferred. DelSolPrimeHomes ensures buyers are aware of who is responsible for paying it in each transaction.",
+    details: "This tax is calculated based on the official land value and years since the last transfer. It's typically paid by the seller but should be negotiated in the contract. Recent legal changes allow challenges if no actual gain occurred. DelSolPrimeHomes ensures clear contractual terms regarding plusvalía responsibility.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I purchase commercial property with DelSolPrimeHomes?",
+    answer: "Yes, DelSolPrimeHomes offers a range of commercial properties, from retail spaces to offices, and assists buyers with all legal and financial requirements.",
+    details: "Commercial property investments include shops, restaurants, offices, warehouses, and hotels. Different financing, tax, and legal requirements apply compared to residential property. DelSolPrimeHomes provides specialized guidance on commercial property investment, including rental yield analysis and legal compliance.",
+    category: "Property Types"
+  },
+  {
+    question: "Does Spain have property disclosure requirements?",
+    answer: "Yes, sellers must disclose material facts about the property, including structural issues or outstanding obligations. DelSolPrimeHomes ensures due diligence to uncover potential risks.",
+    details: "Sellers must disclose known defects, legal issues, planning restrictions, and financial obligations. However, disclosure requirements are less comprehensive than some countries. DelSolPrimeHomes conducts thorough independent surveys and legal checks to identify potential issues beyond seller disclosures.",
+    category: "Due Diligence"
+  },
+  {
+    question: "What is a bank guarantee for new builds?",
+    answer: "A bank guarantee ensures that payments made for a new-build property are protected, even if the developer fails to complete the project. DelSolPrimeHomes advises buyers to always request one.",
+    details: "Spanish law requires developers to provide bank guarantees or insurance for advance payments on new builds. This protects buyers' deposits and stage payments if the project is cancelled or the developer becomes insolvent. DelSolPrimeHomes verifies that proper guarantees are in place before any payments.",
+    category: "Legal"
+  },
 
   // Financing Category
   {
