@@ -271,13 +271,16 @@
 
   @keyframes shimmer {
     0% {
-      background-position: -20% 0;
+      opacity: 0.8;
+      filter: brightness(1);
     }
     50% {
-      background-position: 20% 0;
+      opacity: 1;
+      filter: brightness(1.2);
     }
     100% {
-      background-position: -20% 0;
+      opacity: 0.8;
+      filter: brightness(1);
     }
   }
 
