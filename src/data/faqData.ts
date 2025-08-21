@@ -392,6 +392,126 @@ export const faqData: FAQItem[] = [
     details: "Timings vary by property type, scale, and permitting. The clock starts only after the official building license (Licencia de Obra). Buying at pre-launch can secure better prices and unit choice, with delivery typically in 18–24 months. DelSolPrimeHomes provides transparent planning, photo updates, and safeguards. Some standardized or turnkey concepts can deliver in ~12–15 months.",
     category: "New-build vs Resale"
   },
+  {
+    question: "How do stage payments work for new-build property purchases in Spain?",
+    answer: "Stage payments spread the cost—typically 20–30% during construction, with the remaining 60% at completion, protected by a bank guarantee.",
+    details: "After a small reservation deposit (€6k–€10k), buyers sign a private contract and pay 20–30% in instalments as construction progresses. Each instalment is backed by a bank guarantee, ensuring funds are recoverable if the developer defaults. The final balance (~60%) is paid at notarial signing. This structure improves cash flow, reduces upfront capital commitment, and aligns with construction milestones.",
+    category: "Financing"
+  },
+  {
+    question: "What additional costs should buyers expect when purchasing a new-build property?",
+    answer: "Beyond the purchase price, budget ~12–14% for VAT, legal fees, notary, registry, and other closing costs.",
+    details: "Costs include 10% VAT (IVA) on new builds, 1.5% stamp duty (AJD in Andalucía), legal fees (~1%), notary and registry (~0.5–1%), and bank/translation fees if needed. Buyers should allow an extra ~12–14% of the purchase price in total. DelSolPrimeHomes provides tailored cost estimates before commitment.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Are mortgages available to non-residents for new-build properties in Spain?",
+    answer: "Yes. Non-residents can usually borrow up to 60–70% of the property value with terms of 20–30 years.",
+    details: "Spanish and international banks offer mortgages to non-residents, subject to income verification, creditworthiness, and property valuation. Loan-to-value ratios average 60–70%, interest rates are competitive (fixed or variable), and terms can reach 25–30 years. Buyers need a NIE number and Spanish bank account. DelSolPrimeHomes works with mortgage brokers to secure approvals in advance.",
+    category: "Mortgages"
+  },
+  {
+    question: "What taxes apply to buying a new-build versus a resale property?",
+    answer: "New builds incur 10% VAT + 1.5% stamp duty; resales pay a 7% transfer tax in Andalucía.",
+    details: "On new builds, buyers pay 10% VAT (IVA) and 1.5% AJD stamp duty. On resales, buyers pay a transfer tax (ITP), currently 7% in Andalucía, with no VAT. Both incur notary, registry, and legal fees. Tax implications can influence investment strategies and cash flow.",
+    category: "Taxes"
+  },
+  {
+    question: "What is the Certificate of First Occupation (Licencia de Primera Ocupación)?",
+    answer: "It's the town hall permit certifying a property is completed legally and fit for occupation—essential for utility hookups and rentals.",
+    details: "Issued after municipal inspection, it confirms compliance with the building license and regulations. No property should be occupied or connected to mains utilities without it. Your lawyer verifies its issuance before completion. DelSolPrimeHomes only markets projects guaranteed to receive this certificate.",
+    category: "Legal"
+  },
+  {
+    question: "How do developers handle snagging and quality checks?",
+    answer: "Buyers get a snagging period (typically 30 days) to report defects; developers must remedy them under warranty.",
+    details: "After delivery, DelSolPrimeHomes assists buyers in inspecting finishes, installations, and fittings. Defects are listed in a snagging report. Developers are contractually obliged to fix them within agreed timelines. The structural warranty (10 years) and shorter-term guarantees (1–3 years) cover hidden defects and functionality issues.",
+    category: "Due Diligence"
+  },
+  {
+    question: "What rental yields are achievable with new-build Costa del Sol properties?",
+    answer: "Short-term holiday rentals average 5–8% yields; long-term lets 3–5%, depending on location and amenities.",
+    details: "Marbella, Estepona, and Málaga city achieve premium yields due to tourism and expat demand. Smart-home features, pools, gyms, and proximity to golf or beaches boost occupancy. Holiday rentals can outperform resales due to modern appeal. DelSolPrimeHomes can connect buyers with rental management firms to maximize ROI.",
+    category: "Market Trends"
+  },
+  {
+    question: "Can buyers resell their new-build property before completion?",
+    answer: "Yes—called contract assignment—but it depends on the developer's terms.",
+    details: "Some developers permit resale of the private purchase contract before completion, subject to fees or approvals. This can allow investors to profit from market appreciation before full delivery. Legal advice is crucial, and DelSolPrimeHomes ensures buyers know the resale conditions upfront.",
+    category: "New-build vs Resale"
+  },
+  {
+    question: "Are furniture packages available for new-builds?",
+    answer: "Yes. Most developers offer optional packages tailored to different styles and budgets.",
+    details: "Packages include turnkey solutions covering furniture, appliances, décor, and sometimes linens. Prices range from €10,000–€50,000+. DelSolPrimeHomes can coordinate viewings of show homes and package providers, streamlining the move-in process.",
+    category: "Property Types"
+  },
+  {
+    question: "What role does DelSolPrimeHomes play in the buying process?",
+    answer: "DelSolPrimeHomes guides buyers end-to-end: selection, legal checks, financing, construction updates, completion, and after-sales.",
+    details: "Services include curated property tours, legal introductions, mortgage assistance, construction updates, notarial completion, utility setup, snagging, rentals, and resale strategy. The team provides multilingual support, VIP viewings, and exclusive listings—ensuring a smooth, transparent experience.",
+    category: "General"
+  },
+  {
+    question: "What is the difference between off-plan and key-ready properties?",
+    answer: "Off-plan properties are purchased before completion (lower entry price, staged payments); key-ready units are fully built and move-in ready.",
+    details: "Off-plan purchases often secure discounts and better choice of units but require waiting 16–24 months. Key-ready properties allow immediate occupancy and rental income but at higher upfront cost. DelSolPrimeHomes helps clients decide based on cash flow, lifestyle, and investment priorities.",
+    category: "New-build vs Resale"
+  },
+  {
+    question: "Do new-build properties in Spain come with warranties?",
+    answer: "Yes—10 years structural, 3 years systems, 1 year finishes.",
+    details: "Spanish law mandates coverage: 10 years for structural integrity, 3 years for plumbing/electrical, and 1 year for finishes. Developers often resolve snagging within 30 days post-handover. DelSolPrimeHomes ensures warranty certificates are delivered to each buyer.",
+    category: "Legal"
+  },
+  {
+    question: "How do I open a Spanish bank account as a foreign buyer?",
+    answer: "You'll need your passport, NIE, proof of income, and proof of address. Accounts can be opened in person or remotely with some banks.",
+    details: "Requirements: valid passport, NIE certificate, employment/income proof, and utility bill. Some banks allow video calls for remote setup. DelSolPrimeHomes can recommend banks with English-speaking staff and property-friendly mortgage products.",
+    category: "Legal"
+  },
+  {
+    question: "What is a NIE and why do I need it?",
+    answer: "NIE (Número de Identificación de Extranjero) is a Spanish ID number for foreigners—required for any property purchase or financial transaction.",
+    details: "It is issued by the Spanish National Police, obtained via application in Spain or a consulate abroad. Processing typically takes 1–3 weeks. DelSolPrimeHomes guides clients through the application to ensure readiness for signing contracts, opening bank accounts, and paying taxes.",
+    category: "Legal"
+  },
+  {
+    question: "Can I buy property in Spain without being a resident?",
+    answer: "Yes—foreigners have no residency requirement to buy property in Spain.",
+    details: "Buyers only need an NIE number. Residency is optional, though ownership can support Golden Visa applications for investments of €500,000+. DelSolPrimeHomes assists with both non-resident and residency-linked purchases.",
+    category: "Legal"
+  },
+  {
+    question: "What is the Spanish Golden Visa program?",
+    answer: "It grants residency to non-EU buyers investing €500,000+ in Spanish real estate.",
+    details: "The visa allows renewable 2-year residency, family inclusion, and Schengen travel. Property must be free of mortgage for the first €500,000. Many Costa del Sol buyers leverage this program. DelSolPrimeHomes partners with immigration lawyers to streamline applications.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "How does currency exchange affect foreign buyers?",
+    answer: "Currency fluctuations can significantly impact costs; locking rates via currency brokers reduces risk.",
+    details: "Exchange rate movements can alter purchase budgets by thousands of euros. DelSolPrimeHomes connects buyers to FX specialists who offer forward contracts and better-than-bank rates, stabilizing costs during staged payments.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Can properties be purchased jointly in Spain?",
+    answer: "Yes—properties can be purchased jointly by spouses, partners, or investors.",
+    details: "Ownership can be split in percentages, and each owner's share is recorded on the deed. Joint purchase can optimize tax and inheritance planning. DelSolPrimeHomes coordinates with lawyers to structure ownership appropriately.",
+    category: "Legal"
+  },
+  {
+    question: "Are smart-home features standard in Costa del Sol new builds?",
+    answer: "Many new developments include smart-home systems as standard—lighting, climate, and security control via app.",
+    details: "Smart features raise rental appeal and efficiency. Developers increasingly integrate these systems into apartments and villas. DelSolPrimeHomes highlights projects with top-tier smart-home ecosystems.",
+    category: "Property Types"
+  },
+  {
+    question: "How energy efficient are modern Spanish new builds?",
+    answer: "Most new builds now achieve EPC A or B ratings, with aerothermal heating and solar pre-installations.",
+    details: "Energy efficiency is mandated by EU and Spanish building codes. Features include double glazing, insulation, aerothermal systems, and solar panels. Result: ~30–40% lower running costs than older properties. DelSolPrimeHomes emphasizes energy ratings in buyer comparisons.",
+    category: "Property Types"
+  },
 
   // Financing Category
   {
