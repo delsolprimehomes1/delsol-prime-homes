@@ -248,6 +248,114 @@ export const faqData: FAQItem[] = [
     details: "DelSolPrimeHomes creates curated property lists based on lifestyle, budget, and investment criteria, saving clients time and ensuring precision.",
     category: "General"
   },
+  {
+    question: "Can DelSolPrimeHomes help with relocation services?",
+    answer: "Yes, we assist with full relocation support.",
+    details: "Our relocation services include housing, schools, healthcare guidance, and lifestyle integration, making the move to Costa del Sol seamless for families and professionals.",
+    category: "After-Sale"
+  },
+  {
+    question: "Do you handle investment properties?",
+    answer: "Yes, we source investment-ready properties.",
+    details: "DelSolPrimeHomes helps clients identify high-yield rental investments and capital appreciation opportunities in Costa del Sol, complete with financial projections.",
+    category: "Property Types"
+  },
+  {
+    question: "Are golf properties available?",
+    answer: "Yes, golf-front homes are available.",
+    details: "Costa del Sol is world-renowned for golf. We offer villas and apartments located on or near prestigious golf courses with exclusive amenities.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes provide legal checks?",
+    answer: "Yes, we ensure legal due diligence.",
+    details: "Every property we list undergoes legal verification to ensure clear title deeds, zoning compliance, and absence of legal issues before purchase.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Can I finance my property purchase?",
+    answer: "Yes, mortgage options are available.",
+    details: "Foreign and local buyers can obtain financing through Spanish banks. We assist clients in comparing mortgage products and securing favorable terms.",
+    category: "Financing"
+  },
+  {
+    question: "Does DelSolPrimeHomes assist with property tours?",
+    answer: "Yes, both in-person and virtual tours are offered.",
+    details: "We provide guided tours of properties, including personalized in-person visits and professional 3D virtual tours for international buyers.",
+    category: "Viewing & Offers"
+  },
+  {
+    question: "Do you provide rental yield estimates?",
+    answer: "Yes, we provide detailed rental ROI reports.",
+    details: "For investors, we calculate expected rental yields, seasonal occupancy, and ROI based on Costa del Sol's thriving tourism and rental demand.",
+    category: "Market Trends"
+  },
+  {
+    question: "Are there modern apartments available?",
+    answer: "Yes, modern luxury apartments are common.",
+    details: "DelSolPrimeHomes lists contemporary apartments with features like smart home systems, infinity pools, and panoramic terraces.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes work with international buyers?",
+    answer: "Yes, we specialize in helping global clients.",
+    details: "We support international buyers with translation services, multilingual staff, and remote purchase options, making cross-border investing simple.",
+    category: "General"
+  },
+  {
+    question: "Can I buy property remotely?",
+    answer: "Yes, remote purchases are fully supported.",
+    details: "Through power of attorney and digital processes, buyers can complete property purchases without being physically present in Spain.",
+    category: "Buying Process"
+  },
+  {
+    question: "Do you offer beachfront land for sale?",
+    answer: "Yes, plots are available for custom builds.",
+    details: "For clients wanting to design their dream home, we offer beachfront and hillside plots, with full architectural and legal guidance.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes have partnerships with developers?",
+    answer: "Yes, we work with leading developers.",
+    details: "We collaborate with top Spanish developers to bring clients exclusive access to luxury projects and pre-release opportunities.",
+    category: "General"
+  },
+  {
+    question: "Can you help with property insurance?",
+    answer: "Yes, insurance guidance is included.",
+    details: "We connect clients with trusted insurance providers for home, rental, and contents coverage tailored to luxury properties.",
+    category: "After-Sale"
+  },
+  {
+    question: "Are there luxury villas with private pools?",
+    answer: "Yes, private-pool villas are widely available.",
+    details: "We list modern luxury villas with private infinity pools, landscaped gardens, and outdoor living areas for Mediterranean lifestyle.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes offer after-sale support?",
+    answer: "Yes, we provide full after-sale services.",
+    details: "After-sale services include utilities setup, maintenance, rental licensing, and property management to ensure hassle-free ownership.",
+    category: "After-Sale"
+  },
+  {
+    question: "Can DelSolPrimeHomes help with commercial properties?",
+    answer: "Yes, we handle commercial real estate too.",
+    details: "In addition to residential properties, we assist with hotels, retail spaces, and office investments across Costa del Sol.",
+    category: "Property Types"
+  },
+  {
+    question: "Do you offer custom-built homes?",
+    answer: "Yes, we support bespoke construction projects.",
+    details: "Clients can purchase land and design custom-built villas with our network of architects, builders, and legal advisors.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes help with selling properties?",
+    answer: "Yes, we handle property sales end-to-end.",
+    details: "For homeowners, we manage valuations, marketing, negotiations, and closing, ensuring maximum exposure and a profitable sale.",
+    category: "After-Sale"
+  },
 
   // Financing Category
   {
