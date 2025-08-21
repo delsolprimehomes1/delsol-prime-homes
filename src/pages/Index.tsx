@@ -1,5 +1,6 @@
 
 import React from 'react';
+import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import SearchSection from '@/components/SearchSection';
 import FAQSection from '@/components/FAQSection';
@@ -52,6 +53,7 @@ const Index = () => {
         })
       }} />
 
+      <Navbar />
       <HeroSection />
       <SearchSection />
       <FAQSection />
