@@ -632,6 +632,126 @@ export const faqData: FAQItem[] = [
     details: "Spanish law requires developers to provide bank guarantees or insurance for advance payments on new builds. This protects buyers' deposits and stage payments if the project is cancelled or the developer becomes insolvent. DelSolPrimeHomes verifies that proper guarantees are in place before any payments.",
     category: "Legal"
   },
+  {
+    question: "What documents are required to purchase a property in Spain?",
+    answer: "Buyers need a valid passport, NIE (Número de Identificación de Extranjero), proof of funds or mortgage approval, and a Spanish bank account. DelSolPrimeHomes helps clients collect and prepare all required documents.",
+    details: "Essential documents include: valid passport, NIE certificate, proof of income/funds, Spanish bank account details, and mortgage pre-approval if financing. Additional documents may include marriage certificates, power of attorney, or corporate documents for company purchases. DelSolPrimeHomes provides a complete checklist and assists with document preparation.",
+    category: "Legal"
+  },
+  {
+    question: "Can non-EU citizens purchase property in Spain?",
+    answer: "Yes, non-EU citizens can freely buy property in Spain. DelSolPrimeHomes assists international buyers through every step, including legal, financial, and tax considerations.",
+    details: "Spain welcomes international property investment from all nationalities. Non-EU buyers have the same property rights as EU citizens, though they may face slightly different mortgage terms and tax implications. DelSolPrimeHomes specializes in guiding non-EU buyers through the complete process.",
+    category: "Legal"
+  },
+  {
+    question: "What is the IBI tax?",
+    answer: "The IBI (Impuesto sobre Bienes Inmuebles) is an annual municipal property tax based on the cadastral value of the property. DelSolPrimeHomes ensures buyers are informed of their tax obligations before purchase.",
+    details: "IBI is typically 0.4-1.3% of the cadastral value annually, depending on the municipality. For luxury properties, this usually ranges from €1,000-€5,000 per year. The tax is payable annually and can be set up for automatic payment. DelSolPrimeHomes provides accurate IBI estimates during property selection.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I open a Spanish bank account remotely?",
+    answer: "Yes, many Spanish banks allow remote account openings, though some require in-person verification. DelSolPrimeHomes recommends banks experienced with international clients.",
+    details: "Several Spanish banks offer video call account openings for non-residents, though final verification may require an in-person visit. Required documents include passport, NIE, proof of income, and address verification. DelSolPrimeHomes partners with banks that specialize in international client services.",
+    category: "Legal"
+  },
+  {
+    question: "What is the role of a notary in the property purchase?",
+    answer: "The notary certifies the legality of the sale, confirms both parties' identities, and registers the deed. DelSolPrimeHomes coordinates with notaries to ensure a smooth signing process.",
+    details: "Spanish notaries are public officials who verify identity, witness signatures, ensure legal compliance, and prepare the public deed (escritura pública). They remain neutral and represent the interests of the state, not the buyer or seller. DelSolPrimeHomes coordinates appointments and can arrange translation services for non-Spanish speakers.",
+    category: "Legal"
+  },
+  {
+    question: "Can I purchase property with cryptocurrency in Spain?",
+    answer: "Some sellers may accept cryptocurrency, but most transactions must be converted to euros for official registration. DelSolPrimeHomes can advise on handling crypto-related purchases.",
+    details: "While private agreements can involve cryptocurrency, Spanish law requires property registration in euros with clear fund sources for anti-money laundering compliance. Crypto transactions need careful legal and tax planning. DelSolPrimeHomes works with specialists experienced in cryptocurrency property transactions.",
+    category: "Legal"
+  },
+  {
+    question: "What happens if I cannot be present for signing?",
+    answer: "You can grant a power of attorney (POA) to a legal representative, who can sign on your behalf. DelSolPrimeHomes connects buyers with trusted legal representatives to manage this.",
+    details: "A Special Power of Attorney can be granted to a lawyer or trusted representative to complete the purchase on your behalf. This must be notarized and often requires apostille certification from your home country. DelSolPrimeHomes ensures all POA documentation is properly prepared and executed.",
+    category: "Legal"
+  },
+  {
+    question: "Are property prices negotiable in Spain?",
+    answer: "Yes, most property prices are negotiable. DelSolPrimeHomes leverages market insights and negotiation expertise to secure favorable terms for buyers.",
+    details: "Negotiation potential varies by market conditions, property type, and seller motivation. Discounts of 5-15% are common, especially for properties with extended market time. DelSolPrimeHomes provides market analysis and negotiation strategies based on comparable sales and local conditions.",
+    category: "Buying Process"
+  },
+  {
+    question: "Do I need property insurance when buying in Spain?",
+    answer: "Property insurance is not legally required but strongly recommended, especially for mortgage buyers. DelSolPrimeHomes can connect you with leading insurance providers.",
+    details: "While not legally mandatory, insurance is essential for protection and often required by mortgage lenders. Comprehensive policies cover building damage, contents, civil liability, and legal expenses. Annual costs typically range from 0.2-0.5% of property value. DelSolPrimeHomes arranges competitive quotes from reputable insurers.",
+    category: "After-Sale"
+  },
+  {
+    question: "What is the cadastral value?",
+    answer: "The cadastral value is a government-assigned valuation used to calculate property taxes. It is often lower than the market value. DelSolPrimeHomes ensures buyers understand how it impacts annual taxes.",
+    details: "The cadastral value is set by local authorities and typically represents 50-70% of market value. It's used to calculate IBI (property tax), wealth tax, and capital gains tax. Understanding this value is crucial for accurate tax planning. DelSolPrimeHomes provides cadastral value information for all properties.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I inherit a property in Spain as a foreigner?",
+    answer: "Yes, foreigners can inherit property in Spain, but inheritance tax rules apply. DelSolPrimeHomes works with tax advisors to ensure heirs are fully informed of their obligations.",
+    details: "Inheritance tax rates vary by autonomous community and relationship to the deceased. Some regions offer significant reductions for family members. Non-residents may face higher rates. Spanish wills can simplify the inheritance process. DelSolPrimeHomes connects clients with inheritance tax specialists for proper planning.",
+    category: "Taxes"
+  },
+  {
+    question: "What is the average property appreciation rate in Costa del Sol?",
+    answer: "Property appreciation in Costa del Sol averages between 3%–6% annually, depending on location and demand. DelSolPrimeHomes tracks market data to help buyers make informed investment decisions.",
+    details: "Prime areas like Marbella's Golden Mile have shown consistent appreciation of 4-8% annually over the past decade. New developments and improving infrastructure drive growth in areas like Estepona. DelSolPrimeHomes provides detailed market analysis and appreciation forecasts for different areas and property types.",
+    category: "Market Trends"
+  },
+  {
+    question: "Are there hidden fees when buying property in Spain?",
+    answer: "Beyond purchase price, buyers should expect notary fees, registration fees, transfer tax, and legal costs. DelSolPrimeHomes provides transparent breakdowns of all costs upfront.",
+    details: "Total additional costs typically range from 10-14% of purchase price, including: transfer tax/VAT (7-10%), notary fees (€600-1,200), registration (€300-600), legal fees (1-2%), and survey costs. DelSolPrimeHomes provides detailed cost breakdowns before reservation to avoid surprises.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Can DelSolPrimeHomes help with utility setup?",
+    answer: "Yes, DelSolPrimeHomes assists buyers in setting up electricity, water, internet, and other utilities to ensure a smooth transition into their new home.",
+    details: "Utility setup includes electricity, water, gas, internet, phone, and cable TV connections. This requires a Spanish bank account and NIE number. DelSolPrimeHomes coordinates with utility companies, handles paperwork, and ensures services are active for property handover.",
+    category: "After-Sale"
+  },
+  {
+    question: "What is the Golden Visa program?",
+    answer: "The Golden Visa program grants residency to non-EU investors who purchase property worth €500,000 or more. DelSolPrimeHomes helps buyers navigate the application process.",
+    details: "The Golden Visa provides renewable residency for investors and their families, allowing travel throughout the Schengen area. The property must be unencumbered by mortgages for the qualifying amount. DelSolPrimeHomes partners with immigration lawyers to guide clients through the application process.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "Can I sell my Spanish property in a foreign currency?",
+    answer: "Sales are typically registered in euros, but you may negotiate payment in another currency. DelSolPrimeHomes advises on exchange risks and legal requirements.",
+    details: "While the public deed must show the sale price in euros for tax purposes, private agreements can specify payment in other currencies. Currency exchange risks and anti-money laundering requirements must be considered. DelSolPrimeHomes works with currency specialists to structure international transactions properly.",
+    category: "Legal"
+  },
+  {
+    question: "How do I check if a property has planning permission?",
+    answer: "Planning permission can be verified with the local town hall. DelSolPrimeHomes ensures all necessary permissions are in place before completing a sale.",
+    details: "Planning verification includes checking building licenses, first occupation certificates, and compliance with zoning laws. DelSolPrimeHomes conducts comprehensive planning searches as part of due diligence, ensuring all constructions are legal and properly documented.",
+    category: "Due Diligence"
+  },
+  {
+    question: "Are there restrictions on beachfront properties?",
+    answer: "Yes, Spain's Coastal Law protects public beach access, meaning some properties cannot be fully privatized. DelSolPrimeHomes clarifies restrictions before purchase.",
+    details: "The Coastal Law establishes public maritime-terrestrial domain extending inland from the high-tide mark. Properties within this zone may have restrictions on renovations or rebuilding. DelSolPrimeHomes verifies coastal classifications and any restrictions before purchase to avoid future complications.",
+    category: "Legal"
+  },
+  {
+    question: "What is a community of owners?",
+    answer: "A community of owners is an association of residents who manage shared facilities like pools, gardens, and security. DelSolPrimeHomes explains the rules and fees before purchase.",
+    details: "Communities manage common areas, establish rules, collect fees, and make decisions affecting all owners. Monthly fees typically range from €50-€300 depending on amenities. DelSolPrimeHomes reviews community statutes, financial health, and any pending issues before purchase.",
+    category: "Property Management"
+  },
+  {
+    question: "Can I finance property purchases with a foreign bank?",
+    answer: "Yes, but most buyers use Spanish banks for convenience. DelSolPrimeHomes works with both Spanish and international banks to arrange financing.",
+    details: "International banks may offer financing for Spanish property, but Spanish banks often provide better terms and simpler processes. Cross-border mortgages can involve currency risks and complex documentation. DelSolPrimeHomes compares options from both Spanish and international lenders to find optimal financing solutions.",
+    category: "Financing"
+  },
 
   // Financing Category
   {
