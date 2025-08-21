@@ -131,7 +131,7 @@ const FAQ = () => {
           </h1>
           
           <p className="body-lg text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-            Expert answers to 255 common questions about buying luxury properties in Costa del Sol. 
+            Expert answers to 275 common questions about buying luxury properties in Costa del Sol. 
             From Marbella's Golden Mile to Estepona's New Golden Mile, Fuengirola's beachfront, 
             and Benalmádena's hills—we've got you covered.
           </p>
@@ -142,7 +142,7 @@ const FAQ = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search 255 answers (e.g., 'Can foreigners buy in Marbella?')"
+                placeholder="Search 275 answers (e.g., 'Can foreigners buy in Marbella?')"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-4 py-4 text-base border-2 border-border/30 rounded-xl focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
@@ -169,7 +169,7 @@ const FAQ = () => {
 
           {/* Results Count */}
           <p className="text-sm text-muted-foreground mb-8">
-            Showing {filteredFaqs.length} of 255 questions
+            Showing {filteredFaqs.length} of 275 questions
             {selectedCategory !== 'All' && ` in ${selectedCategory}`}
             {searchQuery && ` matching "${searchQuery}"`}
           </p>

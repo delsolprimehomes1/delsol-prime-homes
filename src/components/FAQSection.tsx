@@ -86,9 +86,9 @@ const FAQSection = () => {
           <a 
             href="/faq" 
             className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors duration-200"
-            aria-label="View all 255 frequently asked questions"
+            aria-label="View all 275 frequently asked questions"
           >
-            See all FAQs (255)
+            See all FAQs (275)
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>
