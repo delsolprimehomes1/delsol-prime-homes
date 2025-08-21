@@ -36,6 +36,7 @@ const BlogSection: React.FC = () => {
       try {
         setLoading(true);
         const currentLanguage = i18n.language || 'en';
+        console.log('BlogSection: Fetching blog data for language:', currentLanguage);
 
         // Fetch latest 3 blog posts
         const { data: postsData, error: postsError } = await supabase
@@ -47,7 +48,7 @@ const BlogSection: React.FC = () => {
           .limit(3);
 
         if (postsError) {
-          console.error('Error fetching blog posts:', postsError);
+          console.error('BlogSection: Error fetching blog posts:', postsError);
           return;
         }
 
@@ -58,14 +59,17 @@ const BlogSection: React.FC = () => {
           .eq('language', currentLanguage);
 
         if (categoriesError) {
-          console.error('Error fetching blog categories:', categoriesError);
+          console.error('BlogSection: Error fetching blog categories:', categoriesError);
           return;
         }
+
+        console.log('BlogSection: Fetched posts:', postsData?.length || 0);
+        console.log('BlogSection: Fetched categories:', categoriesData?.length || 0);
 
         setPosts(postsData || []);
         setCategories(categoriesData || []);
       } catch (error) {
-        console.error('Error in fetchBlogData:', error);
+        console.error('BlogSection: Error in fetchBlogData:', error);
       } finally {
         setLoading(false);
       }
@@ -97,8 +101,30 @@ const BlogSection: React.FC = () => {
     );
   }
 
+  // Show coming soon section if no posts
   if (posts.length === 0) {
-    return null;
+    return (
+      <section 
+        ref={targetRef}
+        className={`py-20 px-4 bg-gradient-to-br from-background via-background/90 to-accent/10 transition-all duration-700 ${
+          isIntersecting ? 'animate-fade-in opacity-100' : 'opacity-0'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <BookOpen className="w-6 h-6 text-primary" />
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
+                {t('blog.sectionTitle', 'Latest Insights')}
+              </h2>
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+              {t('blog.comingSoon', 'Exciting articles coming soon! Stay tuned for the latest insights and updates.')}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
