@@ -992,6 +992,126 @@ export const faqData: FAQItem[] = [
     details: "Golden Visa holders can apply for permanent residency after 5 years of continuous residence. Spanish citizenship is possible after 10 years for most nationalities (2 years for Latin American and other specified countries). DelSolPrimeHomes connects clients with immigration lawyers for residency and citizenship planning.",
     category: "Visas/Residency"
   },
+  {
+    question: "Can I open a bank account in Spain as a non-resident?",
+    answer: "Yes, non-residents can open bank accounts in Spain. DelSolPrimeHomes partners with local banks to help clients open accounts quickly.",
+    details: "Non-residents can open Spanish bank accounts, though some banks have specific requirements or minimum deposits. Required documents typically include passport, NIE, proof of address, and sometimes proof of income. DelSolPrimeHomes works with banks experienced in international clients to streamline the process.",
+    category: "Legal"
+  },
+  {
+    question: "Do Spanish banks offer English-speaking services?",
+    answer: "Yes, many banks on the Costa del Sol have English-speaking staff and online banking platforms. DelSolPrimeHomes connects clients to the best options.",
+    details: "Major banks in tourist areas like Marbella, Estepona, and Fuengirola typically have English-speaking staff and multilingual online platforms. Some banks specialize in international clients. DelSolPrimeHomes recommends banks that provide excellent English-language support and property buyer services.",
+    category: "General"
+  },
+  {
+    question: "What documents are required to open a bank account?",
+    answer: "You need your passport, NIE number, proof of address, and sometimes proof of income or funds. DelSolPrimeHomes guides clients through the process.",
+    details: "Standard requirements include: valid passport, NIE certificate, proof of address (utility bill or rental contract), and proof of income or funds. Some banks require minimum deposits or additional documentation. DelSolPrimeHomes provides complete checklists and assists with documentation preparation.",
+    category: "Legal"
+  },
+  {
+    question: "Can I transfer money easily from abroad?",
+    answer: "Yes, international transfers are common, and using currency brokers often saves money compared to traditional banks.",
+    details: "International transfers to Spain are straightforward through banks, online services, or currency specialists. Currency brokers often offer better exchange rates and lower fees than traditional banks, especially for large property purchases. DelSolPrimeHomes partners with trusted currency specialists for competitive rates.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Are there restrictions on bringing money into Spain?",
+    answer: "No restrictions exist for transfers through banks. If carrying more than €10,000 cash physically, you must declare it at customs.",
+    details: "Electronic transfers have no limits, but amounts over €3,000 require source documentation for anti-money laundering compliance. Physical cash over €10,000 must be declared at customs. DelSolPrimeHomes advises on proper documentation for large transfers to ensure smooth property purchases.",
+    category: "Legal"
+  },
+  {
+    question: "Do I need to declare my foreign assets in Spain?",
+    answer: "Yes, if you are a tax resident, you must declare worldwide assets over €50,000 via Modelo 720. DelSolPrimeHomes connects clients with tax advisors.",
+    details: "Spanish tax residents must declare foreign assets exceeding €50,000 in any category (bank accounts, property, investments) using Form 720. Failure to declare can result in significant penalties. DelSolPrimeHomes works with tax advisors to ensure proper compliance with Spanish reporting requirements.",
+    category: "Taxes"
+  },
+  {
+    question: "What is the Spanish property purchase timeline?",
+    answer: "From reservation to completion, the process typically takes 6–12 weeks. DelSolPrimeHomes ensures smooth handling of each step.",
+    details: "Timeline varies by complexity: cash purchases 4-8 weeks, mortgage purchases 8-12 weeks. Steps include reservation (1 week), legal checks (2-3 weeks), mortgage approval (4-6 weeks), and completion (1 week). DelSolPrimeHomes coordinates all parties to minimize delays and ensure timely completion.",
+    category: "Buying Process"
+  },
+  {
+    question: "What is a reservation agreement?",
+    answer: "A reservation agreement secures the property by removing it from the market. Buyers usually pay a fee of €3,000–€6,000.",
+    details: "Reservation agreements typically require €3,000-€10,000 deposits depending on property value. This secures the property for 2-4 weeks while conducting due diligence and arranging financing. DelSolPrimeHomes ensures fair reservation terms and protects client interests during this period.",
+    category: "Buying Process"
+  },
+  {
+    question: "What is a private purchase contract?",
+    answer: "The private contract outlines the agreed price, terms, and payment schedule. A deposit of 10% is typically paid at this stage.",
+    details: "Private contracts detail all sale terms including price, completion date, conditions, and payment schedule. Deposits usually range from 10-20% of purchase price. This legally binding document precedes the notarial signing. DelSolPrimeHomes ensures contracts protect client interests and include appropriate conditions.",
+    category: "Buying Process"
+  },
+  {
+    question: "What happens at the notary appointment?",
+    answer: "The notary confirms identities, verifies payments, and signs the deed. Once signed, the buyer officially owns the property.",
+    details: "At the notarial appointment, all parties present identification, the notary reads the public deed in Spanish, payment is confirmed, and documents are signed. The buyer becomes the legal owner upon signing. DelSolPrimeHomes coordinates appointments and provides translation support when needed.",
+    category: "Buying Process"
+  },
+  {
+    question: "When do I get the keys to my property?",
+    answer: "Keys are handed over immediately after signing at the notary and transferring funds.",
+    details: "Key handover occurs at completion once the notarial deed is signed and funds are transferred. This is typically done at the notary office or immediately afterward. DelSolPrimeHomes coordinates with all parties to ensure smooth key transfer and property handover.",
+    category: "Buying Process"
+  },
+  {
+    question: "Can I buy a property remotely?",
+    answer: "Yes, with a power of attorney, your lawyer can complete the purchase on your behalf. DelSolPrimeHomes organizes this for international clients.",
+    details: "Remote purchases require a Special Power of Attorney granted to a trusted representative (usually your lawyer). This must be notarized and often apostilled in your home country. DelSolPrimeHomes coordinates remote purchases and ensures all documentation is properly prepared and executed.",
+    category: "Buying Process"
+  },
+  {
+    question: "Is financing available for non-residents?",
+    answer: "Yes, many Spanish banks finance up to 60–70% of the property value for non-residents.",
+    details: "Non-resident mortgages typically offer 60-70% loan-to-value ratios, though some banks may go up to 80% for EU citizens. Interest rates are usually 0.5-1% higher than resident rates. DelSolPrimeHomes works with banks specializing in non-resident financing to secure competitive terms.",
+    category: "Mortgages"
+  },
+  {
+    question: "What is the typical mortgage term in Spain?",
+    answer: "Mortgage terms for non-residents usually range from 15 to 25 years, depending on the bank and buyer's age.",
+    details: "Maximum mortgage terms depend on the borrower's age at completion (typically age 70-75). Non-residents often get 15-25 year terms, while residents may qualify for up to 30 years. DelSolPrimeHomes helps clients understand term options and their impact on monthly payments.",
+    category: "Mortgages"
+  },
+  {
+    question: "Do I need life insurance with a mortgage?",
+    answer: "Many Spanish banks require life insurance when granting a mortgage. Home insurance is also usually mandatory.",
+    details: "Life insurance requirements vary by bank and loan amount, often covering the outstanding mortgage balance. Home insurance is typically mandatory to protect the bank's security. DelSolPrimeHomes connects clients with insurance providers offering competitive rates for both life and property insurance.",
+    category: "Mortgages"
+  },
+  {
+    question: "What is Euribor?",
+    answer: "Euribor is the benchmark interest rate in the Eurozone, often used for variable mortgage rates in Spain.",
+    details: "Euribor (Euro Interbank Offered Rate) is the reference rate for most variable mortgages in Spain. Mortgage rates are typically quoted as Euribor + margin (e.g., Euribor + 1.5%). DelSolPrimeHomes explains how Euribor affects mortgage costs and helps clients choose between fixed and variable rates.",
+    category: "Mortgages"
+  },
+  {
+    question: "Can I fix my mortgage rate?",
+    answer: "Yes, fixed-rate mortgages are available, allowing buyers to lock in stable payments throughout the loan term.",
+    details: "Fixed-rate mortgages provide payment certainty but often start with higher rates than variable options. Terms typically range from 10-30 years. Some banks offer mixed rates (fixed for initial years, then variable). DelSolPrimeHomes helps clients compare fixed vs variable options based on their circumstances.",
+    category: "Mortgages"
+  },
+  {
+    question: "What happens if I default on my mortgage?",
+    answer: "The bank can repossess the property, but Spanish law offers protections. DelSolPrimeHomes advises clients to review terms carefully before signing.",
+    details: "Spanish law provides some protection against foreclosure, including mandatory mediation processes and minimum sale price requirements. However, banks can ultimately repossess and sell properties to recover debts. DelSolPrimeHomes ensures clients understand all terms and recommends appropriate insurance to protect against payment difficulties.",
+    category: "Mortgages"
+  },
+  {
+    question: "Can I pay off my Spanish mortgage early?",
+    answer: "Yes, early repayment is allowed, but small fees may apply depending on whether your mortgage is fixed or variable.",
+    details: "Early repayment fees are regulated: variable rate mortgages typically 0.25% of amount repaid, fixed rates may be higher (up to 2% in first 3 years, 1.5% thereafter). Some banks waive fees for partial payments. DelSolPrimeHomes reviews early repayment terms when comparing mortgage options.",
+    category: "Mortgages"
+  },
+  {
+    question: "Do banks require income proof for mortgages?",
+    answer: "Yes, banks typically require payslips, tax returns, and bank statements to assess affordability for a mortgage.",
+    details: "Income verification typically requires: last 3-6 months' payslips, 2 years' tax returns, 6 months' bank statements, and employment contracts. Self-employed applicants need additional documentation. DelSolPrimeHomes helps clients prepare complete mortgage applications and coordinate with banks' requirements.",
+    category: "Mortgages"
+  },
 
   // Financing Category
   {
