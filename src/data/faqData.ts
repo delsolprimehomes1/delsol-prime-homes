@@ -1112,6 +1112,126 @@ export const faqData: FAQItem[] = [
     details: "Income verification typically requires: last 3-6 months' payslips, 2 years' tax returns, 6 months' bank statements, and employment contracts. Self-employed applicants need additional documentation. DelSolPrimeHomes helps clients prepare complete mortgage applications and coordinate with banks' requirements.",
     category: "Mortgages"
   },
+  {
+    question: "Can foreigners rent out their Spanish property?",
+    answer: "Yes, foreigners can rent their Spanish property. Short-term and long-term rentals are permitted with the proper licenses.",
+    details: "Foreign property owners have the same rental rights as Spanish nationals. Short-term holiday rentals require tourist licenses in most regions, while long-term rentals (over 11 months) typically don't require special licensing. DelSolPrimeHomes assists with rental licensing and management services for international owners.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "Do I need a license to rent out my property?",
+    answer: "Yes, most regions including the Costa del Sol require a tourist rental license for short-term rentals. Long-term rentals may not require one.",
+    details: "Short-term rentals (under 2 months in Andalusia) require a VFT (Vivienda con Fines Turísticos) license. Long-term rentals are governed by standard tenancy law and don't require special licenses. DelSolPrimeHomes guides owners through the licensing process and regulatory compliance.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "How much rental income tax will I pay?",
+    answer: "Non-residents from the EU/EEA pay 19% on rental income, while others pay 24%. Expenses may be deductible for EU residents.",
+    details: "Tax rates vary by residency: Spanish residents pay progressive rates (19-47%), EU non-residents pay 19% on net income with allowable deductions, non-EU residents typically pay 24% on gross income with limited deductions. DelSolPrimeHomes connects owners with tax specialists for optimal planning.",
+    category: "Taxes"
+  },
+  {
+    question: "Do I need to declare rental income in my home country?",
+    answer: "Yes, most countries require declaration of foreign rental income, but double-tax treaties help avoid double taxation.",
+    details: "Most countries require residents to declare worldwide income, including Spanish rental income. Double taxation treaties between Spain and many countries provide relief mechanisms, typically allowing foreign tax paid to be credited against home country tax obligations. DelSolPrimeHomes works with international tax advisors.",
+    category: "Taxes"
+  },
+  {
+    question: "Can DelSolPrimeHomes manage rentals for me?",
+    answer: "Yes, DelSolPrimeHomes offers property management and rental services, including licensing, tenant sourcing, and maintenance.",
+    details: "Comprehensive rental management includes: license applications, professional photography, listing marketing, guest screening, key management, cleaning coordination, maintenance, tax reporting, and income optimization. This is particularly valuable for non-resident owners seeking hassle-free rental income.",
+    category: "Property Management"
+  },
+  {
+    question: "What type of properties are most profitable for rental?",
+    answer: "Beachfront apartments and villas with pools typically achieve the highest rental yields on the Costa del Sol.",
+    details: "High-demand rental properties include: beachfront apartments, villas with private pools, properties near golf courses, and modern developments with amenities. Location factors like proximity to beaches, restaurants, and transport links significantly impact rental yields. DelSolPrimeHomes provides detailed yield analysis for different property types.",
+    category: "Market Trends"
+  },
+  {
+    question: "Is Airbnb legal in Spain?",
+    answer: "Yes, Airbnb rentals are legal in Spain, but owners must obtain the proper tourist rental license to comply with local regulations.",
+    details: "Airbnb and similar platforms are legal in Spain with proper licensing. Properties must have valid VFT licenses and comply with local regulations including safety standards, insurance requirements, and tax obligations. DelSolPrimeHomes ensures clients understand and comply with all platform and regulatory requirements.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "What are community fees in Spain?",
+    answer: "Community fees cover shared costs such as pools, gardens, lifts, and security. They vary by property size and amenities.",
+    details: "Community fees fund maintenance of common areas, facilities, insurance, administration, and services. Costs depend on property size (participation quota), amenities available, and building age. Fees are calculated based on your property's percentage ownership of common areas.",
+    category: "Property Management"
+  },
+  {
+    question: "Who decides the community fees?",
+    answer: "Community fees are set by the community of property owners during annual meetings, based on maintenance and service budgets.",
+    details: "The community of owners (homeowners association) sets annual budgets and fees at general meetings. Decisions require majority votes, with each owner's voting power proportional to their property size. DelSolPrimeHomes explains community governance and helps clients understand their rights and obligations.",
+    category: "Property Management"
+  },
+  {
+    question: "Are community fees mandatory?",
+    answer: "Yes, paying community fees is legally required for all property owners in a development.",
+    details: "Community fees are a legal obligation tied to property ownership. They cannot be avoided even if you don't use the facilities. Fees are established in the community statutes and binding on all owners. DelSolPrimeHomes ensures clients understand community obligations before purchase.",
+    category: "Property Management"
+  },
+  {
+    question: "What happens if I don't pay community fees?",
+    answer: "Unpaid fees can result in legal action, interest charges, and even property seizure.",
+    details: "Non-payment consequences include: late payment interest, legal action, court judgments, and ultimately property seizure for debt recovery. Communities can also restrict access to facilities. DelSolPrimeHomes can arrange automatic payment systems to avoid these issues.",
+    category: "Property Management"
+  },
+  {
+    question: "Do villas have community fees?",
+    answer: "Independent villas may not have community fees unless they are within a gated community or shared development.",
+    details: "Standalone villas typically don't have community fees, but villas in gated communities, urbanizations, or developments with shared facilities do. These fees cover shared amenities like security, communal pools, gardens, or access roads. DelSolPrimeHomes clarifies fee obligations for all property types.",
+    category: "Property Management"
+  },
+  {
+    question: "How much are average community fees?",
+    answer: "Fees range from €50 per month for simple buildings to €500+ per month for luxury developments with many amenities.",
+    details: "Community fees vary widely: basic apartments €50-€150/month, mid-range developments €150-€300/month, luxury complexes €300-€800+/month. Factors include amenities (pools, gyms, security), building age, maintenance needs, and property size. DelSolPrimeHomes provides fee estimates for all properties.",
+    category: "Property Management"
+  },
+  {
+    question: "Are utilities included in community fees?",
+    answer: "Basic services like pool maintenance, gardening, and cleaning are included, but utilities like water and electricity are usually separate.",
+    details: "Community fees typically cover: building maintenance, pool upkeep, gardening, cleaning, security, administration, and building insurance. Individual utilities (electricity, water, gas, internet) are usually billed separately. Some developments include water or communal electricity in fees.",
+    category: "Property Management"
+  },
+  {
+    question: "What is IBI tax in Spain?",
+    answer: "IBI is an annual property tax based on cadastral value, typically between 0.4%–1.1%, paid to the local town hall.",
+    details: "IBI (Impuesto sobre Bienes Inmuebles) is municipal property tax calculated on cadastral value (usually 50-70% of market value). Rates vary by municipality: rural areas ~0.4%, urban areas ~0.4-1.1%. Payment can be annual or in installments, often by direct debit from Spanish bank accounts.",
+    category: "Taxes"
+  },
+  {
+    question: "Do non-residents pay wealth tax in Spain?",
+    answer: "Yes, non-residents may pay wealth tax on assets in Spain, though exemptions and thresholds vary by region.",
+    details: "Non-residents pay wealth tax only on Spanish assets exceeding €700,000. Rates range from 0.2-3.5% of excess value. Some regions like Madrid have eliminated wealth tax, while others offer reductions. DelSolPrimeHomes works with tax advisors to optimize wealth tax planning.",
+    category: "Taxes"
+  },
+  {
+    question: "What is Plusvalía tax?",
+    answer: "Plusvalía is a municipal tax on the increase in land value when selling property, paid by the seller in most cases.",
+    details: "Plusvalía tax (Impuesto Municipal sobre el Incremento de Valor de los Terrenos) is calculated on the theoretical increase in land value since the last transfer. Recent legal changes allow challenges if no actual gain occurred. Liability (buyer or seller) should be specified in the purchase contract.",
+    category: "Taxes"
+  },
+  {
+    question: "What are notary fees?",
+    answer: "Notary fees are paid for the official signing of the property deed and usually cost between 0.5%–1% of the purchase price.",
+    details: "Notary fees are regulated by law and vary by property value. For properties under €600,000, fees typically range €600-€1,200. Higher-value properties may see fees up to 1% of purchase price. Fees cover deed preparation, identity verification, and legal compliance certification.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "What are land registry fees?",
+    answer: "Land registry fees cover the inscription of the deed in the property registry and are typically 0.3%–0.7% of the purchase price.",
+    details: "Land Registry fees are regulated and calculated on a sliding scale based on property value. Registration must occur within 60 days of notarial signing. These fees ensure your ownership is officially recorded and legally protected. DelSolPrimeHomes coordinates registration for all clients.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Do I need a fiscal representative in Spain?",
+    answer: "Non-residents often appoint a fiscal representative to manage taxes and ensure compliance with Spanish regulations.",
+    details: "While not always legally required, fiscal representatives help non-residents comply with Spanish tax obligations including annual returns, quarterly declarations, and correspondence with tax authorities. They're particularly valuable for rental property owners. DelSolPrimeHomes can recommend qualified fiscal representatives.",
+    category: "Taxes"
+  },
 
   // Financing Category
   {
