@@ -1,0 +1,108 @@
+{
+  "hero": {
+    "h1": "Koop Luxe Woningen aan de Costa Del Sol",
+    "h2": "Marbella, Estepona & Fuengirola Vastgoed Experts",
+    "sub": "Met 15+ jaar expertise matchen wij u met de mooiste eigendommen van Marbella, Estepona & Fuengirola.",
+    "question": "Welk luxe huis zoekt u?",
+    "answer": "Of u nu op zoek bent naar een strandvilla aan Marbella's Golden Mile, een modern penthouse aan Estepona's New Golden Mile, of een familielandgoed in de heuvels van Fuengirola, wij hebben exclusieve toegang tot de meest begeerde eigendommen van de Costa del Sol."
+  },
+  "cta": {
+    "bookViewing": "Boek Uw Privé Bezichtiging",
+    "exploreTours": "Verken Virtuele Tours",
+    "search": "Zoek Luxe Eigendommen",
+    "bookConsultation": "Plan Expert Consultatie",
+    "viewAllFaqs": "Bekijk alle FAQ's (275)",
+    "backToTop": "Terug naar Boven"
+  },
+  "nav": {
+    "home": "Home",
+    "properties": "Eigendommen",
+    "about": "Over Ons",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "language": "Taal"
+  },
+  "search": {
+    "title": "Vind Uw Droomhuis aan de Costa Del Sol in 60 Seconden",
+    "subtitle": "Onze AI-zoekmachine verbindt u met perfecte eigendommen in Marbella, Estepona, Fuengirola & daarbuiten",
+    "location": "Locatie",
+    "type": "Type Eigendom",
+    "price": "Prijsklasse",
+    "beds": "Slaapkamers",
+    "baths": "Badkamers",
+    "aiMatch": "🤖 AI-Powered Eigendom Matching",
+    "aiPlaceholder": "Vraag me alles: 'Toon me strandvilla's onder €3M in Marbella' of 'Ik heb een 4-slaapkamer familiehuis met zwembad in Estepona nodig'",
+    "searchButton": "Zoek Eigendommen",
+    "popular": "Populaire Zoekopdrachten",
+    "locations": {
+      "all": "Alle Locaties",
+      "marbella": "Marbella",
+      "estepona": "Estepona",
+      "fuengirola": "Fuengirola",
+      "benalmadena": "Benalmádena",
+      "mijas": "Mijas"
+    },
+    "propertyTypes": {
+      "all": "Alle Types",
+      "villa": "Luxe Villa",
+      "apartment": "Strand Appartement",
+      "penthouse": "Penthouse",
+      "townhouse": "Rijtjeshuis",
+      "plot": "Bouwkavel"
+    },
+    "priceRanges": {
+      "all": "Elke Prijs",
+      "500k-1m": "€500K - €1M",
+      "1m-2m": "€1M - €2M",
+      "2m-5m": "€2M - €5M",
+      "5m+": "€5M+"
+    },
+    "bedrooms": {
+      "any": "Elke",
+      "1": "1+",
+      "2": "2+",
+      "3": "3+",
+      "4": "4+",
+      "5": "5+"
+    }
+  },
+  "faq": {
+    "title": "Veelgestelde Vragen",
+    "subtitle": "Deskundige antwoorden op 275 veelgestelde vragen over het kopen van luxe eigendommen aan de Costa del Sol.",
+    "description": "Van Marbella's Golden Mile tot Estepona's New Golden Mile, Fuengirola's strand, en Benalmádena's heuvels—wij hebben u gedekt.",
+    "searchPlaceholder": "Zoek 275 antwoorden (bijv., 'Kunnen buitenlanders kopen in Marbella?')",
+    "categories": {
+      "all": "Alle Categorieën",
+      "legal": "Juridisch",
+      "fees": "Kosten & Vergoedingen",
+      "visas": "Visa's/Verblijfsrecht",
+      "rentals": "Korte Verhuur",
+      "taxes": "Belastingen",
+      "management": "Vastgoedbeheer",
+      "mortgages": "Hypotheken",
+      "process": "Koopproces",
+      "afterSale": "Na Verkoop",
+      "general": "Algemeen",
+      "market": "Markttrends"
+    },
+    "resultsCount": "{{count}} van 275 vragen weergegeven",
+    "noResults": "Geen resultaten gevonden voor uw zoekopdracht. Probeer andere trefwoorden of bekijk alle categorieën.",
+    "stillQuestions": "Nog Steeds Vragen?",
+    "stillQuestionsText": "Kunt u niet vinden wat u zoekt? Onze Costa del Sol experts staan klaar om te helpen met persoonlijk advies.",
+    "speakToExpert": "Spreek met een Expert"
+  },
+  "locations": {
+    "marbella": "Marbella Luxe Woningen",
+    "estepona": "Estepona Eigendommen",
+    "fuengirola": "Fuengirola Villa's",
+    "benalmadena": "Benalmádena Landgoederen",
+    "mijas": "Mijas Woningen"
+  },
+  "popularSearches": [
+    "Marbella strandvilla €2M-€5M",
+    "Estepona penthouse zeezicht",
+    "Fuengirola familiehuis 4+ slaapkamers",
+    "Golden Mile luxe appartement",
+    "New Golden Mile moderne villa"
+  ]
+}

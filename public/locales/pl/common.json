@@ -1,0 +1,108 @@
+{
+  "hero": {
+    "h1": "Kup Luksusowe Domy na Costa Del Sol",
+    "h2": "Eksperci Nieruchomości Marbella, Estepona i Fuengirola",
+    "sub": "Z ponad 15-letnim doświadczeniem łączymy Cię z najlepszymi nieruchomościami w Marbella, Estepona i Fuengirola.",
+    "question": "Jakiego luksusowego domu szukasz?",
+    "answer": "Czy szukasz willi przy plaży na Golden Mile w Marbella, nowoczesnego penthouse'u na New Golden Mile w Estepona, czy rodzinnej posiadłości na wzgórzach Fuengirola, mamy ekskluzywny dostęp do najbardziej pożądanych nieruchomości na Costa del Sol."
+  },
+  "cta": {
+    "bookViewing": "Zarezerwuj Prywatne Oglądanie",
+    "exploreTours": "Odkryj Wirtualne Wycieczki",
+    "search": "Szukaj Luksusowych Nieruchomości",
+    "bookConsultation": "Zaplanuj Konsultację z Ekspertem",
+    "viewAllFaqs": "Zobacz wszystkie FAQ (275)",
+    "backToTop": "Na Górę"
+  },
+  "nav": {
+    "home": "Strona Główna",
+    "properties": "Nieruchomości",
+    "about": "O Nas",
+    "contact": "Kontakt",
+    "faq": "FAQ",
+    "language": "Język"
+  },
+  "search": {
+    "title": "Znajdź Swój Dom Marzeń na Costa Del Sol w 60 Sekund",
+    "subtitle": "Nasza wyszukiwarka oparta na AI łączy Cię z doskonałymi nieruchomościami w Marbella, Estepona, Fuengirola i nie tylko",
+    "location": "Lokalizacja",
+    "type": "Typ Nieruchomości",
+    "price": "Zakres Cenowy",
+    "beds": "Sypialnie",
+    "baths": "Łazienki",
+    "aiMatch": "🤖 Dopasowanie Nieruchomości przez AI",
+    "aiPlaceholder": "Zapytaj o cokolwiek: 'Pokaż mi wille przy plaży poniżej €3M w Marbella' lub 'Potrzebuję domu rodzinnego z 4 sypialniami i basenem w Estepona'",
+    "searchButton": "Szukaj Nieruchomości",
+    "popular": "Popularne Wyszukiwania",
+    "locations": {
+      "all": "Wszystkie Lokalizacje",
+      "marbella": "Marbella",
+      "estepona": "Estepona",
+      "fuengirola": "Fuengirola",
+      "benalmadena": "Benalmádena",
+      "mijas": "Mijas"
+    },
+    "propertyTypes": {
+      "all": "Wszystkie Typy",
+      "villa": "Luksusowa Willa",
+      "apartment": "Apartament przy Plaży",
+      "penthouse": "Penthouse",
+      "townhouse": "Dom Szeregowy",
+      "plot": "Działka Budowlana"
+    },
+    "priceRanges": {
+      "all": "Dowolna Cena",
+      "500k-1m": "€500K - €1M",
+      "1m-2m": "€1M - €2M",
+      "2m-5m": "€2M - €5M",
+      "5m+": "€5M+"
+    },
+    "bedrooms": {
+      "any": "Dowolna",
+      "1": "1+",
+      "2": "2+",
+      "3": "3+",
+      "4": "4+",
+      "5": "5+"
+    }
+  },
+  "faq": {
+    "title": "Często Zadawane Pytania",
+    "subtitle": "Odpowiedzi ekspertów na 275 często zadawanych pytań o kupno luksusowych nieruchomości na Costa del Sol.",
+    "description": "Od Golden Mile w Marbella do New Golden Mile w Estepona, plaży Fuengirola i wzgórz Benalmádena—mamy wszystko pod kontrolą.",
+    "searchPlaceholder": "Przeszukaj 275 odpowiedzi (np., 'Czy cudzoziemcy mogą kupować w Marbella?')",
+    "categories": {
+      "all": "Wszystkie Kategorie",
+      "legal": "Prawne",
+      "fees": "Opłaty i Koszty",
+      "visas": "Wizy/Pobyt",
+      "rentals": "Wynajem Krótkoterminowy",
+      "taxes": "Podatki",
+      "management": "Zarządzanie Nieruchomościami",
+      "mortgages": "Hipoteki",
+      "process": "Proces Kupna",
+      "afterSale": "Po Sprzedaży",
+      "general": "Ogólne",
+      "market": "Trendy Rynkowe"
+    },
+    "resultsCount": "Wyświetlono {{count}} z 275 pytań",
+    "noResults": "Nie znaleziono wyników dla Twojego wyszukiwania. Spróbuj innych słów kluczowych lub przeglądaj wszystkie kategorie.",
+    "stillQuestions": "Wciąż Masz Pytania?",
+    "stillQuestionsText": "Nie możesz znaleźć tego, czego szukasz? Nasi eksperci Costa del Sol są tutaj, aby pomóc z osobistymi poradami.",
+    "speakToExpert": "Porozmawiaj z Ekspertem"
+  },
+  "locations": {
+    "marbella": "Luksusowe Domy Marbella",
+    "estepona": "Nieruchomości Estepona",
+    "fuengirola": "Wille Fuengirola",
+    "benalmadena": "Posiadłości Benalmádena",
+    "mijas": "Domy Mijas"
+  },
+  "popularSearches": [
+    "Willa przy plaży Marbella €2M-€5M",
+    "Penthouse Estepona widok na morze",
+    "Willa rodzinna Fuengirola 4+ sypialnie",
+    "Luksusowy apartament Golden Mile",
+    "Nowoczesna willa New Golden Mile"
+  ]
+}

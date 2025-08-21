@@ -1,0 +1,108 @@
+{
+  "hero": {
+    "h1": "Køb Luksusboliger på Costa Del Sol",
+    "h2": "Marbella, Estepona & Fuengirola Ejendomseksperter",
+    "sub": "Med over 15 års ekspertise matcher vi dig med de fineste ejendomme i Marbella, Estepona & Fuengirola.",
+    "question": "Hvilket luksushjem leder du efter?",
+    "answer": "Uanset om du søger en strandvilla på Marbellas Golden Mile, en moderne penthouse på Esteponas New Golden Mile, eller et familieestate i Fuengirolas bakker, har vi eksklusiv adgang til Costa del Sols mest eftertragtede ejendomme."
+  },
+  "cta": {
+    "bookViewing": "Book Din Private Visning",
+    "exploreTours": "Udforsk Virtuelle Ture",
+    "search": "Søg Luksusejendomme",
+    "bookConsultation": "Planlæg Ekspertkonsultation",
+    "viewAllFaqs": "Se alle FAQ (275)",
+    "backToTop": "Tilbage Til Toppen"
+  },
+  "nav": {
+    "home": "Hjem",
+    "properties": "Ejendomme",
+    "about": "Om Os",
+    "contact": "Kontakt",
+    "faq": "FAQ",
+    "language": "Sprog"
+  },
+  "search": {
+    "title": "Find Dit Drømmehjem på Costa Del Sol på 60 Sekunder",
+    "subtitle": "Vores AI-drevne søgning forbinder dig med perfekte ejendomme på tværs af Marbella, Estepona, Fuengirola og videre",
+    "location": "Placering",
+    "type": "Ejendomstype",
+    "price": "Prisinterval",
+    "beds": "Soveværelser",
+    "baths": "Badeværelser",
+    "aiMatch": "🤖 AI-drevet Ejendomsmatching",
+    "aiPlaceholder": "Spørg mig om alt: 'Vis mig strandvillaer under €3M i Marbella' eller 'Jeg har brug for et 4-soveværelse familiehus med pool i Estepona'",
+    "searchButton": "Søg Ejendomme",
+    "popular": "Populære Søgninger",
+    "locations": {
+      "all": "Alle Placeringer",
+      "marbella": "Marbella",
+      "estepona": "Estepona",
+      "fuengirola": "Fuengirola",
+      "benalmadena": "Benalmádena",
+      "mijas": "Mijas"
+    },
+    "propertyTypes": {
+      "all": "Alle Typer",
+      "villa": "Luksusvilla",
+      "apartment": "Strandlejlighed",
+      "penthouse": "Penthouse",
+      "townhouse": "Rækkehus",
+      "plot": "Byggegrunde"
+    },
+    "priceRanges": {
+      "all": "Enhver Pris",
+      "500k-1m": "€500K - €1M",
+      "1m-2m": "€1M - €2M",
+      "2m-5m": "€2M - €5M",  
+      "5m+": "€5M+"
+    },
+    "bedrooms": {
+      "any": "Enhver",
+      "1": "1+",
+      "2": "2+",
+      "3": "3+",
+      "4": "4+",
+      "5": "5+"
+    }
+  },
+  "faq": {
+    "title": "Ofte Stillede Spørgsmål",
+    "subtitle": "Ekspertsvar på 275 almindelige spørgsmål om køb af luksusejendomme på Costa del Sol.",
+    "description": "Fra Marbellas Golden Mile til Esteponas New Golden Mile, Fuengirolas strand og Benalmádenas bakker—vi har dig dækket.",
+    "searchPlaceholder": "Søg gennem 275 svar (f.eks., 'Kan udlændinge købe i Marbella?')",
+    "categories": {
+      "all": "Alle Kategorier",
+      "legal": "Juridisk",
+      "fees": "Gebyrer & Omkostninger",
+      "visas": "Visa/Opholdstilladelse",
+      "rentals": "Kortsigtede Udlejninger",
+      "taxes": "Skatter",
+      "management": "Ejendomsforvaltning",
+      "mortgages": "Realkreditlån",
+      "process": "Købsproces",
+      "afterSale": "Efter Salg",
+      "general": "Generelt",
+      "market": "Markedstendenser"
+    },
+    "resultsCount": "Viser {{count}} af 275 spørgsmål",
+    "noResults": "Ingen resultater fundet for din søgning. Prøv andre søgeord eller gennemse alle kategorier.",
+    "stillQuestions": "Har Du Stadig Spørgsmål?",
+    "stillQuestionsText": "Kan du ikke finde det, du leder efter? Vores Costa del Sol-eksperter er her for at hjælpe med personlig rådgivning.",
+    "speakToExpert": "Tal med en Ekspert"
+  },
+  "locations": {
+    "marbella": "Marbella Luksushjem",
+    "estepona": "Estepona Ejendomme",
+    "fuengirola": "Fuengirola Villaer",
+    "benalmadena": "Benalmádena Ejendomme",
+    "mijas": "Mijas Hjem"
+  },
+  "popularSearches": [
+    "Marbella strandvilla €2M-€5M",
+    "Estepona penthouse havudsigt",
+    "Fuengirola familievilla 4+ soveværelser",
+    "Golden Mile luksuslejlighed",
+    "New Golden Mile moderne villa"
+  ]
+}

@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { languageConfig, type SupportedLanguage } from '@/i18n';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
