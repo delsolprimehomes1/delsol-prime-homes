@@ -301,8 +301,82 @@
   /* Mobile Optimizations */
   @media (max-width: 640px) {
     .container {
-      padding-left: 1rem;
-      padding-right: 1rem;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+    
+    /* Mobile-specific hero section */
+    section[class*="min-h-screen"] {
+      min-height: 100vh;
+      min-height: 100svh;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    
+    /* Improve mobile touch targets */
+    button, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Mobile typography optimizations */
+    h1, .heading-display {
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    
+    h2, .heading-xl {
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    
+    /* Optimize mobile video performance */
+    video {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      object-position: center center;
+    }
+    
+    /* Mobile-specific spacing */
+    .space-y-8 > * + * {
+      margin-top: 1.5rem;
+    }
+    
+    .space-y-6 > * + * {
+      margin-top: 1rem;
+    }
+    
+    /* Mobile button optimizations */
+    .min-h-\[56px\] {
+      min-height: 48px;
+    }
+    
+    /* Mobile gradient overlay enhancement for better text contrast */
+    .bg-gradient-to-br {
+      background: linear-gradient(to bottom right, rgba(0,0,0,0.8), rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+    }
+  }
+
+  /* Extra small mobile devices */
+  @media (max-width: 480px) {
+    .container {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    
+    /* Ensure text doesn't get cut off on very small screens */
+    h1 {
+      word-break: break-word;
+      hyphens: auto;
+    }
+    
+    /* Compact spacing for very small screens */
+    .space-y-6 > * + * {
+      margin-top: 0.75rem;
+    }
+    
+    .space-y-4 > * + * {
+      margin-top: 0.5rem;
     }
   }
 
