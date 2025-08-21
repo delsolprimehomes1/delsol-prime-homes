@@ -128,6 +128,126 @@ export const faqData: FAQItem[] = [
     details: "We help clients secure both long-term and holiday rentals in Costa del Sol. This is ideal for those who want to test the market before committing to a purchase.",
     category: "Short-Term Rentals"
   },
+  {
+    question: "Does DelSolPrimeHomes provide market insights?",
+    answer: "Yes, we offer expert property market insights.",
+    details: "Our team regularly provides clients with market reports, price trends, and investment insights specific to Costa del Sol. This ensures buyers and sellers can make data-driven decisions.",
+    category: "Market Trends"
+  },
+  {
+    question: "Do you have beachfront properties?",
+    answer: "Yes, beachfront villas and apartments are available.",
+    details: "DelSolPrimeHomes specializes in premium waterfront listings, including beachfront villas and apartments with panoramic sea views. These properties are some of the most sought-after in Costa del Sol.",
+    category: "Property Types"
+  },
+  {
+    question: "What makes DelSolPrimeHomes different?",
+    answer: "Our blend of luxury focus and international expertise.",
+    details: "Unlike generic agencies, DelSolPrimeHomes focuses exclusively on high-end, modern properties in Costa del Sol. Combined with international buyer support, legal assistance, and digital-first experiences, we offer unmatched value.",
+    category: "General"
+  },
+  {
+    question: "Do you handle property renovations?",
+    answer: "Yes, we connect clients with renovation experts.",
+    details: "We provide renovation support by partnering with trusted local contractors, designers, and architects. From minor upgrades to full remodels, we ensure your property matches your vision.",
+    category: "After-Sale"
+  },
+  {
+    question: "How do you market listed properties?",
+    answer: "Through digital campaigns and international exposure.",
+    details: "DelSolPrimeHomes markets properties via professional photography, 4K video tours, targeted digital ads, SEO, AEO, and global listing platforms. This maximizes visibility to qualified buyers worldwide.",
+    category: "After-Sale"
+  },
+  {
+    question: "Is property management available?",
+    answer: "Yes, we assist with full property management.",
+    details: "Our after-sale services include property management solutions such as maintenance, tenant placement, and rental handling. This is ideal for international investors.",
+    category: "Property Management"
+  },
+  {
+    question: "Are new developments available?",
+    answer: "Yes, we feature new luxury developments.",
+    details: "DelSolPrimeHomes partners with top developers to showcase off-plan and newly built homes. These often include modern designs, eco-friendly features, and exclusive community amenities.",
+    category: "Property Types"
+  },
+  {
+    question: "Can I buy off-plan properties?",
+    answer: "Yes, we support off-plan investments.",
+    details: "Many investors purchase off-plan homes to secure lower entry prices and benefit from value appreciation. We ensure all developments are legally compliant and financially secure.",
+    category: "New-build vs Resale"
+  },
+  {
+    question: "Does DelSolPrimeHomes help with visas?",
+    answer: "Yes, we provide Golden Visa guidance.",
+    details: "For non-EU buyers, we connect clients with legal professionals who handle Spanish Golden Visa applications. Purchasing qualifying property can provide residency opportunities.",
+    category: "Visas/Residency"
+  },
+  {
+    question: "What is the average property price in Costa del Sol?",
+    answer: "Prices vary widely by location and property type.",
+    details: "Costa del Sol homes can range from €250,000 for smaller apartments to €10M+ for luxury estates. We provide custom market analysis to match your budget and goals.",
+    category: "Market Trends"
+  },
+  {
+    question: "Can foreigners own property in Spain?",
+    answer: "Yes, foreign buyers have full ownership rights.",
+    details: "Spain welcomes international buyers. DelSolPrimeHomes assists with obtaining NIE numbers, banking, and legal processes so foreigners can purchase with confidence.",
+    category: "Legal"
+  },
+  {
+    question: "Does DelSolPrimeHomes provide tax guidance?",
+    answer: "Yes, we connect you with tax specialists.",
+    details: "We work with accountants who advise on property taxes, wealth taxes, and rental income laws for foreign investors. This ensures compliance and optimized tax planning.",
+    category: "Taxes"
+  },
+  {
+    question: "Can I rent my property after purchase?",
+    answer: "Yes, rental licensing is supported.",
+    details: "We assist owners in obtaining rental licenses and managing tenants, whether for long-term stays or short-term holiday rentals.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "How long does the buying process take?",
+    answer: "Typically 6–12 weeks.",
+    details: "From signing the reservation contract to completing ownership transfer, the process usually takes between 6–12 weeks, depending on legal checks and financing.",
+    category: "Buying Process"
+  },
+  {
+    question: "Does DelSolPrimeHomes offer concierge services?",
+    answer: "Yes, lifestyle concierge is available.",
+    details: "We go beyond real estate with concierge services including private tours, school recommendations, yacht rentals, and relocation guidance to help clients settle into Costa del Sol.",
+    category: "After-Sale"
+  },
+  {
+    question: "Are eco-friendly homes available?",
+    answer: "Yes, we list sustainable developments.",
+    details: "DelSolPrimeHomes features eco-conscious homes with solar energy, smart home tech, and green certifications to support sustainable living.",
+    category: "Property Types"
+  },
+  {
+    question: "Does DelSolPrimeHomes have local offices?",
+    answer: "Yes, we have on-site presence in Costa del Sol.",
+    details: "Our team operates directly in Costa del Sol, ensuring in-person support for property visits, local advice, and client meetings.",
+    category: "General"
+  },
+  {
+    question: "Can you assist with currency exchange?",
+    answer: "Yes, we partner with FX specialists.",
+    details: "We connect international buyers with secure foreign exchange partners to save money on large transactions and transfers.",
+    category: "Fees & Costs"
+  },
+  {
+    question: "Does DelSolPrimeHomes handle luxury rentals?",
+    answer: "Yes, we manage luxury holiday rentals.",
+    details: "For investors and homeowners, we provide services to rent out luxury properties to high-end clients, maximizing occupancy and ROI.",
+    category: "Short-Term Rentals"
+  },
+  {
+    question: "Do you offer custom property searches?",
+    answer: "Yes, we tailor searches to your needs.",
+    details: "DelSolPrimeHomes creates curated property lists based on lifestyle, budget, and investment criteria, saving clients time and ensuring precision.",
+    category: "General"
+  },
 
   // Financing Category
   {
