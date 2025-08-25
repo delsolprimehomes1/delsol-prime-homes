@@ -25,11 +25,14 @@ interface BlogCategory {
 }
 
 const BlogSection: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n, ready } = useTranslation();
   const { targetRef, isIntersecting } = useIntersectionObserver({ threshold: 0.1 });
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Debug i18n status
+  console.log('BlogSection: i18n ready:', ready, 'language:', i18n.language);
 
   useEffect(() => {
     const fetchBlogData = async () => {
@@ -140,11 +143,11 @@ const BlogSection: React.FC = () => {
           <div className="flex items-center justify-center gap-2 mb-4">
             <BookOpen className="w-6 h-6 text-primary" />
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
-              {t('blog.sectionTitle')}
+              {t('blog.sectionTitle', 'Latest Insights')}
             </h2>
           </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('blog.sectionSubtitle')}
+            {t('blog.sectionSubtitle', 'Expert guidance and market updates for luxury property buyers on the Costa del Sol')}
           </p>
         </div>
 
@@ -174,7 +177,7 @@ const BlogSection: React.FC = () => {
             asChild
           >
             <a href="/blog">
-              {t('blog.viewAllArticles')}
+              {t('blog.viewAllArticles', 'View All Articles')}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </a>
           </Button>
