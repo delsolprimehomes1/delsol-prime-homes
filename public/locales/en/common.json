@@ -107,7 +107,20 @@
     "noPosts": "No articles found",
     "noPostsDescription": "Try adjusting your search or category filter.",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "title": "Blog",
+    "postNotFound": "Post Not Found",
+    "postNotFoundDescription": "The blog post you are looking for does not exist.",
+    "error": "Error",
+    "errorDescription": "Something went wrong while loading the blog post.",
+    "backToBlog": "Back to Blog",
+    "tldr": "TL;DR - Key Takeaways",
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
+    "nextSteps": "Ready to Take the Next Step?",
+    "nextStepsDescription": "Discover exceptional properties in the areas mentioned in this article and start your Costa del Sol investment journey.",
+    "bookViewing": "Book Private Viewing",
+    "exploreProperties": "Explore Properties",
+    "relatedArticles": "Related Articles"
   },
   "locations": {
     "marbella": "Marbella Luxury Homes",
