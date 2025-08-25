@@ -107,7 +107,7 @@ const BlogSection: React.FC = () => {
       <section 
         ref={targetRef}
         className={`py-20 px-4 bg-gradient-to-br from-background via-background/90 to-accent/10 transition-all duration-700 ${
-          isIntersecting ? 'animate-fade-in opacity-100' : 'opacity-0'
+          isIntersecting ? 'animate-fade-in' : ''
         }`}
       >
         <div className="max-w-7xl mx-auto">
@@ -131,7 +131,7 @@ const BlogSection: React.FC = () => {
     <section 
       ref={targetRef}
       className={`py-20 px-4 bg-gradient-to-br from-background via-background/90 to-accent/10 transition-all duration-700 ${
-        isIntersecting ? 'animate-fade-in opacity-100' : 'opacity-0'
+        isIntersecting ? 'animate-fade-in' : ''
       }`}
     >
       <div className="max-w-7xl mx-auto">
@@ -153,7 +153,7 @@ const BlogSection: React.FC = () => {
           {posts.map((post, index) => (
             <div
               key={post.id}
-              className={`${isIntersecting ? 'animate-fade-in' : 'opacity-0'}`}
+              className={`${isIntersecting ? 'animate-fade-in' : ''}`}
               style={{ 
                 animationDelay: isIntersecting ? `${index * 200}ms` : '0ms'
               }}
