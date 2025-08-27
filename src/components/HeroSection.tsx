@@ -50,7 +50,7 @@ const HeroSection = () => {
               <span className="text-white drop-shadow-lg">in Costa Del Sol?</span>
             </h1>
             
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-heading font-semibold leading-relaxed max-w-5xl mx-auto">
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-heading font-semibold leading-relaxed max-w-5xl mx-auto">
               <span className="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
                 We help you buy exclusive Marbella, Estepona, and Fuengirola villas
               </span>
