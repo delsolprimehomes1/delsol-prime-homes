@@ -416,21 +416,41 @@ export default function EnhancedQADetail() {
                   )}
 
                   {/* Funnel CTAs */}
-                  {qaData.internal_links && Array.isArray(qaData.internal_links) && qaData.internal_links.length > 0 && (
+                  {qaData.internal_links && (
                     <section className="space-y-4">
                       <h3 className="text-xl font-semibold text-foreground mb-4">Next Steps</h3>
                       <div className="space-y-4">
-                        {qaData.internal_links.map((link: any, index: number) => (
-                          <FunnelCTA
-                            key={index}
-                            stage={link.stage}
-                            link={{
-                              text: link.text,
-                              url: link.url
-                            }}
-                            onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, link.stage.toUpperCase(), qaData.slug)}
-                          />
-                        ))}
+                        {(() => {
+                          // Handle both object and array formats
+                          if (Array.isArray(qaData.internal_links)) {
+                            return qaData.internal_links.map((link: any, index: number) => (
+                              <FunnelCTA
+                                key={index}
+                                stage={link.stage}
+                                link={{
+                                  text: link.text,
+                                  url: link.url
+                                }}
+                                onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, link.stage.toUpperCase(), qaData.slug)}
+                              />
+                            ));
+                          } else if (typeof qaData.internal_links === 'object') {
+                            // Handle object format: {tofu: {text, url}, mofu: {text, url}, bofu: {text, url}}
+                            const links = qaData.internal_links as any;
+                            return Object.entries(links).map(([stage, linkData]: [string, any]) => (
+                              <FunnelCTA
+                                key={stage}
+                                stage={stage as 'tofu' | 'mofu' | 'bofu'}
+                                link={{
+                                  text: linkData.text,
+                                  url: linkData.url
+                                }}
+                                onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, stage.toUpperCase(), qaData.slug)}
+                              />
+                            ));
+                          }
+                          return null;
+                        })()}
                       </div>
                     </section>
                   )}
