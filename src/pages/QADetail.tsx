@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -50,6 +50,9 @@ export default function QADetail() {
 
   useEffect(() => {
     if (!slug) return;
+    
+    console.log('Current slug:', slug);
+    console.log('Current language:', currentLanguage);
 
     const fetchQAData = async () => {
       try {
@@ -65,9 +68,10 @@ export default function QADetail() {
           `)
           .eq('slug', slug)
           .eq('language', currentLanguage)
-          .single();
+          .maybeSingle();
 
         if (qaError) {
+          console.error('Error fetching Q&A:', qaError);
           throw qaError;
         }
 
@@ -363,14 +367,14 @@ export default function QADetail() {
                           <Badge variant="outline" className="text-xs mb-2">
                             {getFunnelStageInfo(faq.funnel_stage).label}
                           </Badge>
-                          <h4 className="font-medium text-sm leading-tight mb-2">
-                            <a 
-                              href={`/qa/${faq.slug}`}
-                              className="hover:text-primary transition-colors"
-                            >
-                              {faq.question}
-                            </a>
-                          </h4>
+                            <h4 className="font-medium text-sm leading-tight mb-2">
+                              <Link 
+                                to={`/qa/${faq.slug}`}
+                                className="hover:text-primary transition-colors"
+                              >
+                                {faq.question}
+                              </Link>
+                            </h4>
                           <p className="text-xs text-muted-foreground line-clamp-2">
                             {faq.answer_short}
                           </p>

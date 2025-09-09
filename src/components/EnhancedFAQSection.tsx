@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useFAQData } from '@/hooks/useFAQData';
 import {
   Accordion,
@@ -280,10 +281,10 @@ export default function EnhancedFAQSection() {
                                 asChild
                                 className="hover:bg-primary hover:text-primary-foreground transition-colors"
                               >
-                                <a href={`/qa/${faq.slug}`}>
+                                <Link to={`/qa/${faq.slug}`}>
                                   Read Full Answer
                                   <ArrowRight className="ml-2 h-4 w-4" />
-                                </a>
+                                </Link>
                               </Button>
                             </div>
                           </AccordionContent>
