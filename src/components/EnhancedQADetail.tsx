@@ -79,6 +79,10 @@ export default function EnhancedQADetail() {
   const [showShareMenu, setShowShareMenu] = useState(false);
 
   const currentLanguage = (lang || i18n.language || 'en') as SupportedLanguage;
+  
+  // Debug logging
+  console.log('Route parameters:', { slug, lang, currentLanguage });
+  
   const { targetRef: contentRef, isIntersecting: contentVisible } = useIntersectionObserver({
     threshold: 0.1,
     rootMargin: '50px',
