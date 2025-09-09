@@ -53,6 +53,42 @@ export type Database = {
         }
         Relationships: []
       }
+      authors: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          expertise_areas: string[] | null
+          id: string
+          name: string
+          profile_url: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          expertise_areas?: string[] | null
+          id?: string
+          name: string
+          profile_url?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          expertise_areas?: string[] | null
+          id?: string
+          name?: string
+          profile_url?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       backlinks: {
         Row: {
           anchor_text: string | null
@@ -200,6 +236,47 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_analytics: {
+        Row: {
+          clicks_to_detail: number | null
+          created_at: string
+          date: string
+          faq_id: string | null
+          funnel_conversions: number | null
+          id: string
+          time_spent: number | null
+          views: number | null
+        }
+        Insert: {
+          clicks_to_detail?: number | null
+          created_at?: string
+          date?: string
+          faq_id?: string | null
+          funnel_conversions?: number | null
+          id?: string
+          time_spent?: number | null
+          views?: number | null
+        }
+        Update: {
+          clicks_to_detail?: number | null
+          created_at?: string
+          date?: string
+          faq_id?: string | null
+          funnel_conversions?: number | null
+          id?: string
+          time_spent?: number | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_analytics_faq_id_fkey"
+            columns: ["faq_id"]
+            isOneToOne: false
+            referencedRelation: "faqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       faq_categories: {
         Row: {
           created_at: string | null
@@ -233,6 +310,45 @@ export type Database = {
           name?: string
           sort_order?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      faq_category_enhancements: {
+        Row: {
+          category_key: string
+          created_at: string
+          funnel_description: Json | null
+          hero_text: string | null
+          id: string
+          language: string
+          seo_description: string | null
+          seo_title: string | null
+          speakable_intro: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          funnel_description?: Json | null
+          hero_text?: string | null
+          id?: string
+          language: string
+          seo_description?: string | null
+          seo_title?: string | null
+          speakable_intro?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          funnel_description?: Json | null
+          hero_text?: string | null
+          id?: string
+          language?: string
+          seo_description?: string | null
+          seo_title?: string | null
+          speakable_intro?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -279,10 +395,15 @@ export type Database = {
         Row: {
           answer_long: string | null
           answer_short: string
+          author_name: string | null
+          author_url: string | null
           category: string
           created_at: string | null
+          funnel_stage: string | null
           id: string
+          internal_links: Json | null
           is_featured: boolean | null
+          is_speakable: boolean | null
           keywords: string[] | null
           language: string
           location: string | null
@@ -290,20 +411,28 @@ export type Database = {
           meta_title: string | null
           property_types: string[] | null
           question: string
+          related_faqs: string[] | null
+          reviewed_at: string | null
           slug: string
           sort_order: number | null
           tags: string[] | null
           target_areas: string[] | null
           updated_at: string | null
+          view_count: number | null
           voice_queries: string[] | null
         }
         Insert: {
           answer_long?: string | null
           answer_short: string
+          author_name?: string | null
+          author_url?: string | null
           category: string
           created_at?: string | null
+          funnel_stage?: string | null
           id?: string
+          internal_links?: Json | null
           is_featured?: boolean | null
+          is_speakable?: boolean | null
           keywords?: string[] | null
           language: string
           location?: string | null
@@ -311,20 +440,28 @@ export type Database = {
           meta_title?: string | null
           property_types?: string[] | null
           question: string
+          related_faqs?: string[] | null
+          reviewed_at?: string | null
           slug: string
           sort_order?: number | null
           tags?: string[] | null
           target_areas?: string[] | null
           updated_at?: string | null
+          view_count?: number | null
           voice_queries?: string[] | null
         }
         Update: {
           answer_long?: string | null
           answer_short?: string
+          author_name?: string | null
+          author_url?: string | null
           category?: string
           created_at?: string | null
+          funnel_stage?: string | null
           id?: string
+          internal_links?: Json | null
           is_featured?: boolean | null
+          is_speakable?: boolean | null
           keywords?: string[] | null
           language?: string
           location?: string | null
@@ -332,11 +469,14 @@ export type Database = {
           meta_title?: string | null
           property_types?: string[] | null
           question?: string
+          related_faqs?: string[] | null
+          reviewed_at?: string | null
           slug?: string
           sort_order?: number | null
           tags?: string[] | null
           target_areas?: string[] | null
           updated_at?: string | null
+          view_count?: number | null
           voice_queries?: string[] | null
         }
         Relationships: []
@@ -618,7 +758,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_related_faqs: {
+        Args: {
+          current_faq_id: string
+          current_language?: string
+          limit_count?: number
+        }
+        Returns: {
+          answer_short: string
+          category: string
+          funnel_stage: string
+          id: string
+          question: string
+          slug: string
+        }[]
+      }
+      increment_faq_view_count: {
+        Args: { faq_slug: string }
+        Returns: undefined
+      }
     }
     Enums: {
       keyword_intent:
