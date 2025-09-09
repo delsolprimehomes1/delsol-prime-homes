@@ -416,31 +416,21 @@ export default function EnhancedQADetail() {
                   )}
 
                   {/* Funnel CTAs */}
-                  {qaData.internal_links && typeof qaData.internal_links === 'object' && (
+                  {qaData.internal_links && Array.isArray(qaData.internal_links) && qaData.internal_links.length > 0 && (
                     <section className="space-y-4">
                       <h3 className="text-xl font-semibold text-foreground mb-4">Next Steps</h3>
                       <div className="space-y-4">
-                        {(qaData.internal_links as any)?.tofu && (
+                        {qaData.internal_links.map((link: any, index: number) => (
                           <FunnelCTA
-                            stage="tofu"
-                            link={(qaData.internal_links as any).tofu}
-                            onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, 'TOFU', qaData.slug)}
+                            key={index}
+                            stage={link.stage}
+                            link={{
+                              text: link.text,
+                              url: link.url
+                            }}
+                            onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, link.stage.toUpperCase(), qaData.slug)}
                           />
-                        )}
-                        {(qaData.internal_links as any)?.mofu && (
-                          <FunnelCTA
-                            stage="mofu"
-                            link={(qaData.internal_links as any).mofu}
-                            onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, 'MOFU', qaData.slug)}
-                          />
-                        )}
-                        {(qaData.internal_links as any)?.bofu && (
-                          <FunnelCTA
-                            stage="bofu"
-                            link={(qaData.internal_links as any).bofu}
-                            onAnalyticsEvent={(event, data) => trackFunnelEvent(qaData.funnel_stage, 'BOFU', qaData.slug)}
-                          />
-                        )}
+                        ))}
                       </div>
                     </section>
                   )}
