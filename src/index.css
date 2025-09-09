@@ -386,5 +386,10 @@
   }
 }
 
+/* Navbar offset utility for fixed navbar layouts */
+.navbar-offset {
+  @apply pt-20 sm:pt-24;
+}
+
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
