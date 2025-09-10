@@ -65,7 +65,7 @@ const Navbar = () => {
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b shadow-lg will-change-scroll transition-all duration-300",
       isOverHero 
-        ? "bg-transparent border-white/20 lg:bg-transparent md:bg-white/20 sm:bg-white/30 bg-white/95" // Mobile gets background, desktop transparent
+        ? "bg-black/20 border-white/20 lg:bg-transparent" // Better mobile contrast with dark background
         : "bg-white/96 border-primary/20"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,14 +171,14 @@ const Navbar = () => {
 
         {/* Enhanced Mobile Menu with Better Performance */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white/96 backdrop-blur-md border-t border-primary/30 shadow-xl animate-fade-in will-change-transform z-[60]">
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/20 shadow-xl animate-fade-in will-change-transform z-[60]">
             <div className="container mx-auto px-4 sm:px-6 py-6">
-              <div className="flex flex-col space-y-4">
+                <div className="flex flex-col space-y-4">
                 {navigationItems.map((item) => (
                   <a
                     key={item.name}
                     href={item.href}
-                    className="text-secondary hover:text-primary font-medium py-2 px-4 rounded-md hover:bg-primary/10 transition-colors"
+                    className="text-white hover:text-yellow-300 font-medium py-3 px-4 rounded-md hover:bg-white/10 transition-colors text-lg mobile-touch-target"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.name}
@@ -186,8 +186,8 @@ const Navbar = () => {
                 ))}
                 
                 {/* Mobile Language Selection */}
-                <div className="pt-4 border-t border-primary/20">
-                  <p className="text-sm text-secondary/70 mb-3">Language</p>
+                <div className="pt-4 border-t border-white/20">
+                  <p className="text-sm text-white/70 mb-3">Language</p>
                   <div className="grid grid-cols-2 gap-2">
                     {languages.map((language) => (
                       <button
@@ -197,10 +197,10 @@ const Navbar = () => {
                           setIsMobileMenuOpen(false);
                         }}
                         className={cn(
-                          "flex items-center gap-2 p-3 rounded-md transition-colors text-left",
+                          "flex items-center gap-2 p-3 rounded-md transition-colors text-left mobile-touch-target",
                           selectedLanguage.code === language.code
-                            ? "bg-primary/20 text-secondary"
-                            : "hover:bg-primary/10 text-secondary/80"
+                            ? "bg-white/20 text-white"
+                            : "hover:bg-white/10 text-white/80"
                         )}
                       >
                         <span>{language.flag}</span>

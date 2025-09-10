@@ -34,61 +34,63 @@ const HeroSection = () => {
         </video>
       </div>
 
-      {/* Enhanced Responsive Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40 sm:from-black/70 sm:via-black/50 sm:to-black/30 z-10"></div>
+      {/* Enhanced Responsive Gradient Overlay - Lighter for better mobile readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/20 sm:from-black/50 sm:via-black/30 sm:to-black/10 z-10"></div>
 
-      {/* Responsive Content Container */}
-      <div className="relative z-20 container mx-auto px-4 py-8 sm:py-12 md:py-16 text-center text-white safe-area-inset-top flex items-center justify-center min-h-dvh">
-        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
+      {/* Responsive Content Container - Better Mobile Layout */}
+      <div className="relative z-20 container mx-auto px-6 py-16 sm:py-20 md:py-24 text-center text-white safe-area-inset-top flex items-center justify-center min-h-dvh">
+        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 md:space-y-10">
           {/* Enhanced Headlines with Better Mobile Typography */}
-          <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight tracking-tight">
-              <span className="text-white drop-shadow-[0_0_20px_rgba(255,215,0,0.6)] md:bg-gradient-to-r md:from-white md:via-yellow-200 md:to-yellow-400 md:bg-clip-text md:text-transparent md:animate-shimmer">
+          <div className="space-y-6 sm:space-y-8 animate-fade-in">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-heading font-bold leading-[1.1] tracking-tight">
+              <span className="block bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,215,0,0.8)]">
                 Looking for Luxury Homes
               </span>
-              <br />
-              <span className="text-white drop-shadow-lg">in Costa Del Sol?</span>
+              <span className="block text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] mt-2">
+                in Costa Del Sol?
+              </span>
             </h1>
             
-            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-heading font-semibold leading-relaxed max-w-5xl mx-auto">
-              <span className="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
-                We help you buy exclusive Marbella, Estepona, and Fuengirola villas
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-heading font-medium leading-relaxed max-w-4xl mx-auto">
+              <span className="block bg-gradient-to-r from-yellow-200 to-yellow-400 bg-clip-text text-transparent font-semibold mb-2">
+                We help you buy exclusive villas in
               </span>
-              <br className="hidden sm:block" />
-              <span className="text-white/95 drop-shadow-md">
-                with pools, ocean views, and gated security.
+              <span className="block text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+                Marbella, Estepona & Fuengirola
               </span>
             </h2>
           </div>
           
-          {/* Enhanced Supporting Q&A with Mobile Optimization */}
-          <div className="max-w-5xl mx-auto text-center sm:text-left px-2 sm:px-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4">
-              <span className="bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-sm">
-                Where can I buy luxury homes in Costa Del Sol?
-              </span>
-            </h3>
-            <p className="text-base sm:text-lg md:text-xl text-white/85 leading-relaxed drop-shadow-sm">
-              With 15+ years of expertise, Del Sol Prime Homes connects you to Marbella, Estepona, Fuengirola, and Benalmádena's finest properties.
-            </p>
+          {/* Enhanced Supporting Content with Modern Mobile Design */}
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/20">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 bg-clip-text text-transparent">
+                  15+ Years of Luxury Real Estate Expertise
+                </span>
+              </h3>
+              <p className="text-lg sm:text-xl text-white/90 leading-relaxed font-medium">
+                Premium villas • Ocean views • Gated communities • Private pools
+              </p>
+            </div>
           </div>
 
           {/* Enhanced Mobile-First CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-2xl mx-auto pt-4 sm:pt-6 px-4">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center max-w-2xl mx-auto pt-6 sm:pt-8">
             <Button 
               size="lg" 
-              className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transition-all duration-300 border-0 min-h-[48px] sm:min-h-[56px] mobile-touch-target will-change-transform"
+              className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 text-black font-bold px-8 sm:px-10 py-4 sm:py-5 text-lg sm:text-xl shadow-2xl hover:shadow-yellow-500/40 hover:scale-105 transition-all duration-300 border-0 min-h-[56px] sm:min-h-[64px] mobile-touch-target will-change-transform rounded-xl"
             >
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
-              Book Your Private Viewing
+              <Calendar className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
+              Book Private Viewing
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              className="w-full sm:w-auto bg-white/95 text-black border-2 border-white hover:bg-white hover:shadow-xl px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg transition-all duration-300 font-semibold min-h-[48px] sm:min-h-[56px] mobile-touch-target will-change-transform backdrop-blur-sm"
+              className="w-full sm:w-auto bg-white/10 text-white border-2 border-white/50 hover:bg-white/20 hover:border-white hover:shadow-xl px-8 sm:px-10 py-4 sm:py-5 text-lg sm:text-xl transition-all duration-300 font-semibold min-h-[56px] sm:min-h-[64px] mobile-touch-target will-change-transform backdrop-blur-sm rounded-xl"
             >
-              <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
-              Explore Virtual Tours
+              <Eye className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
+              Virtual Tours
             </Button>
           </div>
         </div>
