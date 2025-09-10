@@ -386,6 +386,69 @@
   }
 }
 
+/* Mobile-first touch targets and interactions */
+.touch-target-44 {
+  @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enhanced mobile optimizations */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
+  
+  .heading-display {
+    @apply text-3xl leading-tight;
+  }
+  
+  .heading-xl {
+    @apply text-2xl leading-tight;
+  }
+  
+  .heading-lg {
+    @apply text-xl leading-tight;
+  }
+  
+  .card-luxury {
+    @apply p-4;
+  }
+  
+  /* Mobile-specific spacing utilities */
+  .mobile-safe-spacing {
+    @apply px-4 py-2;
+  }
+  
+  /* Mobile typography */
+  .mobile-readable {
+    @apply text-base leading-relaxed;
+  }
+  
+  /* Mobile cards */
+  .mobile-card-spacing {
+    @apply p-4 gap-3;
+  }
+  
+  /* Mobile buttons */
+  .mobile-button {
+    @apply h-12 px-6 text-base;
+  }
+  
+  /* Mobile touch-friendly form inputs */
+  input, textarea, select {
+    @apply min-h-[44px] text-base;
+  }
+  
+  /* Mobile badge improvements */
+  .badge-mobile {
+    @apply px-3 py-2 text-sm;
+  }
+}
+
 /* Navbar offset utility for fixed navbar layouts */
 .navbar-offset {
   @apply pt-20 sm:pt-24;
