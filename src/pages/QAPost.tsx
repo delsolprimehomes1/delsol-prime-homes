@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { processMarkdownContent } from '@/utils/markdown';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -193,8 +194,8 @@ const QAPost = () => {
             <div className="max-w-4xl mx-auto">
               <div className="prose prose-lg max-w-none animate-fade-in animation-delay-400">
                 <div 
-                  className="content-html"
-                  dangerouslySetInnerHTML={{ __html: article.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br />') }}
+                  className="qa-content space-y-4"
+                  dangerouslySetInnerHTML={{ __html: processMarkdownContent(article.content) }}
                 />
               </div>
             </div>
