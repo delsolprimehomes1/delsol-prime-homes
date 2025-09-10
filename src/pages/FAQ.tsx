@@ -14,7 +14,6 @@ import { trackEvent } from '@/utils/analytics';
 
 const FAQ = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState<string>('');
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -56,11 +55,9 @@ const FAQ = () => {
         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      const matchesStage = !selectedStage || article.funnel_stage === selectedStage;
-      
-      return matchesSearch && matchesStage;
+      return matchesSearch;
     });
-  }, [articles, searchTerm, selectedStage]);
+  }, [articles, searchTerm]);
 
 
   // Generate FAQPage JSON-LD schema
@@ -120,8 +117,9 @@ const FAQ = () => {
               <QASearch 
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
-                selectedStage={selectedStage}
-                onStageChange={setSelectedStage}
+                selectedStage=""
+                onStageChange={() => {}}
+                hideStageFilter={true}
               />
             </div>
           </div>

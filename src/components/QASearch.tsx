@@ -8,9 +8,10 @@ interface QASearchProps {
   onSearchChange: (term: string) => void;
   selectedStage: string;
   onStageChange: (stage: string) => void;
+  hideStageFilter?: boolean;
 }
 
-export const QASearch = ({ searchTerm, onSearchChange, selectedStage, onStageChange }: QASearchProps) => {
+export const QASearch = ({ searchTerm, onSearchChange, selectedStage, onStageChange, hideStageFilter = false }: QASearchProps) => {
   const stages = [
     { value: '', label: 'All Questions', color: 'bg-muted text-foreground' },
     { value: 'TOFU', label: 'Getting Started', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
@@ -43,21 +44,23 @@ export const QASearch = ({ searchTerm, onSearchChange, selectedStage, onStageCha
       </div>
 
       {/* Stage Filters */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {stages.map((stage) => (
-          <Badge
-            key={stage.value}
-            className={`cursor-pointer transition-all duration-200 hover:scale-105 px-4 py-2 ${
-              selectedStage === stage.value
-                ? stage.color
-                : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-            }`}
-            onClick={() => onStageChange(stage.value)}
-          >
-            {stage.label}
-          </Badge>
-        ))}
-      </div>
+      {!hideStageFilter && (
+        <div className="flex flex-wrap justify-center gap-2">
+          {stages.map((stage) => (
+            <Badge
+              key={stage.value}
+              className={`cursor-pointer transition-all duration-200 hover:scale-105 px-4 py-2 ${
+                selectedStage === stage.value
+                  ? stage.color
+                  : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+              }`}
+              onClick={() => onStageChange(stage.value)}
+            >
+              {stage.label}
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
