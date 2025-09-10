@@ -65,8 +65,8 @@ const Navbar = () => {
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b shadow-lg will-change-scroll transition-all duration-300",
       isOverHero 
-        ? "bg-black/20 border-white/20 lg:bg-transparent" // Better mobile contrast with dark background
-        : "bg-white/96 border-primary/20"
+        ? "bg-secondary/30 border-white/20" // Branded navy background with transparency
+        : "bg-secondary/95 border-primary/20" // Consistent branded background
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
@@ -74,10 +74,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <a href="#" className="group">
               <h1 className={cn(
-                "font-heading text-xl sm:text-2xl lg:text-3xl font-bold hover:scale-105 transition-all duration-300 will-change-transform",
-                isOverHero 
-                  ? "text-white" 
-                  : "bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
+                "font-heading text-xl sm:text-2xl lg:text-3xl font-bold hover:scale-105 transition-all duration-300 will-change-transform text-white"
               )}>
                 DelSolPrimeHomes
               </h1>
@@ -95,9 +92,7 @@ const Navbar = () => {
                       className={cn(
                         "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                         "relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:bottom-0 after:left-1/2 after:transition-all after:duration-300 hover:after:w-full hover:after:left-0",
-                        isOverHero 
-                          ? "text-white/90 hover:text-white after:bg-white hover:bg-white/10" 
-                          : "text-secondary hover:text-primary after:bg-primary hover:bg-accent"
+                        "text-white/90 hover:text-white after:bg-white hover:bg-white/10"
                       )}
                     >
                       {item.name}
@@ -114,9 +109,7 @@ const Navbar = () => {
                   variant="outline"
                   className={cn(
                     "flex items-center gap-2 transition-all duration-300",
-                    isOverHero
-                      ? "bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/50"
-                      : "bg-white/80 border-primary/20 text-secondary hover:bg-primary/10 hover:border-primary/40"
+                    "bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/50"
                   )}
                 >
                   <Globe className="w-4 h-4" />
@@ -154,9 +147,7 @@ const Navbar = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={cn(
                 "transition-all duration-300",
-                isOverHero
-                  ? "text-white hover:bg-white/10"
-                  : "text-secondary hover:bg-primary/10"
+                "text-white hover:bg-white/10"
               )}
             >
               {isMobileMenuOpen ? (
@@ -170,7 +161,7 @@ const Navbar = () => {
 
         {/* Enhanced Mobile Menu with Better Performance */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/20 shadow-xl animate-fade-in will-change-transform z-[60]">
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-secondary/95 backdrop-blur-md border-t border-white/20 shadow-xl animate-fade-in will-change-transform z-[60]">
             <div className="container mx-auto px-4 sm:px-6 py-6">
                 <div className="flex flex-col space-y-4">
                 {navigationItems.map((item) => (
