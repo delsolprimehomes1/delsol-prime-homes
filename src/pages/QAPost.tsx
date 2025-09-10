@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
@@ -399,12 +399,17 @@ const QAPost = () => {
                               variant="outline" 
                               asChild
                               className="flex-shrink-0"
-                              onClick={() => trackEvent('cta_click', { type: 'mid_content', destination: '/#properties', article_slug: article.slug })}
+                              onClick={() => trackEvent('cta_click', { 
+                                type: 'mid_content', 
+                                destination: recommendations[0] ? `/qa/${recommendations[0].slug}` : '/qa',
+                                recommended_article: recommendations[0]?.slug,
+                                article_slug: article.slug 
+                              })}
                             >
-                              <a href="/#properties">
+                              <Link to={recommendations[0] ? `/qa/${recommendations[0].slug}` : '/qa'}>
                                 Learn More
                                 <ArrowRight className="w-4 h-4 ml-2" />
-                              </a>
+                              </Link>
                             </Button>
                           </div>
                         </Card>
