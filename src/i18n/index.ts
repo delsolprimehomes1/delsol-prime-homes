@@ -16,43 +16,62 @@ export const languageConfig = {
   da: { name: 'Dansk', flag: '🇩🇰' },
 };
 
-i18n
-  .use(Backend)
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    lng: 'en',
-    fallbackLng: 'en',
-    debug: false,
-    
-    interpolation: {
-      escapeValue: false,
-    },
+// Initialize i18n with basic resources to prevent async issues
+const initI18n = async () => {
+  await i18n
+    .use(Backend)
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      lng: 'en',
+      fallbackLng: 'en',
+      debug: false,
+      
+      interpolation: {
+        escapeValue: false,
+      },
 
-    detection: {
-      order: ['querystring', 'cookie', 'localStorage', 'navigator'],
-      lookupQuerystring: 'lang',
-      lookupCookie: 'i18next',
-      lookupLocalStorage: 'i18nextLng',
-      caches: ['cookie', 'localStorage'],
-      cookieMinutes: 10080, // 7 days
-    },
+      detection: {
+        order: ['querystring', 'cookie', 'localStorage', 'navigator'],
+        lookupQuerystring: 'lang',
+        lookupCookie: 'i18next',
+        lookupLocalStorage: 'i18nextLng',
+        caches: ['cookie', 'localStorage'],
+        cookieMinutes: 10080, // 7 days
+      },
 
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
-      addPath: '/locales/add/{{lng}}/{{ns}}',
-    },
+      backend: {
+        loadPath: '/locales/{{lng}}/{{ns}}.json',
+        addPath: '/locales/add/{{lng}}/{{ns}}',
+      },
 
-    resources: {},
-    ns: ['common'],
-    defaultNS: 'common',
-    
-    supportedLngs: supportedLanguages,
-    load: 'languageOnly',
-    
-    react: {
-      useSuspense: false,
-    },
-  });
+      // Provide basic fallback resources to ensure synchronous operation
+      resources: {
+        en: {
+          common: {
+            loading: 'Loading...',
+            welcome: 'Welcome'
+          }
+        }
+      },
+      ns: ['common'],
+      defaultNS: 'common',
+      
+      supportedLngs: supportedLanguages,
+      load: 'languageOnly',
+      
+      react: {
+        useSuspense: false,
+        transEmptyNodeValue: '',
+        transSupportBasicHtmlNodes: true,
+        transKeepBasicHtmlNodesFor: ['br', 'strong', 'i'],
+      },
+    });
+  
+  return i18n;
+};
+
+// Initialize immediately
+initI18n().catch(console.error);
 
 export default i18n;
