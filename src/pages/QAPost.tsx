@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
-import { QANavigation } from '@/components/QANavigation';
 import { ReadingProgressBar } from '@/components/ReadingProgressBar';
 import { FunnelCTA } from '@/components/FunnelCTA';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
@@ -34,19 +33,6 @@ const QAPost = () => {
     enabled: !!slug,
   });
 
-  const { data: allArticles = [] } = useQuery({
-    queryKey: ['qa-articles-nav'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('qa_articles' as any)
-        .select('id, slug, title, funnel_stage')
-        .order('funnel_stage')
-        .order('title');
-      
-      if (error) throw error;
-      return data as any[];
-    }
-  });
 
   // Smart recommendations hook
   const { recommendations } = useSmartRecommendations({ 
@@ -270,8 +256,6 @@ const QAPost = () => {
           </div>
         </section>
 
-        {/* Navigation */}
-        <QANavigation currentArticle={article} allArticles={allArticles} />
       </main>
     </>
   );
