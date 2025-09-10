@@ -16,7 +16,6 @@ export const languageConfig = {
   da: { name: 'Dansk', flag: '🇩🇰' },
 };
 
-// Initialize i18n synchronously to prevent React errors
 i18n
   .use(Backend)
   .use(LanguageDetector)
@@ -44,20 +43,7 @@ i18n
       addPath: '/locales/add/{{lng}}/{{ns}}',
     },
 
-    // Provide comprehensive fallback resources
-    resources: {
-      en: {
-        common: {
-          loading: 'Loading...',
-          welcome: 'Welcome',
-          error: 'Error',
-          'no-results': 'No results found',
-          search: 'Search',
-          filters: 'Filters',
-          clear: 'Clear'
-        }
-      }
-    },
+    resources: {},
     ns: ['common'],
     defaultNS: 'common',
     
@@ -66,9 +52,6 @@ i18n
     
     react: {
       useSuspense: false,
-      transEmptyNodeValue: '',
-      transSupportBasicHtmlNodes: true,
-      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i'],
     },
   });
 

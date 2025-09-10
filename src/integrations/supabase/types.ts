@@ -310,60 +310,6 @@ export type Database = {
         }
         Relationships: []
       }
-      qa_articles: {
-        Row: {
-          city: string
-          content: string
-          created_at: string
-          excerpt: string
-          funnel_stage: string
-          id: string
-          language: string
-          last_updated: string
-          next_step_text: string | null
-          next_step_url: string | null
-          slug: string
-          tags: string[] | null
-          title: string
-          topic: string
-          updated_at: string
-        }
-        Insert: {
-          city?: string
-          content: string
-          created_at?: string
-          excerpt: string
-          funnel_stage: string
-          id?: string
-          language?: string
-          last_updated?: string
-          next_step_text?: string | null
-          next_step_url?: string | null
-          slug: string
-          tags?: string[] | null
-          title: string
-          topic: string
-          updated_at?: string
-        }
-        Update: {
-          city?: string
-          content?: string
-          created_at?: string
-          excerpt?: string
-          funnel_stage?: string
-          id?: string
-          language?: string
-          last_updated?: string
-          next_step_text?: string | null
-          next_step_url?: string | null
-          slug?: string
-          tags?: string[] | null
-          title?: string
-          topic?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       search_console_data: {
         Row: {
           clicks: number | null
