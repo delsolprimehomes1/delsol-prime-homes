@@ -105,22 +105,24 @@ const FAQ = () => {
         </section>
         
         {/* Hero Section */}
-        <section className="luxury-gradient py-16 sm:py-20">
+        <section className="luxury-gradient py-16 sm:py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
+              <h1 className="faq-hero-title mb-6 animate-fade-in">
                 Frequently Asked Questions
               </h1>
-              <p className="text-lg sm:text-xl text-white/90 mb-8 animate-fade-in animation-delay-200">
+              <p className="faq-hero-subtitle mb-8 animate-fade-in animation-delay-200">
                 Quick answers to guide your Costa del Sol property journey. Click any question for detailed information.
               </p>
-              <QASearch 
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                selectedStage=""
-                onStageChange={() => {}}
-                hideStageFilter={true}
-              />
+              <div className="animate-fade-in animation-delay-400">
+                <QASearch 
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  selectedStage=""
+                  onStageChange={() => {}}
+                  hideStageFilter={true}
+                />
+              </div>
             </div>
           </div>
         </section>
