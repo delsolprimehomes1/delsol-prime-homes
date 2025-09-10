@@ -194,7 +194,7 @@ const QAPost = () => {
             <div className="max-w-4xl mx-auto">
               <div className="prose prose-lg max-w-none animate-fade-in animation-delay-400">
                 <div 
-                  className="qa-content space-y-4"
+                  className="qa-content space-y-2"
                   dangerouslySetInnerHTML={{ __html: processMarkdownContent(article.content) }}
                 />
               </div>

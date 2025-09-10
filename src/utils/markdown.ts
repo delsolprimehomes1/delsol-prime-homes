@@ -19,8 +19,8 @@ export function processMarkdownContent(content: string): string {
   processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>');
 
   // Convert unordered lists
-  processed = processed.replace(/^- (.+)$/gm, '<li class="ml-4 mb-2">$1</li>');
-  processed = processed.replace(/(<li.*?>.*?<\/li>)/gs, '<ul class="list-disc list-inside mb-4 space-y-1 text-muted-foreground">$1</ul>');
+  processed = processed.replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>');
+  processed = processed.replace(/(<li.*?>.*?<\/li>)/gs, '<ul class="list-disc list-inside mb-2 space-y-0 text-muted-foreground">$1</ul>');
 
   // Convert line breaks
   processed = processed.replace(/\n\n/g, '</p><p class="mb-4 text-muted-foreground leading-relaxed">');
