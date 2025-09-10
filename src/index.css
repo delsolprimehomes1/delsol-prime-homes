@@ -254,10 +254,16 @@
   .faq-hero-title {
     @apply font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  }
+
+  /* Desktop gradient text effect */
+  @media (min-width: 768px) {
+    .faq-hero-title {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
   }
   
   .faq-hero-subtitle {
