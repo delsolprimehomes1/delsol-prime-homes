@@ -7,13 +7,22 @@ export function processMarkdownContent(content: string): string {
 
   let processed = content;
 
-  // Convert headers (### **Header** or ### Header)
+  // Convert headers (order matters: longest patterns first)
+  // Convert #### headers (h4)
+  processed = processed.replace(/#### \*\*(.*?)\*\*/g, '<h4 class="text-lg font-semibold mb-3 mt-6 text-foreground">$1</h4>');
+  processed = processed.replace(/#### (.*?)$/gm, '<h4 class="text-lg font-semibold mb-3 mt-6 text-foreground">$1</h4>');
+  
+  // Convert ### headers (h3)
   processed = processed.replace(/### \*\*(.*?)\*\*/g, '<h3 class="text-xl font-semibold mb-4 mt-8 text-foreground">$1</h3>');
   processed = processed.replace(/### (.*?)$/gm, '<h3 class="text-xl font-semibold mb-4 mt-8 text-foreground">$1</h3>');
   
-  // Convert ## headers
+  // Convert ## headers (h2)
   processed = processed.replace(/## \*\*(.*?)\*\*/g, '<h2 class="text-2xl font-semibold mb-6 mt-10 text-foreground">$1</h2>');
   processed = processed.replace(/## (.*?)$/gm, '<h2 class="text-2xl font-semibold mb-6 mt-10 text-foreground">$1</h2>');
+  
+  // Convert # headers (h1)
+  processed = processed.replace(/# \*\*(.*?)\*\*/g, '<h1 class="text-3xl font-bold mb-8 mt-12 text-foreground">$1</h1>');
+  processed = processed.replace(/# (.*?)$/gm, '<h1 class="text-3xl font-bold mb-8 mt-12 text-foreground">$1</h1>');
 
   // Convert bold text (but not headers which we already processed)
   processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>');
