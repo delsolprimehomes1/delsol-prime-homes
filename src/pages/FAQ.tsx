@@ -13,15 +13,15 @@ import { Separator } from '@/components/ui/separator';
 import { trackEvent } from '@/utils/analytics';
 import { faqJsonLd, orgJsonLd } from '@/utils/schema';
 import { generateSpeakableSchema, generateQAArticleSchema } from '@/utils/schemas';
-
 const QAHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
 
   // Breadcrumb items
-  const breadcrumbItems = [
-    { label: 'Questions & Answers', current: true }
-  ];
+  const breadcrumbItems = [{
+    label: 'Questions & Answers',
+    current: true
+  }];
 
   // Analytics tracking
   useEffect(() => {
@@ -29,41 +29,39 @@ const QAHub = () => {
       timestamp: new Date().toISOString()
     });
   }, []);
-
-  const { data: articles = [], isLoading } = useQuery({
+  const {
+    data: articles = [],
+    isLoading
+  } = useQuery({
     queryKey: ['qa-articles-hub'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('qa_articles' as any)
-        .select('*');
-      
+      const {
+        data,
+        error
+      } = await supabase.from('qa_articles' as any).select('*');
       if (error) throw error;
-      
+
       // Custom ordering: TOFU → MOFU → BOFU
       const orderedData = (data || []).sort((a: any, b: any) => {
-        const stageOrder = { 'TOFU': 1, 'MOFU': 2, 'BOFU': 3 };
+        const stageOrder = {
+          'TOFU': 1,
+          'MOFU': 2,
+          'BOFU': 3
+        };
         const stageA = stageOrder[a.funnel_stage as keyof typeof stageOrder] || 999;
         const stageB = stageOrder[b.funnel_stage as keyof typeof stageOrder] || 999;
         return stageA - stageB;
       });
-      
       return orderedData as any[];
     }
   });
-
   const filteredArticles = useMemo(() => {
     return articles.filter(article => {
-      const matchesSearch = !searchTerm || 
-        article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+      const matchesSearch = !searchTerm || article.title.toLowerCase().includes(searchTerm.toLowerCase()) || article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) || article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStage = !selectedStage || article.funnel_stage === selectedStage;
-      
       return matchesSearch && matchesStage;
     });
   }, [articles, searchTerm, selectedStage]);
-
 
   // Enhanced JSON-LD schemas for optimal AI/LLM compatibility
   const enhancedFAQSchema = faqJsonLd('en', articles.map(article => ({
@@ -81,18 +79,11 @@ const QAHub = () => {
     "speakable": {
       "@type": "SpeakableSpecification",
       "cssSelector": [".question-title", ".short-answer"],
-      "xpath": [
-        "//*[contains(@class, 'question-title')]",
-        "//*[contains(@class, 'short-answer')]"
-      ]
+      "xpath": ["//*[contains(@class, 'question-title')]", "//*[contains(@class, 'short-answer')]"]
     }
   };
-  
   const organizationSchema = orgJsonLd('en');
-
-
-  return (
-    <>
+  return <>
       <Helmet>
         <title>Questions & Answers - Costa del Sol Property Guide | DelSolPrimeHomes</title>
         <meta name="description" content="Comprehensive Q&A hub for Costa del Sol property buyers. Get instant short answers plus detailed insights for serious buyers. Expert guidance for UK and Irish expats." />
@@ -134,9 +125,7 @@ const QAHub = () => {
         <section className="luxury-gradient py-16 sm:py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="faq-hero-title mb-6 animate-fade-in">
-                Questions & Answers Hub
-              </h1>
+              <h1 className="faq-hero-title mb-6 animate-fade-in">Q&A Hub</h1>
               <p className="faq-hero-subtitle mb-4 animate-fade-in animation-delay-200">
                 <strong>Two layers of expertise:</strong> Quick answers for skimmers, detailed insights for serious buyers.
               </p>
@@ -144,13 +133,7 @@ const QAHub = () => {
                 Expand any question below for comprehensive guidance on your Costa del Sol property journey.
               </p>
               <div className="animate-fade-in animation-delay-400">
-                <QASearch 
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                  selectedStage={selectedStage}
-                  onStageChange={setSelectedStage}
-                  hideStageFilter={false}
-                />
+                <QASearch searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedStage={selectedStage} onStageChange={setSelectedStage} hideStageFilter={false} />
               </div>
             </div>
           </div>
@@ -162,36 +145,22 @@ const QAHub = () => {
         {/* Q&A Accordion Section */}
         <section className="py-12 sm:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            {isLoading ? (
-              <div className="space-y-4 max-w-4xl mx-auto">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
+            {isLoading ? <div className="space-y-4 max-w-4xl mx-auto">
+                {[...Array(6)].map((_, i) => <div key={i} className="animate-pulse">
                     <div className="bg-muted rounded-lg h-32"></div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4 max-w-4xl mx-auto">
-                {filteredArticles.map((article, index) => (
-                  <QAAccordionItem 
-                    key={article.id} 
-                    article={article} 
-                    animationDelay={index * 50}
-                  />
-                ))}
-              </div>
-            )}
+                  </div>)}
+              </div> : <div className="space-y-4 max-w-4xl mx-auto">
+                {filteredArticles.map((article, index) => <QAAccordionItem key={article.id} article={article} animationDelay={index * 50} />)}
+              </div>}
 
-            {!isLoading && filteredArticles.length === 0 && (
-              <div className="text-center py-16">
+            {!isLoading && filteredArticles.length === 0 && <div className="text-center py-16">
                 <h3 className="text-xl font-semibold text-muted-foreground mb-2">
                   No questions found
                 </h3>
                 <p className="text-muted-foreground">
                   Try adjusting your search terms or stage filters.
                 </p>
-              </div>
-            )}
+              </div>}
 
             {/* AI & Voice Search Notice */}
             <div className="mt-16 text-center max-w-2xl mx-auto">
@@ -208,8 +177,6 @@ const QAHub = () => {
           </div>
         </section>
       </main>
-    </>
-  );
+    </>;
 };
-
 export default QAHub;
