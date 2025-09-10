@@ -46,7 +46,7 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Properties', href: '#properties' },
     { name: 'Blog', href: '/blog' },
-    { name: 'Q&A', href: '/qa' },
+    { name: 'FAQ', href: '/faq' },
   ];
 
   const languages = [

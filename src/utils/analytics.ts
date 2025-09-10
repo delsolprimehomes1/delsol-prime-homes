@@ -78,6 +78,50 @@ export const trackCTAClick = (ctaType: string, ctaText: string, destination: str
   }
 };
 
+// Track funnel progression between stages
+export const trackFunnelProgression = (fromStage: string, toStage: string, questionSlug: string) => {
+  const eventData = {
+    from_stage: fromStage,
+    to_stage: toStage,
+    question_slug: questionSlug,
+    timestamp: new Date().toISOString(),
+    page_url: window.location.href
+  };
+
+  console.log('Funnel Progression:', eventData);
+
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'funnel_progression', {
+      custom_map: {
+        from_stage: fromStage,
+        to_stage: toStage,
+        question_slug: questionSlug
+      }
+    });
+  }
+};
+
+// Track BOFU conversion events
+export const trackFunnelConversion = (conversionType: string, questionSlug: string) => {
+  const eventData = {
+    conversion_type: conversionType,
+    question_slug: questionSlug,
+    timestamp: new Date().toISOString(),
+    page_url: window.location.href
+  };
+
+  console.log('Funnel Conversion:', eventData);
+
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'funnel_conversion', {
+      custom_map: {
+        conversion_type: conversionType,
+        question_slug: questionSlug
+      }
+    });
+  }
+};
+
 // Generic analytics event tracker
 export const trackEvent = (event: string, data: Record<string, any>) => {
   const eventData = {

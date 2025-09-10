@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, Target, Lightbulb } from 'lucide-react';
-import { trackCTAClick } from '@/utils/analytics';
+import { trackCTAClick, trackFunnelConversion, trackFunnelProgression } from '@/utils/analytics';
 import { cn } from '@/lib/utils';
 
 interface FunnelCTAProps {
@@ -58,7 +58,18 @@ export const FunnelCTA = ({
   const Icon = config.icon;
 
   const handleCTAClick = (destination: string, ctaText: string) => {
-    trackCTAClick('funnel_progression', ctaText, destination);
+    trackCTAClick('funnel_cta', ctaText, destination);
+    
+    // Track funnel progression for BOFU conversions
+    if (currentStage === 'BOFU' && ctaText === 'Book A Viewing') {
+      trackFunnelConversion('viewing_booking', articleSlug);
+    }
+    
+    // Track funnel progression between stages
+    if (currentStage !== 'BOFU') {
+      const nextStage = currentStage === 'TOFU' ? 'MOFU' : 'BOFU';
+      trackFunnelProgression(currentStage, nextStage, articleSlug);
+    }
   };
 
   return (

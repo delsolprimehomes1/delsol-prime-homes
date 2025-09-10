@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, Calendar, Tag, Clock } from 'lucide-react';
 import { processMarkdownContent } from '@/utils/markdown';
-import { trackEvent } from '@/utils/analytics';
+import { trackEvent, trackFunnelProgression } from '@/utils/analytics';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -72,10 +72,10 @@ const QAPost = () => {
 
   // Generate breadcrumb items
   const breadcrumbItems = article ? [
-    { label: 'Questions & Answers', href: '/qa' },
+    { label: 'FAQ', href: '/faq' },
     { 
       label: article.topic || 'General', 
-      href: `/qa?topic=${encodeURIComponent(article.topic || 'general')}` 
+      href: `/faq?topic=${encodeURIComponent(article.topic || 'general')}` 
     },
     { label: article.title, current: true }
   ] : [];

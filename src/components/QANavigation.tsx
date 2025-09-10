@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Home } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface QAArticle {
   id: string;
@@ -24,12 +24,12 @@ export const QANavigation = ({ currentArticle, allArticles }: QANavigationProps)
     <section className="py-12 bg-muted/30 border-t">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {/* Back to QA Hub */}
+          {/* Back to FAQ */}
           <div className="text-center mb-8">
             <Button asChild variant="outline" className="bg-background/80 backdrop-blur-sm">
-              <Link to="/qa">
-                <Home className="mr-2 w-4 h-4" />
-                Back to All Questions
+              <Link to="/faq">
+                <ArrowLeft className="mr-2 w-4 h-4" />
+                ← Back to FAQ
               </Link>
             </Button>
           </div>
