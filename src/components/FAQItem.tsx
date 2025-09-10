@@ -27,11 +27,6 @@ export const FAQItem = ({ article, animationDelay = 0 }: FAQItemProps) => {
     });
   };
 
-  const stageColors = {
-    TOFU: 'bg-blue-500/10 text-blue-700 border-blue-200',
-    MOFU: 'bg-amber-500/10 text-amber-700 border-amber-200', 
-    BOFU: 'bg-green-500/10 text-green-700 border-green-200'
-  };
 
   return (
     <Card 
@@ -47,9 +42,6 @@ export const FAQItem = ({ article, animationDelay = 0 }: FAQItemProps) => {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-3">
-                <Badge className={`${stageColors[article.funnel_stage as keyof typeof stageColors]} text-xs`}>
-                  {article.funnel_stage}
-                </Badge>
                 <span className="text-xs text-muted-foreground capitalize">
                   {article.topic}
                 </span>

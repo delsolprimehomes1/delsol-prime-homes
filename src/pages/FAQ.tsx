@@ -33,12 +33,19 @@ const FAQ = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('qa_articles' as any)
-        .select('*')
-        .order('funnel_stage', { ascending: true })
-        .order('title', { ascending: true });
+        .select('*');
       
       if (error) throw error;
-      return data as any[];
+      
+      // Custom ordering: TOFU → MOFU → BOFU
+      const orderedData = (data || []).sort((a: any, b: any) => {
+        const stageOrder = { 'TOFU': 1, 'MOFU': 2, 'BOFU': 3 };
+        const stageA = stageOrder[a.funnel_stage as keyof typeof stageOrder] || 999;
+        const stageB = stageOrder[b.funnel_stage as keyof typeof stageOrder] || 999;
+        return stageA - stageB;
+      });
+      
+      return orderedData as any[];
     }
   });
 
@@ -55,16 +62,6 @@ const FAQ = () => {
     });
   }, [articles, searchTerm, selectedStage]);
 
-  const groupedArticles = useMemo(() => {
-    const groups: Record<string, typeof articles> = {};
-    filteredArticles.forEach(article => {
-      if (!groups[article.funnel_stage]) {
-        groups[article.funnel_stage] = [];
-      }
-      groups[article.funnel_stage].push(article);
-    });
-    return groups;
-  }, [filteredArticles]);
 
   // Generate FAQPage JSON-LD schema
   const faqSchema = {
@@ -80,23 +77,6 @@ const FAQ = () => {
     }))
   };
 
-  const stageInfo = {
-    TOFU: { 
-      label: 'Getting Started', 
-      description: 'Essential information for first-time buyers',
-      color: 'bg-blue-500/10 text-blue-700 border-blue-200'
-    },
-    MOFU: { 
-      label: 'Researching Options', 
-      description: 'Detailed guides for informed decision-making',
-      color: 'bg-amber-500/10 text-amber-700 border-amber-200'
-    },
-    BOFU: { 
-      label: 'Ready to Buy', 
-      description: 'Final considerations and checklists',
-      color: 'bg-green-500/10 text-green-700 border-green-200'
-    }
-  };
 
   return (
     <>
@@ -162,37 +142,13 @@ const FAQ = () => {
                 ))}
               </div>
             ) : (
-              <div className="space-y-12">
-                {Object.entries(groupedArticles).map(([stage, stageArticles], index) => (
-                  <div key={stage} className="animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
-                    <div className="flex items-center gap-4 mb-6">
-                      <Badge className={`${stageInfo[stage as keyof typeof stageInfo]?.color} px-4 py-2 text-sm font-medium`}>
-                        {stageInfo[stage as keyof typeof stageInfo]?.label}
-                      </Badge>
-                      <div>
-                        <h2 className="text-2xl font-semibold text-foreground">
-                          {stageInfo[stage as keyof typeof stageInfo]?.label}
-                        </h2>
-                        <p className="text-muted-foreground">
-                          {stageInfo[stage as keyof typeof stageInfo]?.description}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {stageArticles.map((article, articleIndex) => (
-                        <FAQItem 
-                          key={article.id} 
-                          article={article} 
-                          animationDelay={articleIndex * 50}
-                        />
-                      ))}
-                    </div>
-                    
-                    {index < Object.keys(groupedArticles).length - 1 && (
-                      <Separator className="mt-12" />
-                    )}
-                  </div>
+              <div className="space-y-6 max-w-4xl mx-auto">
+                {filteredArticles.map((article, index) => (
+                  <FAQItem 
+                    key={article.id} 
+                    article={article} 
+                    animationDelay={index * 50}
+                  />
                 ))}
               </div>
             )}
