@@ -27,22 +27,34 @@ export function processMarkdownContent(content: string): string {
   // Convert bold text (but not headers which we already processed)
   processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>');
 
-  // Convert unordered lists
-  processed = processed.replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>');
-  processed = processed.replace(/(<li.*?>.*?<\/li>)/gs, '<ul class="list-disc list-inside mb-2 space-y-0 text-muted-foreground">$1</ul>');
+  // Convert unordered lists with enhanced styling
+  processed = processed.replace(/^- (.+)$/gm, '<li class="mb-3 text-muted-foreground flex items-start gap-3"><span class="w-2 h-2 bg-primary/60 rounded-full mt-2 flex-shrink-0"></span><span>$1</span></li>');
+  processed = processed.replace(/^(\* .+)$/gm, '<li class="mb-3 text-muted-foreground flex items-start gap-3"><span class="w-2 h-2 bg-primary/60 rounded-full mt-2 flex-shrink-0"></span><span>$1</span></li>');
+  
+  // Wrap consecutive list items in proper containers
+  processed = processed.replace(/((<li[^>]*>.*?<\/li>\s*)+)/gs, '<ul class="space-y-1 mb-8 p-4 bg-muted/20 rounded-lg border-l-4 border-l-primary/30">$1</ul>');
+  
+  // Convert line breaks and paragraphs with better spacing
+  processed = processed.split('\n\n')
+    .map(paragraph => {
+      const trimmed = paragraph.trim();
+      if (trimmed && 
+          !trimmed.includes('<h') && 
+          !trimmed.includes('<ul') && 
+          !trimmed.includes('<li') &&
+          !trimmed.includes('<strong>')) {
+        return `<p class="mb-6 text-muted-foreground leading-relaxed text-lg">${trimmed}</p>`;
+      }
+      return paragraph;
+    })
+    .join('\n\n');
 
-  // Convert line breaks
-  processed = processed.replace(/\n\n/g, '</p><p class="mb-4 text-muted-foreground leading-relaxed">');
-  processed = processed.replace(/\n/g, '<br />');
+  // Convert remaining single line breaks to proper spacing
+  processed = processed.replace(/\n(?!<)/g, '<br class="mb-2" />');
 
-  // Wrap in paragraph tags if not already wrapped
-  if (!processed.startsWith('<')) {
-    processed = '<p class="mb-4 text-muted-foreground leading-relaxed">' + processed + '</p>';
-  }
-
-  // Clean up any double paragraph tags
-  processed = processed.replace(/<\/p><p[^>]*><\/p>/g, '</p>');
+  // Clean up empty paragraphs and extra spacing
   processed = processed.replace(/<p[^>]*><\/p>/g, '');
+  processed = processed.replace(/<br[^>]*>\s*<br[^>]*>/g, '<br />');
 
   return processed;
 }

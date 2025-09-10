@@ -329,15 +329,88 @@ const QAPost = () => {
           </div>
         </section>
 
-        {/* Article Content */}
-        <section className="py-12 sm:py-16">
+        {/* Quick Answer Section */}
+        <section className="py-8 sm:py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
-              <div className="prose prose-lg max-w-none animate-fade-in animation-delay-400">
-                <div 
-                  className="qa-content space-y-2"
-                  dangerouslySetInnerHTML={{ __html: processMarkdownContent(article.content) }}
-                />
+              <Card className="p-6 sm:p-8 bg-primary/5 border-primary/20 animate-fade-in animation-delay-400">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                    <ArrowRight className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-foreground mb-4 speakable">Quick Answer</h2>
+                    <div className="short-answer text-lg text-muted-foreground leading-relaxed">
+                      {article.excerpt}
+                    </div>
+                    <div className="mt-6">
+                      <Button 
+                        asChild
+                        className="bg-primary text-white hover:bg-primary/90"
+                      >
+                        <a href={getCTALink(article.funnel_stage)}>
+                          {getCTAText(article.funnel_stage)}
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Article Content */}
+        <section className="py-8 sm:py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="space-y-8 animate-fade-in animation-delay-500">
+                {/* Split content into sections for better readability */}
+                {article.content.split('\n\n').filter(section => section.trim()).map((section, index) => {
+                  const processedSection = processMarkdownContent(section);
+                  
+                  // Check if this is a header section
+                  const isHeader = section.includes('#');
+                  const isListSection = section.includes('- ') || section.includes('* ');
+                  
+                  return (
+                    <div key={index} className="space-y-4">
+                      <div 
+                        className={`qa-content detailed-content ${isHeader ? 'speakable' : ''} ${
+                          isListSection ? 'bg-muted/30 p-6 rounded-lg border-l-4 border-l-primary/30' : ''
+                        } ${isHeader ? 'mb-8' : 'mb-6'}`}
+                        dangerouslySetInnerHTML={{ __html: processedSection }}
+                      />
+                      
+                      {/* Add mid-content CTA after every 3rd section */}
+                      {index > 0 && (index + 1) % 3 === 0 && (
+                        <Card className="p-6 bg-accent/5 border-accent/20 text-center">
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="text-left sm:text-left">
+                              <h3 className="font-semibold text-foreground mb-2">
+                                Need More Information?
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Get personalized guidance for your Costa del Sol property journey
+                              </p>
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              asChild
+                              className="flex-shrink-0"
+                            >
+                              <a href={getCTALink(article.funnel_stage)}>
+                                Learn More
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                              </a>
+                            </Button>
+                          </div>
+                        </Card>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
