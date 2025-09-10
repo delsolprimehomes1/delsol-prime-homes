@@ -14,6 +14,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowRight, Calendar, Tag, Clock } from 'lucide-react';
 import { processMarkdownContent } from '@/utils/markdown';
 import { trackEvent, trackFunnelProgression } from '@/utils/analytics';
+import { generateQAArticleSchema, generateAIServiceSchema, generateSpeakableSchema, generateOpenGraphData, generateTwitterCardData, generateCanonicalAndHreflang } from '@/utils/schemas';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -139,56 +140,40 @@ const QAPost = () => {
         
         {/* Enhanced JSON-LD Structured Data for AI/LLM Optimization */}
         <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": article.title,
-            "description": article.excerpt,
-            "author": {
-              "@type": "Organization",
-              "name": "DelSolPrimeHomes",
-              "url": "https://delsolprimehomes.com",
-              "sameAs": [
-                "https://www.facebook.com/delsolprimehomes",
-                "https://www.instagram.com/delsolprimehomes"
-              ]
-            },
-            "publisher": {
-              "@type": "Organization",
-              "name": "DelSolPrimeHomes",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://delsolprimehomes.com/logo.png"
-              }
-            },
-            "inLanguage": article.language || "en",
-            "about": {
-              "@type": "Thing",
-              "name": `Costa del Sol Property ${article.topic}`,
-              "description": `Expert guidance on ${article.topic} for Costa del Sol property buyers`
-            },
-            "keywords": article.tags ? article.tags.join(", ") : "",
-            "mainEntity": {
-              "@type": "Question", 
-              "name": article.title,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": article.content.replace(/<[^>]*>/g, '').substring(0, 500) + "...",
-                "author": {
-                  "@type": "Organization",
-                  "name": "DelSolPrimeHomes"
-                }
-              }
-            },
-            "dateCreated": article.created_at,
-            "dateModified": article.last_updated,
-            "datePublished": article.created_at,
-            "url": `https://delsolprimehomes.com/qa/${article.slug}`,
-            "mainEntityOfPage": {
-              "@type": "WebPage",
-              "@id": `https://delsolprimehomes.com/qa/${article.slug}`
+          {JSON.stringify(generateQAArticleSchema({
+            question: article.title,
+            answer_short: article.excerpt,
+            answer_long: article.content,
+            author_name: "DelSolPrimeHomes Expert",
+            reviewed_at: article.last_updated,
+            created_at: article.created_at,
+            updated_at: article.last_updated,
+            slug: article.slug,
+            language: article.language || "en",
+            topic: article.topic,
+            tags: article.tags,
+            funnel_stage: article.funnel_stage
+          }))}
+        </script>
+        
+        {/* AI Service Schema for Multilingual Support */}
+        <script type="application/ld+json">
+          {JSON.stringify(generateAIServiceSchema(article.language || "en"))}
+        </script>
+        
+        {/* Enhanced Speakable Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify(generateSpeakableSchema(
+            article.title, 
+            article.excerpt,
+            {
+              topic: article.topic,
+              tags: article.tags,
+              isAIRelated: article.title.toLowerCase().includes('ai') || 
+                          article.title.toLowerCase().includes('multilingual') ||
+                          article.content.toLowerCase().includes('assistant')
             }
-          })}
+          ))}
         </script>
         <script type="application/ld+json">
           {JSON.stringify({

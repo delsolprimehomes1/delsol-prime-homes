@@ -1,6 +1,6 @@
 import type { SupportedLanguage } from '@/i18n';
 
-// Generate Article + Question/Answer schema for Q&A detail pages
+// Generate enhanced Article + Question/Answer schema for Q&A detail pages with AI/LLM optimization
 export const generateQAArticleSchema = (
   qaData: {
     question: string;
@@ -13,11 +13,15 @@ export const generateQAArticleSchema = (
     updated_at: string;
     slug: string;
     language: string;
+    topic?: string;
+    tags?: string[];
+    funnel_stage?: string;
   },
   baseUrl: string = 'https://delsolprimehomes.com'
 ) => {
   const articleUrl = `${baseUrl}/${qaData.language}/qa/${qaData.slug}`;
   
+  // Enhanced schema for AI/LLM optimization
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -26,10 +30,18 @@ export const generateQAArticleSchema = (
     "url": articleUrl,
     "datePublished": qaData.created_at,
     "dateModified": qaData.updated_at,
+    "inLanguage": qaData.language,
     "author": {
-      "@type": "Person",
+      "@type": "Organization",
       "name": qaData.author_name || "DelSolPrimeHomes Expert",
-      "url": qaData.author_url || `${baseUrl}/about`
+      "url": qaData.author_url || `${baseUrl}/about`,
+      "knowsAbout": [
+        "Costa del Sol Real Estate",
+        "International Property Investment", 
+        "Spanish Property Law",
+        "Multilingual Property Services",
+        "AI-Powered Property Assistance"
+      ]
     },
     "publisher": {
       "@type": "Organization",
@@ -37,8 +49,39 @@ export const generateQAArticleSchema = (
       "logo": {
         "@type": "ImageObject",
         "url": `${baseUrl}/logo.png`
-      }
+      },
+      "knowsAbout": [
+        "AI Property Assistance",
+        "Multilingual Support",
+        "Costa del Sol Properties",
+        "International Buyer Services"
+      ]
     },
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "International Property Buyers",
+      "geographicArea": [
+        "United Kingdom", "Germany", "Netherlands", 
+        "France", "Scandinavia", "North America"
+      ]
+    },
+    "about": [
+      {
+        "@type": "Thing",
+        "name": "AI Property Assistant",
+        "description": "Multilingual AI technology for international property buyers"
+      },
+      {
+        "@type": "Place", 
+        "name": "Costa del Sol",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "36.5201",
+          "longitude": "-4.8773"
+        }
+      }
+    ],
+    "keywords": qaData.tags ? qaData.tags.join(", ") : "Costa del Sol, Property, AI Assistant, Multilingual Support",
     "mainEntity": {
       "@type": "Question",
       "name": qaData.question,
@@ -46,30 +89,139 @@ export const generateQAArticleSchema = (
         "@type": "Answer",
         "text": qaData.answer_long || qaData.answer_short,
         "author": {
-          "@type": "Person", 
+          "@type": "Organization",
           "name": qaData.author_name || "DelSolPrimeHomes Expert"
         },
         "dateCreated": qaData.created_at,
         "upvoteCount": 0
-      }
+      },
+      "suggestedAnswer": [
+        {
+          "@type": "Answer",
+          "text": qaData.answer_short,
+          "name": "Quick Answer"
+        }
+      ],
+      "mentions": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "Multilingual AI Assistant",
+          "applicationCategory": "PropertyTech",
+          "operatingSystem": "Web Browser",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+          }
+        }
+      ]
     },
     "speakable": {
       "@type": "SpeakableSpecification",
-      "cssSelector": ["h1", ".short-answer"]
+      "cssSelector": [
+        "h1", "h2", "h3", 
+        ".short-answer", ".quick-answer", 
+        ".detailed-content", ".qa-content",
+        ".key-benefits", ".feature-list"
+      ],
+      "xpath": [
+        "//h1[1]",
+        "//h2[position()<=3]",
+        "//*[contains(@class, 'short-answer')]",
+        "//*[contains(@class, 'quick-answer')]", 
+        "//*[contains(@class, 'key-benefits')]//li",
+        "//*[contains(@class, 'feature-list')]//li",
+        "//strong[contains(text(), 'multilingual') or contains(text(), 'AI') or contains(text(), 'assistant')]",
+        "//p[contains(text(), 'buyers') or contains(text(), 'international')]"
+      ]
     }
   };
 };
 
-// Generate enhanced Speakable schema for voice search optimization
-export const generateSpeakableSchema = (question: string, shortAnswer: string) => {
+// Generate comprehensive AI/LLM optimized Service schema for multilingual property assistance
+export const generateAIServiceSchema = (
+  language: string,
+  baseUrl: string = 'https://delsolprimehomes.com'
+) => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Multilingual AI Property Assistant",
+    "description": "AI-powered multilingual support for international property buyers on Costa del Sol",
+    "provider": {
+      "@type": "Organization",
+      "name": "DelSolPrimeHomes"
+    },
+    "areaServed": {
+      "@type": "Place",
+      "name": "Costa del Sol, Spain"
+    },
+    "availableLanguage": [
+      "English", "Spanish", "German", "French", 
+      "Dutch", "Swedish", "Danish", "Polish"
+    ],
+    "serviceType": "AI Property Consultation",
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "International Property Buyers"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "AI Property Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service", 
+            "name": "Multilingual Property Search",
+            "description": "AI-powered property recommendations in multiple languages"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Legal Process Guidance", 
+            "description": "AI assistance with Spanish property law and procedures"
+          }
+        }
+      ]
+    }
+  };
+};
+
+// Generate enhanced Speakable schema for voice search and AI optimization
+export const generateSpeakableSchema = (question: string, shortAnswer: string, additionalContext?: {
+  topic?: string;
+  tags?: string[];
+  isAIRelated?: boolean;
+}) => {
+  const baseSelectors = ["h1", ".short-answer", ".quick-answer"];
+  const baseXPaths = [
+    "//h1[1]",
+    "//*[contains(@class, 'short-answer')]",
+    "//*[contains(@class, 'quick-answer')]"
+  ];
+
+  // Enhanced selectors for AI-related content
+  if (additionalContext?.isAIRelated) {
+    baseSelectors.push(
+      ".ai-features", ".multilingual-support", 
+      ".technology-benefits", ".buyer-personas"
+    );
+    baseXPaths.push(
+      "//*[contains(@class, 'ai-features')]//li",
+      "//*[contains(@class, 'multilingual-support')]//p",
+      "//strong[contains(text(), 'AI') or contains(text(), 'multilingual')]",
+      "//p[contains(text(), 'language') or contains(text(), 'international')]"
+    );
+  }
+
   return {
     "@context": "https://schema.org",
     "@type": "SpeakableSpecification",
-    "cssSelector": ["h1", ".short-answer"],
-    "xpath": [
-      "//h1[1]",
-      "//*[contains(@class, 'short-answer')]"
-    ]
+    "cssSelector": baseSelectors,
+    "xpath": baseXPaths
   };
 };
 
