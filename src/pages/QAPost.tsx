@@ -399,8 +399,9 @@ const QAPost = () => {
                               variant="outline" 
                               asChild
                               className="flex-shrink-0"
+                              onClick={() => trackEvent('cta_click', { type: 'mid_content', destination: '/#properties', article_slug: article.slug })}
                             >
-                              <a href={getCTALink(article.funnel_stage)}>
+                              <a href="/#properties">
                                 Learn More
                                 <ArrowRight className="w-4 h-4 ml-2" />
                               </a>
