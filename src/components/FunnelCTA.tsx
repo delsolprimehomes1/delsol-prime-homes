@@ -43,8 +43,8 @@ const stageConfig = {
     color: 'bg-green-500/10 text-green-600 border-green-200 dark:border-green-800',
     nextStage: null,
     nextLabel: 'Convert',
-    description: 'Start your Costa del Sol journey',
-    ctaText: 'Contact Our Experts',
+    description: 'Ready to see your future home?',
+    ctaText: 'Book A Viewing',
   }
 };
 
@@ -165,30 +165,58 @@ export const FunnelCTA = ({
       {/* Main CTA */}
       <Card className="p-6 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20">
         <div className="text-center space-y-4">
-          <h4 className="font-semibold text-foreground">Ready for the Next Step?</h4>
+          <h4 className="font-semibold text-foreground">
+            {currentStage === 'BOFU' ? 'Ready to View Your Future Home?' : 'Ready for the Next Step?'}
+          </h4>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
             {currentStage === 'BOFU' 
-              ? 'Get personalized advice from our Costa del Sol property experts.'
+              ? 'Schedule a private viewing of exclusive Costa del Sol properties. Limited availability - book today.'
               : 'Continue your journey with our comprehensive guides and expert insights.'
             }
           </p>
           
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/25"
-            onClick={() => {
-              const destination = currentStage === 'BOFU' ? '/contact' : '/qa';
-              handleCTAClick(destination, config.ctaText);
-              if (currentStage === 'BOFU') {
-                window.open('/contact', '_blank');
-              } else {
-                window.location.href = '/qa';
-              }
-            }}
-          >
-            {config.ctaText}
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
+          {currentStage === 'BOFU' ? (
+            <div className="space-y-3">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 hover:scale-105 transition-all duration-300 shadow-lg shadow-green-500/25 w-full sm:w-auto"
+                onClick={() => {
+                  handleCTAClick('/book-viewing', 'Book A Viewing');
+                  window.open('/contact?service=viewing', '_blank');
+                }}
+              >
+                Book A Viewing
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="w-full sm:w-auto border-primary/20 hover:bg-primary/5"
+                onClick={() => {
+                  handleCTAClick('/contact', 'Speak to Expert');
+                  window.open('/contact', '_blank');
+                }}
+              >
+                Speak to Expert
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                📞 Free consultation • 🏠 200+ successful viewings • ⭐ 5-star service
+              </p>
+            </div>
+          ) : (
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary hover:scale-105 transition-all duration-300 shadow-lg shadow-primary/25"
+              onClick={() => {
+                const destination = '/qa';
+                handleCTAClick(destination, config.ctaText);
+                window.location.href = destination;
+              }}
+            >
+              {config.ctaText}
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          )}
         </div>
       </Card>
     </div>
