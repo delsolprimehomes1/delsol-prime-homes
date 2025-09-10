@@ -324,10 +324,6 @@
       opacity: 0.6; 
     }
   }
-      opacity: 1;
-      filter: brightness(1);
-    }
-  }
 
   /* Hover Effects */
   .hover-lift {
