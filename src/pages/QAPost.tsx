@@ -137,38 +137,138 @@ const QAPost = () => {
         {article.tags && <meta name="keywords" content={article.tags.join(', ')} />}
         <link rel="canonical" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
         
-        {/* JSON-LD Structured Data */}
+        {/* Enhanced JSON-LD Structured Data for AI/LLM Optimization */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
             "headline": article.title,
+            "description": article.excerpt,
             "author": {
               "@type": "Organization",
-              "name": "DelSolPrimeHomes"
+              "name": "DelSolPrimeHomes",
+              "url": "https://delsolprimehomes.com",
+              "sameAs": [
+                "https://www.facebook.com/delsolprimehomes",
+                "https://www.instagram.com/delsolprimehomes"
+              ]
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "DelSolPrimeHomes",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://delsolprimehomes.com/logo.png"
+              }
             },
             "inLanguage": article.language || "en",
+            "about": {
+              "@type": "Thing",
+              "name": `Costa del Sol Property ${article.topic}`,
+              "description": `Expert guidance on ${article.topic} for Costa del Sol property buyers`
+            },
+            "keywords": article.tags ? article.tags.join(", ") : "",
+            "mainEntity": {
+              "@type": "Question", 
+              "name": article.title,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": article.content.replace(/<[^>]*>/g, '').substring(0, 500) + "...",
+                "author": {
+                  "@type": "Organization",
+                  "name": "DelSolPrimeHomes"
+                }
+              }
+            },
+            "dateCreated": article.created_at,
+            "dateModified": article.last_updated,
+            "datePublished": article.created_at,
+            "url": `https://delsolprimehomes.com/qa/${article.slug}`,
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://delsolprimehomes.com/qa/${article.slug}`
+            }
+          })}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
             "mainEntity": {
               "@type": "Question",
               "name": article.title,
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": article.excerpt
+                "text": article.content.replace(/<[^>]*>/g, ''),
+                "author": {
+                  "@type": "Organization",
+                  "name": "DelSolPrimeHomes"
+                }
               }
             },
-            "dateModified": article.last_updated,
-            "url": `https://delsolprimehomes.com/qa/${article.slug}`
+            "about": {
+              "@type": "Place",
+              "name": "Costa del Sol",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "36.5201",
+                "longitude": "-4.8773"
+              }
+            }
           })}
         </script>
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
+            "name": article.title,
+            "description": article.excerpt,
             "inLanguage": article.language || "en",
+            "url": `https://delsolprimehomes.com/qa/${article.slug}`,
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "DelSolPrimeHomes",
+              "url": "https://delsolprimehomes.com"
+            },
             "speakable": {
               "@type": "SpeakableSpecification",
-              "cssSelector": ["h1", ".short-answer"]
+              "cssSelector": ["h1", "h2", "h3", ".short-answer", ".detailed-content", ".qa-content"],
+              "xpath": [
+                "//h1",
+                "//h2", 
+                "//h3",
+                "//*[@class='short-answer']",
+                "//*[@class='detailed-content']"
+              ]
+            },
+            "potentialAction": {
+              "@type": "ReadAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": `https://delsolprimehomes.com/qa/${article.slug}`
+              }
             }
+          })}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "DelSolPrimeHomes",
+            "url": "https://delsolprimehomes.com",
+            "logo": "https://delsolprimehomes.com/logo.png",
+            "description": "Premier Costa del Sol property specialists helping international buyers find their perfect Spanish home",
+            "areaServed": {
+              "@type": "Place",
+              "name": "Costa del Sol, Spain"
+            },
+            "serviceType": "Real Estate Services",
+            "knowsAbout": [
+              "Costa del Sol Property Market",
+              "Spanish Property Law",
+              "International Property Investment",
+              "Expat Relocation Services"
+            ]
           })}
         </script>
         <script type="application/ld+json">
