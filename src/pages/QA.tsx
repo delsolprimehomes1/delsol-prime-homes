@@ -16,16 +16,22 @@ const QA = () => {
   const [filteredArticles, setFilteredArticles] = useState([]);
   const { targetRef, isIntersecting } = useIntersectionObserver({ threshold: 0.1 });
 
-  const { data: articles = [], isLoading } = useQuery({
+  const { data: articles = [], isLoading, error } = useQuery({
     queryKey: ['qa-articles'],
     queryFn: async () => {
+      console.log('Fetching QA articles...');
       const { data, error } = await supabase
         .from('qa_articles')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Fetched articles:', data?.length || 0, data);
+      return data || [];
     }
   });
 
@@ -33,6 +39,9 @@ const QA = () => {
     const query = searchParams.get('q') || '';
     const topic = searchParams.get('topic') || '';
     const stage = searchParams.get('stage') || '';
+
+    console.log('Filtering articles, total:', articles.length);
+    console.log('Query params:', { query, topic, stage });
 
     let filtered = articles;
 
@@ -52,6 +61,7 @@ const QA = () => {
       filtered = filtered.filter(article => article.funnel_stage === stage);
     }
 
+    console.log('Filtered articles:', filtered.length);
     setFilteredArticles(filtered);
   }, [articles, searchParams]);
 
