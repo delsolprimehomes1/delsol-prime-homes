@@ -79,8 +79,7 @@ const Navbar = () => {
                   ? "text-white" 
                   : "bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
               )}>
-                <span className="sm:hidden">DelSol</span>
-                <span className="hidden sm:inline">DelSolPrimeHomes</span>
+                DelSolPrimeHomes
               </h1>
             </a>
           </div>
