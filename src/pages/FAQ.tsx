@@ -4,31 +4,34 @@ import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
-import { FAQItem } from '@/components/FAQItem';
+import { QAAccordionItem } from '@/components/QAAccordionItem';
 import { QASearch } from '@/components/QASearch';
 import { QAProgress } from '@/components/QAProgress';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { trackEvent } from '@/utils/analytics';
+import { faqJsonLd, orgJsonLd } from '@/utils/schema';
+import { generateSpeakableSchema, generateQAArticleSchema } from '@/utils/schemas';
 
-const FAQ = () => {
+const QAHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStage, setSelectedStage] = useState('');
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: 'FAQ', current: true }
+    { label: 'Questions & Answers', current: true }
   ];
 
   // Analytics tracking
   useEffect(() => {
-    trackEvent('faq_overview_visit', {
+    trackEvent('qa_hub_visit', {
       timestamp: new Date().toISOString()
     });
   }, []);
 
   const { data: articles = [], isLoading } = useQuery({
-    queryKey: ['qa-articles-faq'],
+    queryKey: ['qa-articles-hub'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('qa_articles' as any)
@@ -55,37 +58,60 @@ const FAQ = () => {
         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      return matchesSearch;
+      const matchesStage = !selectedStage || article.funnel_stage === selectedStage;
+      
+      return matchesSearch && matchesStage;
     });
-  }, [articles, searchTerm]);
+  }, [articles, searchTerm, selectedStage]);
 
 
-  // Generate FAQPage JSON-LD schema
-  const faqSchema = {
+  // Enhanced JSON-LD schemas for optimal AI/LLM compatibility
+  const enhancedFAQSchema = faqJsonLd('en', articles.map(article => ({
+    id: article.id,
+    question: article.title,
+    shortAnswer: article.excerpt,
+    longAnswer: article.content,
+    category: article.topic
+  })));
+
+  // Page-level speakable schema for voice search optimization
+  const speakableSchema = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": articles.map(article => ({
-      "@type": "Question",
-      "name": article.title,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": article.excerpt
-      }
-    }))
+    "@type": "WebPage",
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": [".question-title", ".short-answer"],
+      "xpath": [
+        "//*[contains(@class, 'question-title')]",
+        "//*[contains(@class, 'short-answer')]"
+      ]
+    }
   };
+  
+  const organizationSchema = orgJsonLd('en');
 
 
   return (
     <>
       <Helmet>
-        <title>Frequently Asked Questions - Costa del Sol Property Guide</title>
-        <meta name="description" content="Get quick answers to common questions about buying property in Costa del Sol. Expert guidance for UK and Irish buyers from DelSolPrimeHomes." />
-        <meta name="keywords" content="Costa del Sol FAQ, property buying questions, expat guide Spain, UK buyers" />
-        <link rel="canonical" href="https://delsolprimehomes.com/faq" />
+        <title>Questions & Answers - Costa del Sol Property Guide | DelSolPrimeHomes</title>
+        <meta name="description" content="Comprehensive Q&A hub for Costa del Sol property buyers. Get instant short answers plus detailed insights for serious buyers. Expert guidance for UK and Irish expats." />
+        <meta name="keywords" content="Costa del Sol Q&A, property buying questions, expat guide Spain, UK buyers, detailed property advice" />
+        <link rel="canonical" href="https://delsolprimehomes.com/qa" />
         
-        {/* FAQPage JSON-LD Structured Data */}
+        {/* Enhanced FAQPage JSON-LD with Speakable Support */}
         <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
+          {JSON.stringify(enhancedFAQSchema)}
+        </script>
+        
+        {/* Speakable Schema for Voice Search */}
+        <script type="application/ld+json">
+          {JSON.stringify(speakableSchema)}
+        </script>
+        
+        {/* Organization Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify(organizationSchema)}
         </script>
         
         {/* Breadcrumb JSON-LD */}
@@ -109,18 +135,21 @@ const FAQ = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
               <h1 className="faq-hero-title mb-6 animate-fade-in">
-                Frequently Asked Questions
+                Questions & Answers Hub
               </h1>
-              <p className="faq-hero-subtitle mb-8 animate-fade-in animation-delay-200">
-                Quick answers to guide your Costa del Sol property journey. Click any question for detailed information.
+              <p className="faq-hero-subtitle mb-4 animate-fade-in animation-delay-200">
+                <strong>Two layers of expertise:</strong> Quick answers for skimmers, detailed insights for serious buyers.
+              </p>
+              <p className="text-white/90 text-lg mb-8 animate-fade-in animation-delay-300">
+                Expand any question below for comprehensive guidance on your Costa del Sol property journey.
               </p>
               <div className="animate-fade-in animation-delay-400">
                 <QASearch 
                   searchTerm={searchTerm}
                   onSearchChange={setSearchTerm}
-                  selectedStage=""
-                  onStageChange={() => {}}
-                  hideStageFilter={true}
+                  selectedStage={selectedStage}
+                  onStageChange={setSelectedStage}
+                  hideStageFilter={false}
                 />
               </div>
             </div>
@@ -130,21 +159,21 @@ const FAQ = () => {
         {/* Progress Indicator */}
         <QAProgress totalArticles={articles.length} filteredCount={filteredArticles.length} />
 
-        {/* FAQ Section */}
+        {/* Q&A Accordion Section */}
         <section className="py-12 sm:py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {isLoading ? (
-              <div className="space-y-6">
+              <div className="space-y-4 max-w-4xl mx-auto">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="bg-muted rounded-lg h-24"></div>
+                    <div className="bg-muted rounded-lg h-32"></div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="space-y-4 max-w-4xl mx-auto">
                 {filteredArticles.map((article, index) => (
-                  <FAQItem 
+                  <QAAccordionItem 
                     key={article.id} 
                     article={article} 
                     animationDelay={index * 50}
@@ -156,22 +185,25 @@ const FAQ = () => {
             {!isLoading && filteredArticles.length === 0 && (
               <div className="text-center py-16">
                 <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-                  No FAQ items found
+                  No questions found
                 </h3>
                 <p className="text-muted-foreground">
-                  Try adjusting your search terms or filters.
+                  Try adjusting your search terms or stage filters.
                 </p>
               </div>
             )}
 
-            {/* Link to full Q&A hub */}
-            <div className="mt-16 text-center">
-              <Link 
-                to="/qa" 
-                className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
-              >
-                View detailed Q&A articles →
-              </Link>
+            {/* AI & Voice Search Notice */}
+            <div className="mt-16 text-center max-w-2xl mx-auto">
+              <div className="bg-muted/50 rounded-lg p-6 border">
+                <h3 className="font-semibold text-foreground mb-2">
+                  🤖 AI & Voice Search Optimized
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  This page is optimized for AI assistants, voice search, and chatbots. 
+                  Each question provides both quick answers and detailed insights.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -180,4 +212,4 @@ const FAQ = () => {
   );
 };
 
-export default FAQ;
+export default QAHub;
