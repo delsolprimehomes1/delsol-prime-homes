@@ -38,7 +38,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/20 sm:from-black/50 sm:via-black/30 sm:to-black/10 z-10"></div>
 
       {/* Responsive Content Container - Better Mobile Layout */}
-      <div className="relative z-20 container mx-auto px-6 pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32 md:pb-24 text-center text-white safe-area-inset-top flex items-center justify-center min-h-dvh">
+      <div className="relative z-20 container mx-auto px-6 pt-16 pb-16 sm:pt-20 sm:pb-20 md:pt-24 md:pb-24 text-center text-white safe-area-inset-top flex items-center justify-center min-h-dvh">
         <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 md:space-y-10">
           {/* Enhanced Headlines with Better Mobile Typography */}
           <div className="space-y-6 sm:space-y-8 animate-fade-in">
