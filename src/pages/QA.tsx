@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
@@ -6,12 +6,26 @@ import Navbar from '@/components/Navbar';
 import { QACard } from '@/components/QACard';
 import { QASearch } from '@/components/QASearch';
 import { QAProgress } from '@/components/QAProgress';
+import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { trackEvent } from '@/utils/analytics';
 
 const QA = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<string>('');
+
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { label: 'Questions & Answers', current: true }
+  ];
+
+  // Analytics tracking
+  useEffect(() => {
+    trackEvent('qa_hub_visit', {
+      timestamp: new Date().toISOString()
+    });
+  }, []);
 
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ['qa-articles'],
@@ -76,11 +90,23 @@ const QA = () => {
         <meta name="description" content="Get answers to common questions about buying property in Costa del Sol. Expert guidance from DelSolPrimeHomes for UK and Irish buyers." />
         <meta name="keywords" content="Costa del Sol FAQ, property buying questions, expat guide Spain" />
         <link rel="canonical" href="https://delsolprimehomes.com/qa" />
+        
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
+        </script>
       </Helmet>
       
       <Navbar />
       
       <main className="min-h-screen pt-20">
+        {/* Breadcrumb Navigation */}
+        <section className="py-4 bg-background border-b">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <Breadcrumb items={breadcrumbItems} />
+          </div>
+        </section>
+        
         {/* Hero Section */}
         <section className="luxury-gradient py-16 sm:py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">

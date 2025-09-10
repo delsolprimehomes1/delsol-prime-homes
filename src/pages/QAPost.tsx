@@ -1,14 +1,20 @@
+import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import { QANavigation } from '@/components/QANavigation';
+import { ReadingProgressBar } from '@/components/ReadingProgressBar';
+import { FunnelCTA } from '@/components/FunnelCTA';
+import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
+import { useSmartRecommendations } from '@/hooks/useSmartRecommendations';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { ArrowRight, Calendar, Tag, Clock } from 'lucide-react';
 import { processMarkdownContent } from '@/utils/markdown';
+import { trackEvent } from '@/utils/analytics';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -41,6 +47,38 @@ const QAPost = () => {
       return data as any[];
     }
   });
+
+  // Smart recommendations hook
+  const { recommendations } = useSmartRecommendations({ 
+    currentArticle: article, 
+    maxRecommendations: 3 
+  });
+
+  // Calculate reading time
+  const readingTime = article?.content 
+    ? Math.ceil(article.content.split(' ').length / 200) 
+    : 0;
+
+  // Track page view
+  React.useEffect(() => {
+    if (article) {
+      trackEvent('qa_article_view', {
+        article_slug: article.slug,
+        funnel_stage: article.funnel_stage,
+        topic: article.topic
+      });
+    }
+  }, [article]);
+
+  // Generate breadcrumb items
+  const breadcrumbItems = article ? [
+    { label: 'Questions & Answers', href: '/qa' },
+    { 
+      label: article.topic || 'General', 
+      href: `/qa?topic=${encodeURIComponent(article.topic || 'general')}` 
+    },
+    { label: article.title, current: true }
+  ] : [];
 
   if (isLoading) {
     return (
@@ -147,11 +185,25 @@ const QAPost = () => {
             }
           })}
         </script>
+        <script type="application/ld+json">
+          {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
+        </script>
       </Helmet>
+      
+      {/* Reading Progress Bar */}
+      <ReadingProgressBar articleSlug={article?.slug || ''} />
       
       <Navbar />
       
       <main className="min-h-screen pt-20">
+        {/* Breadcrumb Navigation */}
+        <section className="py-4 bg-background border-b">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <Breadcrumb items={breadcrumbItems} />
+            </div>
+          </div>
+        </section>
         {/* Article Header */}
         <section className="py-12 sm:py-16 bg-muted/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,6 +215,9 @@ const QAPost = () => {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span className="text-sm">Updated {article.last_updated}</span>
+                  <span className="mx-2">•</span>
+                  <Clock className="w-4 h-4" />
+                  <span className="text-sm">{readingTime} min read</span>
                 </div>
               </div>
               
@@ -202,26 +257,16 @@ const QAPost = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* Funnel CTA Section */}
         <section className="py-12 bg-muted/50 animate-fade-in animation-delay-500">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="max-w-4xl mx-auto p-8 text-center">
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">
-                Ready for the Next Step?
-              </h3>
-              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                {article.funnel_stage === 'BOFU' 
-                  ? 'Get personalized guidance from our Costa del Sol property experts.'
-                  : 'Explore more resources to help with your property decision.'
-                }
-              </p>
-              <Button asChild className="gold-gradient text-secondary font-semibold px-8 py-3 hover-gold transition-all duration-300 hover:scale-105">
-                <a href={getCTALink(article.funnel_stage)}>
-                  {getCTAText(article.funnel_stage)}
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </a>
-              </Button>
-            </Card>
+            <div className="max-w-4xl mx-auto">
+              <FunnelCTA 
+                currentStage={article.funnel_stage as 'TOFU' | 'MOFU' | 'BOFU'}
+                articleSlug={article.slug}
+                nextStepRecommendations={recommendations}
+              />
+            </div>
           </div>
         </section>
 
