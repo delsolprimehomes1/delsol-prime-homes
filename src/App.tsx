@@ -31,10 +31,10 @@ const App = () => (
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/:lang/blog/:slug" element={<BlogPost />} />
-              <Route path="/book-viewing" element={<BookViewing />} />
               <Route path="/faq" element={<QAHub />} />
               <Route path="/qa" element={<QAHub />} />
               <Route path="/qa/:slug" element={<QAPost />} />
+              <Route path="/book-viewing" element={<BookViewing />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
