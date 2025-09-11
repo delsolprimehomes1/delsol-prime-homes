@@ -10,6 +10,7 @@ import i18n from './i18n';
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import BookViewing from "./pages/BookViewing";
 import QAHub from "./pages/FAQ";
 import QA from "./pages/QA";
 import QAPost from "./pages/QAPost";
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/:lang/blog/:slug" element={<BlogPost />} />
+              <Route path="/book-viewing" element={<BookViewing />} />
               <Route path="/faq" element={<QAHub />} />
               <Route path="/qa" element={<QAHub />} />
               <Route path="/qa/:slug" element={<QAPost />} />

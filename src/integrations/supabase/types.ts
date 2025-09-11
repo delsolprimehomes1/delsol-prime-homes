@@ -280,6 +280,45 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          conversation_log: Json | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string
+          source: string
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          conversation_log?: Json | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          phone: string
+          source?: string
+          stage?: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_log?: Json | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string
+          source?: string
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

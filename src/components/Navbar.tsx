@@ -133,10 +133,12 @@ const Navbar = () => {
             </DropdownMenu>
 
             {/* Enhanced CTA Button */}
-            <Button className="gold-gradient text-secondary font-semibold px-4 sm:px-6 py-2 hover-gold transition-all duration-300 hover:scale-105 will-change-transform">
-              <span className="hidden sm:inline">Book Viewing</span>
-              <span className="sm:hidden text-xs">Book</span>
-            </Button>
+            <a href="/book-viewing">
+              <Button className="gold-gradient text-secondary font-semibold px-4 sm:px-6 py-2 hover-gold transition-all duration-300 hover:scale-105 will-change-transform">
+                <span className="hidden sm:inline">Book Viewing</span>
+                <span className="sm:hidden text-xs">Book</span>
+              </Button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -201,9 +203,11 @@ const Navbar = () => {
                 </div>
 
                 {/* Enhanced Mobile CTA */}
-                <Button className="gold-gradient text-secondary font-semibold w-full mt-4 hover-gold mobile-touch-target py-3 transition-all duration-300">
-                  Book Your Viewing
-                </Button>
+                <a href="/book-viewing">
+                  <Button className="gold-gradient text-secondary font-semibold w-full mt-4 hover-gold mobile-touch-target py-3 transition-all duration-300">
+                    Book Your Viewing
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
