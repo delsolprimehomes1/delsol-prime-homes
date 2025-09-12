@@ -159,7 +159,7 @@ const AIConversationBot = () => {
   };
 
   return (
-    <Card className="glass-effect border-white/20 shadow-2xl max-w-4xl mx-auto">
+    <Card className="glass-effect border-white/20 shadow-2xl max-w-4xl mx-auto !bg-transparent">
       <div className="p-6 h-[600px] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
