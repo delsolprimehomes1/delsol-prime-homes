@@ -193,22 +193,11 @@ export const FunnelCTA = ({
                 className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 hover:scale-105 transition-all duration-300 shadow-lg shadow-green-500/25 w-full sm:w-auto"
                 onClick={() => {
                   handleCTAClick('/book-viewing', 'Book A Viewing');
-                  window.open('/contact?service=viewing', '_blank');
+                  window.location.href = '/book-viewing';
                 }}
               >
                 Book A Viewing
                 <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="w-full sm:w-auto border-primary/20 hover:bg-primary/5"
-                onClick={() => {
-                  handleCTAClick('/contact', 'Speak to Expert');
-                  window.open('/contact', '_blank');
-                }}
-              >
-                Speak to Expert
               </Button>
               <p className="text-xs text-muted-foreground">
                 📞 Free consultation • 🏠 200+ successful viewings • ⭐ 5-star service

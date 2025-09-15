@@ -90,7 +90,7 @@ export const QAAccordionItem = ({ article, animationDelay = 0 }: QAAccordionItem
     switch (stage) {
       case 'TOFU': return 'Learn More';
       case 'MOFU': return 'Compare Options';
-      case 'BOFU': return 'Get Started';
+      case 'BOFU': return 'Book A Viewing';
       default: return 'Learn More';
     }
   };
@@ -214,17 +214,15 @@ export const QAAccordionItem = ({ article, animationDelay = 0 }: QAAccordionItem
                     </Button>
                   </Link>
 
-                  {article.next_step_url && (
-                    <Link to={article.next_step_url} className="flex-1">
-                      <Button 
-                        variant={getCTAVariant(article.funnel_stage)}
-                        className="w-full justify-between group"
-                      >
-                        <span>{article.next_step_text || getCTAText(article.funnel_stage)}</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-                      </Button>
-                    </Link>
-                  )}
+                  <Link to={article.funnel_stage === 'BOFU' ? '/book-viewing' : (article.next_step_url || '#')} className="flex-1">
+                    <Button 
+                      variant={getCTAVariant(article.funnel_stage)}
+                      className="w-full justify-between group"
+                    >
+                      <span>{article.funnel_stage === 'BOFU' ? 'Book A Viewing' : (article.next_step_text || getCTAText(article.funnel_stage))}</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                    </Button>
+                  </Link>
                 </div>
               </>
             )}

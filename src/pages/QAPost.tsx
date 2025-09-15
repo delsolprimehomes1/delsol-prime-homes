@@ -111,7 +111,7 @@ const QAPost = () => {
       case 'MOFU':
         return 'Compare Properties in Your Area';
       case 'BOFU':
-        return 'Schedule Your Free Consultation';
+        return 'Book A Viewing';
       default:
         return 'Get Started Today';
     }
@@ -124,7 +124,7 @@ const QAPost = () => {
       case 'MOFU':
         return '/#properties';
       case 'BOFU':
-        return '/#contact';
+        return '/book-viewing';
       default:
         return '/';
     }
