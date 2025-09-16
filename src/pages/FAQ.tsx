@@ -16,6 +16,7 @@ import { generateSpeakableSchema, generateQAArticleSchema } from '@/utils/schema
 const QAHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState('');
 
   // Breadcrumb items
   const breadcrumbItems = [{
@@ -57,11 +58,16 @@ const QAHub = () => {
   });
   const filteredArticles = useMemo(() => {
     return articles.filter(article => {
-      const matchesSearch = !searchTerm || article.title.toLowerCase().includes(searchTerm.toLowerCase()) || article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) || article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = !searchTerm || 
+        article.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        article.topic?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStage = !selectedStage || article.funnel_stage === selectedStage;
-      return matchesSearch && matchesStage;
+      const matchesTopic = !selectedTopic || article.topic === selectedTopic;
+      return matchesSearch && matchesStage && matchesTopic;
     });
-  }, [articles, searchTerm, selectedStage]);
+  }, [articles, searchTerm, selectedStage, selectedTopic]);
 
   // Enhanced JSON-LD schemas for optimal AI/LLM compatibility
   const enhancedFAQSchema = faqJsonLd('en', articles.map(article => ({
@@ -133,7 +139,15 @@ const QAHub = () => {
                 Expand any question below for comprehensive guidance on your Costa del Sol property journey.
               </p>
               <div className="animate-fade-in animation-delay-400">
-                <QASearch searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedStage={selectedStage} onStageChange={setSelectedStage} hideStageFilter={false} />
+                <QASearch 
+                  searchTerm={searchTerm} 
+                  onSearchChange={setSearchTerm} 
+                  selectedStage={selectedStage} 
+                  onStageChange={setSelectedStage}
+                  selectedTopic={selectedTopic}
+                  onTopicChange={setSelectedTopic}
+                  hideStageFilter={false} 
+                />
               </div>
             </div>
           </div>

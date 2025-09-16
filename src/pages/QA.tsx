@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import { QACard } from '@/components/QACard';
 import { QASearch } from '@/components/QASearch';
 import { QAProgress } from '@/components/QAProgress';
+import { QAClusterStats } from '@/components/QAClusterStats';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -14,6 +15,8 @@ import { trackEvent } from '@/utils/analytics';
 const QA = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<string>('');
+  const [selectedTopic, setSelectedTopic] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'clusters' | 'stages'>('clusters');
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -46,24 +49,39 @@ const QA = () => {
       const matchesSearch = !searchTerm || 
         article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.topic?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       
       const matchesStage = !selectedStage || article.funnel_stage === selectedStage;
+      const matchesTopic = !selectedTopic || article.topic === selectedTopic;
       
-      return matchesSearch && matchesStage;
+      return matchesSearch && matchesStage && matchesTopic;
     });
-  }, [articles, searchTerm, selectedStage]);
+  }, [articles, searchTerm, selectedStage, selectedTopic]);
 
   const groupedArticles = useMemo(() => {
-    const groups: Record<string, typeof articles> = {};
-    filteredArticles.forEach(article => {
-      if (!groups[article.funnel_stage]) {
-        groups[article.funnel_stage] = [];
-      }
-      groups[article.funnel_stage].push(article);
-    });
-    return groups;
-  }, [filteredArticles]);
+    if (viewMode === 'stages') {
+      const groups: Record<string, typeof articles> = {};
+      filteredArticles.forEach(article => {
+        if (!groups[article.funnel_stage]) {
+          groups[article.funnel_stage] = [];
+        }
+        groups[article.funnel_stage].push(article);
+      });
+      return groups;
+    } else {
+      // Group by topic for cluster view
+      const groups: Record<string, typeof articles> = {};
+      filteredArticles.forEach(article => {
+        const topic = article.topic || 'Miscellaneous';
+        if (!groups[topic]) {
+          groups[topic] = [];
+        }
+        groups[topic].push(article);
+      });
+      return groups;
+    }
+  }, [filteredArticles, viewMode]);
 
   const stageInfo = {
     TOFU: { 
@@ -81,6 +99,26 @@ const QA = () => {
       description: 'Final considerations and checklists',
       color: 'bg-green-500/10 text-green-700 border-green-200'
     }
+  };
+
+  const getTopicColor = (topic: string) => {
+    const colors: Record<string, string> = {
+      'Getting Started': 'bg-purple-500/10 text-purple-700 border-purple-200',
+      'Legal & Documentation': 'bg-red-500/10 text-red-700 border-red-200',
+      'Financing & Mortgages': 'bg-indigo-500/10 text-indigo-700 border-indigo-200',
+      'Property Search': 'bg-orange-500/10 text-orange-700 border-orange-200',
+      'Investment Strategy': 'bg-teal-500/10 text-teal-700 border-teal-200',
+      'International Buyer Journey': 'bg-cyan-500/10 text-cyan-700 border-cyan-200',
+      'Property Maintenance & Management': 'bg-lime-500/10 text-lime-700 border-lime-200',
+      'Lifestyle Integration': 'bg-pink-500/10 text-pink-700 border-pink-200',
+      'Rental Investment': 'bg-violet-500/10 text-violet-700 border-violet-200',
+      'Renovation & Development': 'bg-rose-500/10 text-rose-700 border-rose-200',
+      'Insurance & Protection': 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
+      'Utilities & Services': 'bg-sky-500/10 text-sky-700 border-sky-200',
+      'Transportation & Accessibility': 'bg-stone-500/10 text-stone-700 border-stone-200',
+      'Miscellaneous': 'bg-gray-500/10 text-gray-700 border-gray-200'
+    };
+    return colors[topic] || 'bg-gray-500/10 text-gray-700 border-gray-200';
   };
 
   return (
@@ -122,13 +160,55 @@ const QA = () => {
                 onSearchChange={setSearchTerm}
                 selectedStage={selectedStage}
                 onStageChange={setSelectedStage}
+                selectedTopic={selectedTopic}
+                onTopicChange={setSelectedTopic}
               />
             </div>
           </div>
         </section>
 
-        {/* Progress Indicator */}
-        <QAProgress totalArticles={articles.length} filteredCount={filteredArticles.length} />
+        {/* Enhanced Progress & Stats */}
+        <QAClusterStats 
+          totalArticles={articles.length} 
+          filteredCount={filteredArticles.length}
+          clusterData={Object.entries(
+            articles.reduce((acc: Record<string, number>, article) => {
+              const topic = article.topic || 'Miscellaneous';
+              acc[topic] = (acc[topic] || 0) + 1;
+              return acc;
+            }, {})
+          ).map(([name, count]) => ({ 
+            name, 
+            count: count as number, 
+            avgStageDistribution: { TOFU: 3, MOFU: 2, BOFU: 1 } 
+          }))}
+          currentFilters={{ searchTerm, selectedStage, selectedTopic }}
+        />
+
+        {/* View Mode Toggle */}
+        <section className="py-6 bg-muted/20 border-b">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center gap-4">
+              <span className="text-sm text-muted-foreground">View by:</span>
+              <div className="flex gap-2">
+                <Badge
+                  variant={viewMode === 'clusters' ? 'default' : 'secondary'}
+                  className="cursor-pointer"
+                  onClick={() => setViewMode('clusters')}
+                >
+                  Topic Clusters
+                </Badge>
+                <Badge
+                  variant={viewMode === 'stages' ? 'default' : 'secondary'}
+                  className="cursor-pointer"
+                  onClick={() => setViewMode('stages')}
+                >
+                  Buyer Journey
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Articles Section */}
         <section className="py-12 sm:py-16">
@@ -143,37 +223,48 @@ const QA = () => {
               </div>
             ) : (
               <div className="space-y-12">
-                {Object.entries(groupedArticles).map(([stage, stageArticles], index) => (
-                  <div key={stage} className="animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
-                    <div className="flex items-center gap-4 mb-6">
-                      <Badge className={`${stageInfo[stage as keyof typeof stageInfo]?.color} px-4 py-2 text-sm font-medium`}>
-                        {stageInfo[stage as keyof typeof stageInfo]?.label}
-                      </Badge>
-                      <div>
-                        <h2 className="text-2xl font-semibold text-foreground">
-                          {stageInfo[stage as keyof typeof stageInfo]?.label}
-                        </h2>
-                        <p className="text-muted-foreground">
-                          {stageInfo[stage as keyof typeof stageInfo]?.description}
-                        </p>
+                {Object.entries(groupedArticles).map(([groupKey, groupArticles], index) => {
+                  const isStageView = viewMode === 'stages';
+                  const groupInfo = isStageView 
+                    ? stageInfo[groupKey as keyof typeof stageInfo]
+                    : { 
+                        label: groupKey, 
+                        description: `${groupArticles.length} articles about ${groupKey.toLowerCase()}`,
+                        color: getTopicColor(groupKey)
+                      };
+
+                  return (
+                    <div key={groupKey} className="animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
+                      <div className="flex items-center gap-4 mb-6">
+                        <Badge className={`${groupInfo?.color} px-4 py-2 text-sm font-medium`}>
+                          {groupInfo?.label}
+                        </Badge>
+                        <div>
+                          <h2 className="text-2xl font-semibold text-foreground">
+                            {groupInfo?.label}
+                          </h2>
+                          <p className="text-muted-foreground">
+                            {groupInfo?.description}
+                          </p>
+                        </div>
                       </div>
+                      
+                      <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        {groupArticles.map((article, articleIndex) => (
+                          <QACard 
+                            key={article.id} 
+                            article={article} 
+                            animationDelay={articleIndex * 50}
+                          />
+                        ))}
+                      </div>
+                      
+                      {index < Object.keys(groupedArticles).length - 1 && (
+                        <Separator className="mt-12" />
+                      )}
                     </div>
-                    
-                    <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                      {stageArticles.map((article, articleIndex) => (
-                        <QACard 
-                          key={article.id} 
-                          article={article} 
-                          animationDelay={articleIndex * 50}
-                        />
-                      ))}
-                    </div>
-                    
-                    {index < Object.keys(groupedArticles).length - 1 && (
-                      <Separator className="mt-12" />
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
