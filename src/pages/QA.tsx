@@ -11,6 +11,12 @@ import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { trackEvent } from '@/utils/analytics';
+import { 
+  generateComprehensiveFAQSchema,
+  generateAIEnhancedOrganizationSchema,
+  generateAIWebsiteSchema,
+  generateEnhancedBreadcrumbSchema
+} from '@/utils/enhanced-schemas';
 
 const QA = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -121,17 +127,76 @@ const QA = () => {
     return colors[topic] || 'bg-gray-500/10 text-gray-700 border-gray-200';
   };
 
+  // Generate enhanced schemas for AI/LLM optimization
+  const comprehensiveFAQSchema = useMemo(() => 
+    generateComprehensiveFAQSchema(articles, 'en'), [articles]
+  );
+  
+  const aiOrganizationSchema = useMemo(() => 
+    generateAIEnhancedOrganizationSchema('en'), []
+  );
+  
+  const aiWebsiteSchema = useMemo(() => 
+    generateAIWebsiteSchema('en'), []
+  );
+  
+  const enhancedBreadcrumbSchema = useMemo(() => 
+    generateEnhancedBreadcrumbSchema(breadcrumbItems), [breadcrumbItems]
+  );
+
   return (
     <>
       <Helmet>
-        <title>Frequently Asked Questions - Costa del Sol Property Experts</title>
-        <meta name="description" content="Get answers to common questions about buying property in Costa del Sol. Expert guidance from DelSolPrimeHomes for UK and Irish buyers." />
-        <meta name="keywords" content="Costa del Sol FAQ, property buying questions, expat guide Spain" />
+        <title>Costa del Sol Property FAQ Hub - AI-Powered Expert Guidance</title>
+        <meta name="description" content="Comprehensive FAQ hub for Costa del Sol property buyers. AI-powered multilingual support with {articles.length}+ expert answers for international buyers." />
+        <meta name="keywords" content="Costa del Sol FAQ, AI property assistant, multilingual property guide, international buyers Spain, property questions answers" />
         <link rel="canonical" href="https://delsolprimehomes.com/qa" />
         
-        {/* JSON-LD Structured Data */}
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Costa del Sol Property FAQ Hub - AI Expert Guidance" />
+        <meta property="og:description" content="Get instant answers to property questions with our AI-powered multilingual FAQ hub. {articles.length}+ expert answers for Costa del Sol buyers." />
+        <meta property="og:url" content="https://delsolprimehomes.com/qa" />
+        <meta property="og:site_name" content="DelSolPrimeHomes" />
+        <meta property="og:image" content="https://delsolprimehomes.com/assets/qa-hub-og.jpg" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Costa del Sol Property FAQ Hub" />
+        <meta name="twitter:description" content="AI-powered multilingual FAQ hub with {articles.length}+ expert answers" />
+        <meta name="twitter:image" content="https://delsolprimehomes.com/assets/qa-hub-twitter.jpg" />
+        
+        {/* Enhanced JSON-LD Structured Data for AI/LLM Optimization */}
         <script type="application/ld+json">
-          {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
+          {JSON.stringify(comprehensiveFAQSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(aiOrganizationSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(aiWebsiteSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(enhancedBreadcrumbSchema)}
+        </script>
+        
+        {/* Speakable Content Markers for Voice Search */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SpeakableSpecification",
+            "cssSelector": [
+              "h1", "h2", ".question-title", ".short-answer", 
+              ".qa-card h3", ".topic-cluster-title", ".stage-description"
+            ],
+            "xpath": [
+              "//h1[1]",
+              "//h2[contains(@class, 'topic-title')]", 
+              "//*[contains(@class, 'question-title')]",
+              "//*[contains(@class, 'short-answer')]",
+              "//div[contains(@class, 'qa-card')]//h3"
+            ]
+          })}
         </script>
       </Helmet>
       

@@ -15,6 +15,7 @@ import { ArrowRight, Calendar, Tag, Clock } from 'lucide-react';
 import { processMarkdownContent } from '@/utils/markdown';
 import { trackEvent, trackFunnelProgression } from '@/utils/analytics';
 import { generateQAArticleSchema, generateAIServiceSchema, generateSpeakableSchema, generateOpenGraphData, generateTwitterCardData, generateCanonicalAndHreflang } from '@/utils/schemas';
+import { generateEnhancedQAArticleSchema, generateAIEnhancedOrganizationSchema } from '@/utils/enhanced-schemas';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -45,6 +46,17 @@ const QAPost = () => {
   const readingTime = article?.content 
     ? Math.ceil(article.content.split(' ').length / 200) 
     : 0;
+
+  // Generate enhanced schemas for AI/LLM optimization
+  const enhancedArticleSchema = React.useMemo(() => 
+    article ? generateEnhancedQAArticleSchema(article, recommendations) : null, 
+    [article, recommendations]
+  );
+  
+  const aiOrganizationSchema = React.useMemo(() => 
+    generateAIEnhancedOrganizationSchema(article?.language || 'en'), 
+    [article?.language]
+  );
 
   // Track page view
   React.useEffect(() => {
@@ -133,131 +145,128 @@ const QAPost = () => {
   return (
     <>
       <Helmet>
-        <title>{article.title}</title>
-        <meta name="description" content={article.excerpt} />
-        {article.tags && <meta name="keywords" content={article.tags.join(', ')} />}
+        <title>{article.title} - AI-Enhanced Costa del Sol Property Guide</title>
+        <meta name="description" content={`${article.excerpt} Get AI-powered multilingual support for your Costa del Sol property journey.`} />
+        {article.tags && <meta name="keywords" content={`${article.tags.join(', ')}, AI property assistant, multilingual support, Costa del Sol`} />}
         <link rel="canonical" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
         
-        {/* Enhanced JSON-LD Structured Data for AI/LLM Optimization */}
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={article.excerpt} />
+        <meta property="og:url" content={`https://delsolprimehomes.com/qa/${article.slug}`} />
+        <meta property="og:site_name" content="DelSolPrimeHomes" />
+        <meta property="og:image" content="https://delsolprimehomes.com/assets/qa-article-og.jpg" />
+        <meta property="article:author" content="DelSolPrimeHomes Expert" />
+        <meta property="article:section" content={article.topic} />
+        <meta property="article:published_time" content={article.created_at} />
+        <meta property="article:modified_time" content={article.last_updated} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={article.excerpt} />
+        <meta name="twitter:image" content="https://delsolprimehomes.com/assets/qa-article-twitter.jpg" />
+        
+        {/* Enhanced JSON-LD Structured Data for Maximum AI/LLM Optimization */}
+        {enhancedArticleSchema && (
+          <script type="application/ld+json">
+            {JSON.stringify(enhancedArticleSchema)}
+          </script>
+        )}
+        
         <script type="application/ld+json">
-          {JSON.stringify(generateQAArticleSchema({
-            question: article.title,
-            answer_short: article.excerpt,
-            answer_long: article.content,
-            author_name: "DelSolPrimeHomes Expert",
-            reviewed_at: article.last_updated,
-            created_at: article.created_at,
-            updated_at: article.last_updated,
-            slug: article.slug,
-            language: article.language || "en",
-            topic: article.topic,
-            tags: article.tags,
-            funnel_stage: article.funnel_stage
-          }))}
+          {JSON.stringify(aiOrganizationSchema)}
         </script>
         
-        {/* AI Service Schema for Multilingual Support */}
         <script type="application/ld+json">
-          {JSON.stringify(generateAIServiceSchema(article.language || "en"))}
+          {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
         </script>
         
-        {/* Enhanced Speakable Schema */}
-        <script type="application/ld+json">
-          {JSON.stringify(generateSpeakableSchema(
-            article.title, 
-            article.excerpt,
-            {
-              topic: article.topic,
-              tags: article.tags,
-              isAIRelated: article.title.toLowerCase().includes('ai') || 
-                          article.title.toLowerCase().includes('multilingual') ||
-                          article.content.toLowerCase().includes('assistant')
-            }
-          ))}
-        </script>
+        {/* AI-Specific Structured Data for Voice Search and LLM Citation */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "FAQPage",
+            "@type": ["FAQPage", "WebPage"],
+            "name": article.title,
+            "description": article.excerpt,
+            "url": `https://delsolprimehomes.com/qa/${article.slug}`,
+            "inLanguage": article.language || "en",
+            "isAccessibleForFree": true,
+            "audience": {
+              "@type": "Audience",
+              "audienceType": "International Property Buyers"
+            },
             "mainEntity": {
               "@type": "Question",
               "name": article.title,
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": article.content.replace(/<[^>]*>/g, ''),
+                "text": article.content.replace(/<[^>]*>/g, '').substring(0, 1000) + '...',
                 "author": {
                   "@type": "Organization",
-                  "name": "DelSolPrimeHomes"
+                  "name": "DelSolPrimeHomes",
+                  "knowsAbout": ["AI Property Assistance", "Multilingual Support", "Costa del Sol Real Estate"]
+                },
+                "dateCreated": article.created_at,
+                "upvoteCount": 0
+              }
+            },
+            "about": [
+              {
+                "@type": "Place",
+                "name": article.city,
+                "containedInPlace": {
+                  "@type": "AdministrativeArea",
+                  "name": "Andalusia, Spain"
                 }
+              },
+              {
+                "@type": "Thing",
+                "name": article.topic
               }
-            },
-            "about": {
-              "@type": "Place",
-              "name": "Costa del Sol",
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": "36.5201",
-                "longitude": "-4.8773"
-              }
-            }
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "name": article.title,
-            "description": article.excerpt,
-            "inLanguage": article.language || "en",
-            "url": `https://delsolprimehomes.com/qa/${article.slug}`,
-            "isPartOf": {
-              "@type": "WebSite",
-              "name": "DelSolPrimeHomes",
-              "url": "https://delsolprimehomes.com"
-            },
+            ],
+            "mentions": [
+              {
+                "@type": "SoftwareApplication",
+                "name": "AI Property Assistant",
+                "applicationCategory": "PropertyTech"
+              },
+              ...((article.tags || []).map(tag => ({
+                "@type": "Thing",
+                "name": tag
+              })))
+            ],
             "speakable": {
               "@type": "SpeakableSpecification",
-              "cssSelector": ["h1", "h2", "h3", ".short-answer", ".detailed-content", ".qa-content"],
+              "cssSelector": [
+                "h1", "h2", "h3", ".short-answer", ".detailed-content", 
+                ".qa-content", ".key-points", ".speakable"
+              ],
               "xpath": [
-                "//h1",
-                "//h2", 
-                "//h3",
-                "//*[@class='short-answer']",
-                "//*[@class='detailed-content']"
+                "//h1[1]",
+                "//h2[position()<=3]",
+                "//*[contains(@class, 'short-answer')]",
+                "//*[contains(@class, 'detailed-content')]//p[position()<=3]",
+                "//strong[contains(text(), 'important') or contains(text(), 'key')]",
+                "//li[contains(text(), 'Costa del Sol') or contains(text(), 'property')]"
               ]
             },
-            "potentialAction": {
-              "@type": "ReadAction",
-              "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": `https://delsolprimehomes.com/qa/${article.slug}`
+            "potentialAction": [
+              {
+                "@type": "ReadAction",
+                "target": `https://delsolprimehomes.com/qa/${article.slug}`
+              },
+              {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://delsolprimehomes.com/qa?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
               }
-            }
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "DelSolPrimeHomes",
-            "url": "https://delsolprimehomes.com",
-            "logo": "https://delsolprimehomes.com/logo.png",
-            "description": "Premier Costa del Sol property specialists helping international buyers find their perfect Spanish home",
-            "areaServed": {
-              "@type": "Place",
-              "name": "Costa del Sol, Spain"
-            },
-            "serviceType": "Real Estate Services",
-            "knowsAbout": [
-              "Costa del Sol Property Market",
-              "Spanish Property Law",
-              "International Property Investment",
-              "Expat Relocation Services"
             ]
           })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
         </script>
       </Helmet>
       
