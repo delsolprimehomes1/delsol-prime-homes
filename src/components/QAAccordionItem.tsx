@@ -28,6 +28,15 @@ interface QAArticle {
   last_updated: string;
   next_step_text?: string;
   next_step_url?: string;
+  // New multilingual fields
+  language?: string;
+  parent_id?: string;
+  image_url?: string;
+  alt_text?: string;
+  target_audience?: string;
+  intent?: string;
+  location_focus?: string;
+  markdown_frontmatter?: any;
 }
 
 interface QAAccordionItemProps {

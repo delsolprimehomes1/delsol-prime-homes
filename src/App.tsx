@@ -14,6 +14,7 @@ import BookViewing from "./pages/BookViewing";
 import QAHub from "./pages/FAQ";
 import QA from "./pages/QA";
 import QAPost from "./pages/QAPost";
+import ContentManager from "./pages/ContentManager";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/faq" element={<QAHub />} />
               <Route path="/qa" element={<QAHub />} />
               <Route path="/qa/:slug" element={<QAPost />} />
+              <Route path="/content-manager" element={<ContentManager />} />
               <Route path="/book-viewing" element={<BookViewing />} />
               
               {/* Location-specific landing pages for enhanced SEO */}

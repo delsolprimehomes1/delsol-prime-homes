@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import { QACard } from '@/components/QACard';
 import { QASearch } from '@/components/QASearch';
@@ -11,18 +12,22 @@ import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { trackEvent } from '@/utils/analytics';
+import { generateMultilingualFAQSchema } from '@/utils/multilingual-schemas';
 import { 
   generateComprehensiveFAQSchema,
   generateAIEnhancedOrganizationSchema,
   generateAIWebsiteSchema,
   generateEnhancedBreadcrumbSchema
 } from '@/utils/enhanced-schemas';
+import type { SupportedLanguage } from '@/i18n';
 
 const QA = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [viewMode, setViewMode] = useState<'clusters' | 'stages'>('clusters');
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language as SupportedLanguage;
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -37,16 +42,17 @@ const QA = () => {
   }, []);
 
   const { data: articles = [], isLoading } = useQuery({
-    queryKey: ['qa-articles'],
+    queryKey: ['qa-articles', currentLanguage],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('qa_articles' as any)
+        .from('qa_articles')
         .select('*')
+        .eq('language', currentLanguage)
         .order('funnel_stage', { ascending: true })
         .order('title', { ascending: true });
       
       if (error) throw error;
-      return data as any[];
+      return data;
     }
   });
 
@@ -127,17 +133,21 @@ const QA = () => {
     return colors[topic] || 'bg-gray-500/10 text-gray-700 border-gray-200';
   };
 
-  // Generate enhanced schemas for AI/LLM optimization
+  // Generate enhanced schemas for AI/LLM optimization  
+  const multilingualFAQSchema = useMemo(() => 
+    generateMultilingualFAQSchema(articles as any[], currentLanguage), [articles, currentLanguage]
+  );
+  
   const comprehensiveFAQSchema = useMemo(() => 
-    generateComprehensiveFAQSchema(articles, 'en'), [articles]
+    generateComprehensiveFAQSchema(articles as any[], currentLanguage), [articles, currentLanguage]
   );
   
   const aiOrganizationSchema = useMemo(() => 
-    generateAIEnhancedOrganizationSchema('en'), []
+    generateAIEnhancedOrganizationSchema(currentLanguage), [currentLanguage]
   );
   
   const aiWebsiteSchema = useMemo(() => 
-    generateAIWebsiteSchema('en'), []
+    generateAIWebsiteSchema(currentLanguage), [currentLanguage]
   );
   
   const enhancedBreadcrumbSchema = useMemo(() => 
@@ -167,6 +177,9 @@ const QA = () => {
         <meta name="twitter:image" content="https://delsolprimehomes.com/assets/qa-hub-twitter.jpg" />
         
         {/* Enhanced JSON-LD Structured Data for AI/LLM Optimization */}
+        <script type="application/ld+json">
+          {JSON.stringify(multilingualFAQSchema)}
+        </script>
         <script type="application/ld+json">
           {JSON.stringify(comprehensiveFAQSchema)}
         </script>
