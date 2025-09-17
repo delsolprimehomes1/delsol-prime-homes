@@ -25,12 +25,29 @@ const QAPost = () => {
   const { slug } = useParams();
 
   // Map legacy stage names to new user-friendly names
-  const mapStageToUserFriendly = (stage: string): 'exploration' | 'research' | 'decision' => {
-    switch (stage?.toUpperCase()) {
-      case 'TOFU': return 'exploration';
-      case 'MOFU': return 'research'; 
-      case 'BOFU': return 'decision';
-      default: return 'exploration';
+  const mapStageToUserFriendly = (stage: string | null | undefined): 'exploration' | 'research' | 'decision' => {
+    if (!stage) {
+      console.warn('Stage is null/undefined, defaulting to exploration');
+      return 'exploration';
+    }
+    
+    const upperStage = stage.toUpperCase().trim();
+    switch (upperStage) {
+      case 'TOFU': 
+        return 'exploration';
+      case 'MOFU': 
+        return 'research'; 
+      case 'BOFU': 
+        return 'decision';
+      case 'EXPLORATION':
+        return 'exploration';
+      case 'RESEARCH':
+        return 'research';
+      case 'DECISION':
+        return 'decision';
+      default: 
+        console.warn(`Unknown stage "${stage}", defaulting to exploration`);
+        return 'exploration';
     }
   };
 
