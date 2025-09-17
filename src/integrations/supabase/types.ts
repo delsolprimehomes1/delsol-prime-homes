@@ -236,6 +236,36 @@ export type Database = {
         }
         Relationships: []
       }
+      content_import_batches: {
+        Row: {
+          batch_name: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          processed_questions: number | null
+          status: string | null
+          total_questions: number | null
+        }
+        Insert: {
+          batch_name: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          processed_questions?: number | null
+          status?: string | null
+          total_questions?: number | null
+        }
+        Update: {
+          batch_name?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          processed_questions?: number | null
+          status?: string | null
+          total_questions?: number | null
+        }
+        Relationships: []
+      }
       keyword_rankings: {
         Row: {
           clicks: number | null
@@ -351,57 +381,86 @@ export type Database = {
       }
       qa_articles: {
         Row: {
+          alt_text: string | null
           city: string
           content: string
           created_at: string
           excerpt: string
           funnel_stage: string
           id: string
+          image_url: string | null
+          intent: string | null
           language: string
           last_updated: string
+          location_focus: string | null
+          markdown_frontmatter: Json | null
           next_step_text: string | null
           next_step_url: string | null
+          parent_id: string | null
           slug: string
           tags: string[] | null
+          target_audience: string | null
           title: string
           topic: string
           updated_at: string
         }
         Insert: {
+          alt_text?: string | null
           city?: string
           content: string
           created_at?: string
           excerpt: string
           funnel_stage: string
           id?: string
+          image_url?: string | null
+          intent?: string | null
           language?: string
           last_updated?: string
+          location_focus?: string | null
+          markdown_frontmatter?: Json | null
           next_step_text?: string | null
           next_step_url?: string | null
+          parent_id?: string | null
           slug: string
           tags?: string[] | null
+          target_audience?: string | null
           title: string
           topic: string
           updated_at?: string
         }
         Update: {
+          alt_text?: string | null
           city?: string
           content?: string
           created_at?: string
           excerpt?: string
           funnel_stage?: string
           id?: string
+          image_url?: string | null
+          intent?: string | null
           language?: string
           last_updated?: string
+          location_focus?: string | null
+          markdown_frontmatter?: Json | null
           next_step_text?: string | null
           next_step_url?: string | null
+          parent_id?: string | null
           slug?: string
           tags?: string[] | null
+          target_audience?: string | null
           title?: string
           topic?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "qa_articles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "qa_articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_console_data: {
         Row: {
@@ -606,7 +665,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      link_multilingual_articles: {
+        Args: { english_id: string; translation_ids: string[] }
+        Returns: undefined
+      }
     }
     Enums: {
       keyword_intent:
