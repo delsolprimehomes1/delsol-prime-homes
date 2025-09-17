@@ -68,15 +68,30 @@ const QAPost = () => {
   };
 
   const { data: article, isLoading, error } = useQuery({
-    queryKey: ['qa-article', slug],
+    queryKey: ['qa-article', slug, i18n.language],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Try to get article in current language first
+      let { data, error } = await supabase
         .from('qa_articles' as any)
         .select('*')
         .eq('slug', slug)
+        .eq('language', i18n.language)
         .single();
       
-      if (error) throw error;
+      // If not found in current language and not English, try English
+      if ((error?.code === 'PGRST116' || !data) && i18n.language !== 'en') {
+        const fallback = await supabase
+          .from('qa_articles' as any)
+          .select('*')
+          .eq('slug', slug)
+          .eq('language', 'en')
+          .single();
+        
+        if (fallback.error && fallback.error.code !== 'PGRST116') throw fallback.error;
+        if (fallback.data) return fallback.data as any;
+      }
+      
+      if (error && error.code !== 'PGRST116') throw error;
       return data as any;
     },
     enabled: !!slug,

@@ -57,12 +57,26 @@ const QA = () => {
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ['qa-articles', currentLanguage],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Try to get articles in the current language
+      let { data, error } = await supabase
         .from('qa_articles')
         .select('*')
         .eq('language', currentLanguage)
         .order('funnel_stage', { ascending: true })
         .order('title', { ascending: true });
+      
+      // If no content in current language and not English, fall back to English
+      if ((!data || data.length === 0) && currentLanguage !== 'en') {
+        const fallback = await supabase
+          .from('qa_articles')
+          .select('*')
+          .eq('language', 'en')
+          .order('funnel_stage', { ascending: true })
+          .order('title', { ascending: true });
+        
+        if (fallback.error) throw fallback.error;
+        return fallback.data;
+      }
       
       if (error) throw error;
       return data;

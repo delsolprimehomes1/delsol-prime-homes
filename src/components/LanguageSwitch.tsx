@@ -36,9 +36,6 @@ export const LanguageSwitch: React.FC<LanguageSwitchProps> = ({
     
     const newUrl = `${path}?${searchParams.toString()}`;
     window.history.pushState({}, '', newUrl);
-    
-    // Reload to fetch new language content
-    window.location.reload();
   };
 
   if (variant === 'badges') {
