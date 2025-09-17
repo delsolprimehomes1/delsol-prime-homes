@@ -38,7 +38,7 @@ export const QASearch = ({
     { value: 'Investment Strategy', label: 'Investment', color: 'bg-teal-500/10 text-teal-700 border-teal-200' },
     { value: 'International Buyer Journey', label: 'International', color: 'bg-cyan-500/10 text-cyan-700 border-cyan-200' },
     { value: 'Property Maintenance & Management', label: 'Maintenance', color: 'bg-lime-500/10 text-lime-700 border-lime-200' },
-    { value: 'Lifestyle Integration', label: 'Lifestyle', color: 'bg-pink-500/10 text-pink-700 border-pink-200' },
+    { value: 'Lifestyle', label: 'Lifestyle', color: 'bg-pink-500/10 text-pink-700 border-pink-200' },
     { value: 'Rental Investment', label: 'Rental', color: 'bg-violet-500/10 text-violet-700 border-violet-200' },
     { value: 'Renovation & Development', label: 'Renovation', color: 'bg-rose-500/10 text-rose-700 border-rose-200' },
     { value: 'Insurance & Protection', label: 'Insurance', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-200' },

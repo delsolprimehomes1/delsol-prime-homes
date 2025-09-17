@@ -122,7 +122,7 @@ const QA = () => {
       'Investment Strategy': 'bg-teal-500/10 text-teal-700 border-teal-200',
       'International Buyer Journey': 'bg-cyan-500/10 text-cyan-700 border-cyan-200',
       'Property Maintenance & Management': 'bg-lime-500/10 text-lime-700 border-lime-200',
-      'Lifestyle Integration': 'bg-pink-500/10 text-pink-700 border-pink-200',
+      'Lifestyle': 'bg-pink-500/10 text-pink-700 border-pink-200',
       'Rental Investment': 'bg-violet-500/10 text-violet-700 border-violet-200',
       'Renovation & Development': 'bg-rose-500/10 text-rose-700 border-rose-200',
       'Insurance & Protection': 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
