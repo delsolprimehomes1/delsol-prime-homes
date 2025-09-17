@@ -7,21 +7,29 @@ User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
+# AI/LLM Crawlers - Priority Access
 User-agent: GPTBot
 Allow: /
-Crawl-delay: 2
+Crawl-delay: 1
 
 User-agent: ChatGPT-User
 Allow: /
 
 User-agent: CCBot
 Allow: /
-Crawl-delay: 2
+Crawl-delay: 1
 
 User-agent: anthropic-ai
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Voice Assistant Crawlers
+User-agent: Applebot
 Allow: /
 
 User-agent: Twitterbot
@@ -40,10 +48,16 @@ User-agent: *
 Allow: /
 Crawl-delay: 3
 
-# High priority pages for AI training and citation
+# Enhanced sitemaps for AI discovery
 Sitemap: https://delsolprimehomes.com/sitemap.xml
 Sitemap: https://delsolprimehomes.com/qa-sitemap.xml
 Sitemap: https://delsolprimehomes.com/blog-sitemap.xml
+Sitemap: https://delsolprimehomes.com/ai-training-sitemap.xml
+
+# AI-specific endpoints
+Allow: /api/qa/*.json
+Allow: /content/qa/*.md
+Allow: /schemas/*.json
 
 # Priority crawling paths
 # QA content optimized for LLM citation

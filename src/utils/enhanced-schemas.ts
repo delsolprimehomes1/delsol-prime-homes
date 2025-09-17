@@ -18,25 +18,39 @@ interface QAArticle {
   next_step_text?: string;
 }
 
-// Phase 1: Comprehensive FAQPage Schema for QA Hub
+// Phase 1: Enhanced FAQ Schema with AI Citation Optimization
 export const generateComprehensiveFAQSchema = (
   articles: QAArticle[],
   language: string = 'en',
   baseUrl: string = 'https://delsolprimehomes.com'
 ) => {
+  const totalWordCount = articles.reduce((sum, article) => sum + (article.content?.split(' ').length || 0), 0);
+  const avgReadingTime = Math.ceil(totalWordCount / (200 * articles.length)); // 200 words per minute average
+
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "name": "Costa del Sol Property FAQ Hub - Complete Guide",
-    "description": "Comprehensive frequently asked questions about buying property in Costa del Sol. AI-powered multilingual support for international buyers.",
+    "name": "Costa del Sol Property FAQ Hub - AI-Enhanced Expert Guide",
+    "description": "Comprehensive AI-optimized FAQ with 68+ expert answers about Costa del Sol property investment. Multilingual support for international buyers with structured data for voice search and LLM citation.",
     "inLanguage": language,
     "url": `${baseUrl}/qa`,
+    "datePublished": new Date(Math.min(...articles.map(a => new Date(a.created_at || Date.now()).getTime()))).toISOString(),
+    "dateModified": new Date().toISOString(),
     "lastReviewed": new Date().toISOString().split('T')[0],
+    "isAccessibleForFree": true,
+    "wordCount": totalWordCount,
+    "timeRequired": `PT${avgReadingTime}M`,
     "reviewedBy": {
       "@type": "Organization", 
-      "@id": `${baseUrl}/#organization`
+      "@id": `${baseUrl}/#organization`,
+      "name": "DelSolPrimeHomes Expert Team"
     },
     "publisher": {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`
+    },
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "copyrightHolder": {
       "@type": "Organization",
       "@id": `${baseUrl}/#organization`
     },
@@ -113,16 +127,22 @@ export const generateComprehensiveFAQSchema = (
     "speakable": {
       "@type": "SpeakableSpecification",
       "cssSelector": [
-        "h1", "h2", ".question-title", ".short-answer", 
-        ".qa-card h3", ".topic-cluster-title", ".stage-description"
+        "h1", "h2", "h3", ".question-title", ".short-answer", ".key-answer",
+        ".qa-card h3", ".topic-cluster-title", ".stage-description", 
+        ".ai-optimized", ".voice-friendly", ".quick-facts", ".essential-info",
+        ".speakable", "[data-speakable='true']", ".faq-answer-summary"
       ],
       "xpath": [
         "//h1[1]",
-        "//h2[contains(@class, 'topic-title')]",
-        "//*[contains(@class, 'question-title')]",
-        "//*[contains(@class, 'short-answer')]",
+        "//h2[contains(@class, 'topic-title') or contains(@class, 'cluster-title')]",
+        "//*[contains(@class, 'question-title') or contains(@class, 'qa-title')]",
+        "//*[contains(@class, 'short-answer') or contains(@class, 'key-answer')]",
         "//div[contains(@class, 'qa-card')]//h3",
-        "//*[contains(text(), 'Costa del Sol') or contains(text(), 'property') or contains(text(), 'buying')]"
+        "//*[contains(@class, 'quick-facts')]//li[position()<=3]",
+        "//*[contains(@class, 'essential-info')]//p[position()<=2]",
+        "//strong[contains(text(), 'Important:') or contains(text(), 'Key:')]",
+        "//*[contains(text(), 'Costa del Sol') or contains(text(), 'property') or contains(text(), 'buying') or contains(text(), 'investment')]",
+        "//div[contains(@class, 'ai-optimized') or @data-speakable='true']"
       ]
     },
     "potentialAction": [

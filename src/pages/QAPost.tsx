@@ -20,6 +20,9 @@ import { processMarkdownContent } from '@/utils/markdown';
 import { trackEvent, trackFunnelProgression } from '@/utils/analytics';
 import { generateQAArticleSchema, generateAIServiceSchema, generateSpeakableSchema, generateOpenGraphData, generateTwitterCardData, generateCanonicalAndHreflang } from '@/utils/schemas';
 import { generateEnhancedQAArticleSchema, generateAIEnhancedOrganizationSchema } from '@/utils/enhanced-schemas';
+import { AIOptimizedContent } from '@/components/AIOptimizedContent';
+import { SchemaValidator } from '@/components/SchemaValidator';
+import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -144,6 +147,18 @@ const QAPost = () => {
   const aiOrganizationSchema = React.useMemo(() => 
     generateAIEnhancedOrganizationSchema(article?.language || 'en'), 
     [article?.language]
+  );
+
+  // Generate AI-optimized content
+  const aiOptimizedContent = React.useMemo(() => 
+    article ? generateAIOptimizedContent(article) : null,
+    [article]
+  );
+
+  // Enhanced speakable selectors
+  const speakableSelectors = React.useMemo(() => 
+    getEnhancedSpeakableSelectors(),
+    []
   );
 
   // Track page view
@@ -327,18 +342,8 @@ const QAPost = () => {
             ],
             "speakable": {
               "@type": "SpeakableSpecification",
-              "cssSelector": [
-                "h1", "h2", "h3", ".short-answer", ".detailed-content", 
-                ".qa-content", ".key-points", ".speakable"
-              ],
-              "xpath": [
-                "//h1[1]",
-                "//h2[position()<=3]",
-                "//*[contains(@class, 'short-answer')]",
-                "//*[contains(@class, 'detailed-content')]//p[position()<=3]",
-                "//strong[contains(text(), 'important') or contains(text(), 'key')]",
-                "//li[contains(text(), 'Costa del Sol') or contains(text(), 'property')]"
-              ]
+              "cssSelector": speakableSelectors.cssSelector,
+              "xpath": speakableSelectors.xpath
             },
             "potentialAction": [
               {
@@ -442,6 +447,17 @@ const QAPost = () => {
             </div>
           </div>
         </section>
+
+        {/* AI-Optimized Content Section */}
+        {aiOptimizedContent && (
+          <section className="py-8">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-4xl mx-auto">
+                <AIOptimizedContent article={article} />
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Article Content */}
         <section className="py-8 sm:py-12">
