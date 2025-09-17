@@ -35,6 +35,24 @@ const App = () => (
               <Route path="/qa" element={<QAHub />} />
               <Route path="/qa/:slug" element={<QAPost />} />
               <Route path="/book-viewing" element={<BookViewing />} />
+              
+              {/* Location-specific landing pages for enhanced SEO */}
+              <Route path="/marbella" element={<QAHub />} />
+              <Route path="/marbella/villas" element={<QAHub />} />
+              <Route path="/marbella/apartments" element={<QAHub />} />
+              <Route path="/estepona" element={<QAHub />} />
+              <Route path="/estepona/villas" element={<QAHub />} />
+              <Route path="/estepona/apartments" element={<QAHub />} />
+              <Route path="/fuengirola" element={<QAHub />} />
+              <Route path="/fuengirola/villas" element={<QAHub />} />
+              <Route path="/fuengirola/apartments" element={<QAHub />} />
+              <Route path="/benalmadena" element={<QAHub />} />
+              <Route path="/benalmadena/villas" element={<QAHub />} />
+              <Route path="/benalmadena/apartments" element={<QAHub />} />
+              <Route path="/mijas" element={<QAHub />} />
+              <Route path="/mijas/villas" element={<QAHub />} />
+              <Route path="/mijas/apartments" element={<QAHub />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

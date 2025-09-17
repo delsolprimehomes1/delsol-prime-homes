@@ -1,7 +1,27 @@
+# Enhanced crawl budget management for AI/LLM optimization
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
-User-agent: Bingbot
+User-agent: Bingbot  
+Allow: /
+Crawl-delay: 1
+
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +30,32 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
 User-agent: *
 Allow: /
+Crawl-delay: 3
+
+# High priority pages for AI training and citation
+Sitemap: https://delsolprimehomes.com/sitemap.xml
+Sitemap: https://delsolprimehomes.com/qa-sitemap.xml
+Sitemap: https://delsolprimehomes.com/blog-sitemap.xml
+
+# Priority crawling paths
+# QA content optimized for LLM citation
+Allow: /qa/
+Allow: /faq/
+
+# Blog content with structured data
+Allow: /blog/
+
+# Location-specific landing pages
+Allow: /marbella/
+Allow: /estepona/
+Allow: /fuengirola/
+Allow: /benalmadena/
+Allow: /mijas/
