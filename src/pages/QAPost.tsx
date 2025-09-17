@@ -10,6 +10,7 @@ import { LeadCaptureForm } from '@/components/LeadCaptureForm';
 import { AuthorCredentialsSchema } from '@/components/AuthorCredentialsSchema';
 import { ReviewsSchema } from '@/components/ReviewsSchema';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
+import { FunnelNavigation } from '@/components/FunnelNavigation';
 import { useSmartRecommendations } from '@/hooks/useSmartRecommendations';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -540,10 +541,10 @@ const QAPost = () => {
                 </div>
               </Card>
               
-              <FunnelCTA 
+              <FunnelNavigation 
                 currentStage={article.funnel_stage as 'TOFU' | 'MOFU' | 'BOFU'}
-                articleSlug={article.slug}
-                nextStepRecommendations={recommendations}
+                nextStepUrl={article.next_step_url || undefined}
+                nextStepText={article.next_step_text || undefined}
               />
             </div>
           </div>

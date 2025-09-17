@@ -41,10 +41,22 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     setResults(null);
 
     try {
-      // Split content into individual question blocks
-      const questionBlocks = content
-        .split(/(?=```\s*title:)/)
-        .filter(block => block.trim().length > 0);
+      // Detect format and split content into individual question blocks
+      const isNewFormat = content.includes('## **') && content.includes('SEO-fields');
+      
+      let questionBlocks: string[];
+      
+      if (isNewFormat) {
+        // Split by numbered stage headers like "## **1. TOFU**"
+        questionBlocks = content
+          .split(/(?=##\s*\*\*\d+\.\s*(?:TOFU|MOFU|BOFU))/)
+          .filter(block => block.trim().length > 0);
+      } else {
+        // Legacy format - split by frontmatter blocks
+        questionBlocks = content
+          .split(/(?=```\s*title:)/)
+          .filter(block => block.trim().length > 0);
+      }
 
       if (questionBlocks.length === 0) {
         throw new Error('No valid question blocks found in the content');
@@ -57,7 +69,12 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       // Parse each question block
       for (let i = 0; i < questionBlocks.length; i++) {
         try {
-          const question = ContentProcessor.parseContentBlock(questionBlocks[i]);
+          let question;
+          if (isNewFormat) {
+            question = ContentProcessor.parseNewFormatBlock(questionBlocks[i], 'en'); // Default to English for now
+          } else {
+            question = ContentProcessor.parseContentBlock(questionBlocks[i]);
+          }
           questions.push(question);
           successCount++;
           setProgress(((i + 1) / questionBlocks.length) * 50); // First 50% for parsing
@@ -117,32 +134,30 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     }
   };
 
-  const exampleContent = `\`\`\`
-title: "Is internet coverage and mobile reception reliable in new-build complexes on the Costa del Sol?"
-slug: internet-coverage-costa-del-sol
-language: en
-funnelStage: TOFU
-locationFocus: "Costa del Sol – Torremolinos to Sotogrande"
-tags: [internet in Spain, Costa del Sol fiber, new-build Wi-Fi, 5G coverage Spain, remote working expats]
-targetAudience: "UK, Scottish & Irish buyers (45–70 years)"
-intent: "Informational + reassuring (remote working / quality of life)"
-\`\`\`
+  const exampleContent = `## **1. TOFU**  
+## **Is internet coverage and mobile reception reliable in new-build complexes on the Costa del Sol?**
 
-**Short Explanation:**
-Yes, most new-build complexes along the Costa del Sol come with excellent internet coverage and modern mobile reception. Fiber-optic connections and 4G/5G service are typically included in coastal and urban developments.
+## **Short Explanation**  
+Yes, most new-build complexes along the Costa del Sol are delivered with excellent internet coverage and modern mobile reception infrastructure. Developers typically install **fiber-optic connections** as standard, combined with strong **4G/5G coverage**, especially in urban and newly developed coastal areas.  
 
-**Detailed Explanation:**
-The demand for fast and reliable internet has grown significantly — especially among international buyers from the UK, Scotland, and Ireland who often work remotely. Developers now include:
+## **Detailed Explanation**  
+The demand for fast and reliable internet has grown significantly in recent years — particularly among international buyers from the **UK, Scotland, and Ireland** who often work remotely. To meet this demand, most developers now include:  
 
-- Fiber-optic broadband extended directly to each unit  
-- Wired Ethernet ports in key rooms (ideal for streaming, remote work)  
-- Strong mobile reception — 4G is standard, 5G is emerging in many zones  
-- Smart home-ready setups requiring high-speed connections  
+- **Fiber-optic broadband**: usually extended right to the front door of each apartment.  
+- **Wired connections** in several rooms, ideal for home offices, streaming, or gaming.  
+- **Mobile reception**: 4G is nearly universal, and in many coastal zones 5G is already widely available.  
+- **Smart home-ready features**: supporting advanced domotics systems that require stable, high-speed internet.  
 
-Even in hillside or rural locations, developers often install mesh Wi-Fi or boosters to ensure coverage.
+For buyers looking for a **future-proof second home or investment**, this level of connectivity is a major advantage. In hillside or more rural areas, coverage may vary, but solutions such as **signal boosters** or **mesh Wi-Fi systems** are often integrated.  
 
-**Tip:**
-Ask the developer about infrastructure during your purchase. Run a speed test at handover to confirm real-world bandwidth.`;
+## **Tip**  
+Always ask the developer about the available internet infrastructure during your purchase process. At handover, it's advisable to run a **speed test** in the property to confirm real-world performance.  
+
+## SEO-fields  
+**Tags:** internet in Spain, Costa del Sol fiber, new-build Wi-Fi, 5G coverage Spain, remote working expats  
+**Location focus:** Costa del Sol – Torremolinos to Sotogrande  
+**Target audience:** UK, Scottish & Irish buyers (45–70 years)  
+**Intent:** Informational + reassuring (remote working / quality of life)`;
 
   return (
     <div className="space-y-6">
@@ -265,20 +280,18 @@ Ask the developer about infrastructure during your purchase. Run a speed test at
           </div>
           
           <div className="space-y-2">
-            <h4 className="font-medium">Required Fields:</h4>
+            <h4 className="font-medium">New Format Structure:</h4>
             <ul className="text-sm space-y-1 list-disc list-inside">
-              <li><strong>title:</strong> The question text (quoted)</li>
-              <li><strong>slug:</strong> URL-friendly identifier</li>
-              <li><strong>language:</strong> Language code (en, nl, fr, de, pl, sv, da)</li>
-              <li><strong>funnelStage:</strong> TOFU, MOFU, or BOFU</li>
-              <li><strong>locationFocus:</strong> Geographic focus (quoted)</li>
-              <li><strong>tags:</strong> Array of keywords [tag1, tag2, tag3]</li>
-              <li><strong>targetAudience:</strong> Target audience description (quoted)</li>
-              <li><strong>intent:</strong> Search intent description (quoted)</li>
-              <li><strong>Short Explanation:</strong> Brief answer (2-3 sentences)</li>
-              <li><strong>Detailed Explanation:</strong> Full detailed answer</li>
-              <li><strong>Tip:</strong> Optional helpful tip</li>
+              <li><strong>## **N. STAGE**:</strong> Question number and funnel stage (TOFU/MOFU/BOFU)</li>
+              <li><strong>## **Question Title**:</strong> The actual question as a header</li>
+              <li><strong>## **Short Explanation**:</strong> Brief answer (2-3 sentences)</li>
+              <li><strong>## **Detailed Explanation**:</strong> Full detailed answer with formatting</li>
+              <li><strong>## **Tip**:</strong> Optional helpful tip (can be omitted)</li>
+              <li><strong>## SEO-fields:</strong> Metadata section with Tags, Location focus, Target audience, Intent</li>
             </ul>
+            <div className="mt-3 p-2 bg-blue-50 rounded text-sm">
+              <strong>Note:</strong> This format automatically generates slugs from titles and creates funnel navigation (TOFU → MOFU → BOFU → Chatbot).
+            </div>
           </div>
         </CardContent>
       </Card>

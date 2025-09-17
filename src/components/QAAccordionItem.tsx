@@ -60,7 +60,7 @@ export const QAAccordionItem = ({ article, animationDelay = 0 }: QAAccordionItem
     BOFU: 'Ready to Buy'
   };
 
-  const readingTime = Math.ceil(article.content?.split(' ').length / 200) || 1;
+  const readingTime = Math.ceil((article.content?.split(' ').length || 0) / 200) || 1;
 
   const handleToggle = () => {
     setIsOpen(!isOpen);

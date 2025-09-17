@@ -24,7 +24,86 @@ export interface ContentBatch {
 
 export class ContentProcessor {
   /**
-   * Parse markdown frontmatter content block into structured data
+   * Parse new markdown format (## headers) into structured data
+   */
+  static parseNewFormatBlock(markdownContent: string, language: SupportedLanguage = 'en'): StructuredQAContent {
+    // Extract funnel stage from header like "## **1. TOFU**"
+    const stageMatch = markdownContent.match(/##\s*\*\*\d+\.\s*(TOFU|MOFU|BOFU)\s*\*\*/);
+    if (!stageMatch) {
+      throw new Error('Could not find funnel stage (TOFU/MOFU/BOFU) in content');
+    }
+    const funnelStage = stageMatch[1] as 'TOFU' | 'MOFU' | 'BOFU';
+
+    // Extract question title from header like "## **Question text**"
+    const titleMatch = markdownContent.match(/##\s*\*\*([^*]+?)\*\*(?!\s*$)/g);
+    if (!titleMatch || titleMatch.length < 2) {
+      throw new Error('Could not find question title in content');
+    }
+    
+    // Find the question title (should be the second ## ** header after the stage)
+    let title = '';
+    for (let i = 1; i < titleMatch.length; i++) {
+      const match = titleMatch[i].match(/##\s*\*\*([^*]+?)\*\*/);
+      if (match && !match[1].includes('Short Explanation') && !match[1].includes('Detailed Explanation') && !match[1].includes('Tip')) {
+        title = match[1].trim();
+        break;
+      }
+    }
+    
+    if (!title) {
+      throw new Error('Could not extract question title from headers');
+    }
+
+    // Generate slug from title
+    const slug = title.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+
+    // Extract content sections
+    const shortMatch = markdownContent.match(/##\s*\*\*Short Explanation\*\*\s*\n([\s\S]*?)(?=##\s*\*\*Detailed Explanation|$)/);
+    const detailedMatch = markdownContent.match(/##\s*\*\*Detailed Explanation\*\*\s*\n([\s\S]*?)(?=##\s*\*\*Tip|##\s*SEO-fields|$)/);
+    const tipMatch = markdownContent.match(/##\s*\*\*Tip\*\*\s*\n([\s\S]*?)(?=##\s*SEO-fields|$)/);
+
+    if (!shortMatch || !detailedMatch) {
+      throw new Error('Missing required Short Explanation or Detailed Explanation sections');
+    }
+
+    // Extract SEO fields
+    const seoFieldsSection = markdownContent.match(/##\s*SEO-fields\s*\n([\s\S]*?)$/);
+    if (!seoFieldsSection) {
+      throw new Error('Missing SEO-fields section');
+    }
+
+    const seoContent = seoFieldsSection[1];
+    const tagsMatch = seoContent.match(/\*\*Tags:\*\*\s*([^\n]+)/);
+    const locationMatch = seoContent.match(/\*\*Location focus:\*\*\s*([^\n]+)/);
+    const audienceMatch = seoContent.match(/\*\*Target audience:\*\*\s*([^\n]+)/);
+    const intentMatch = seoContent.match(/\*\*Intent:\*\*\s*([^\n]+)/);
+
+    const tags = tagsMatch ? tagsMatch[1].split(',').map(tag => tag.trim()) : [];
+    const locationFocus = locationMatch ? locationMatch[1].trim() : '';
+    const targetAudience = audienceMatch ? audienceMatch[1].trim() : '';
+    const intent = intentMatch ? intentMatch[1].trim() : '';
+
+    return {
+      title,
+      slug,
+      language,
+      funnelStage,
+      locationFocus,
+      tags,
+      targetAudience,
+      intent,
+      shortExplanation: shortMatch[1].trim(),
+      detailedExplanation: detailedMatch[1].trim(),
+      tip: tipMatch?.[1]?.trim()
+    };
+  }
+
+  /**
+   * Parse markdown frontmatter content block into structured data (legacy format)
    */
   static parseContentBlock(markdownContent: string): StructuredQAContent {
     const frontmatterMatch = markdownContent.match(/```\s*title:\s*"([^"]+)"\s*slug:\s*([^\s]+)\s*language:\s*([^\s]+)\s*funnelStage:\s*([^\s]+)\s*locationFocus:\s*"([^"]+)"\s*tags:\s*\[([^\]]+)\]\s*targetAudience:\s*"([^"]+)"\s*intent:\s*"([^"]+)"\s*```/);
@@ -105,7 +184,7 @@ export class ContentProcessor {
   }
 
   /**
-   * Process and import a batch of QA content
+   * Process and import a batch of QA content with funnel linking
    */
   static async processBatch(batch: ContentBatch): Promise<void> {
     const batchId = await this.createImportBatch(batch.batchName, batch.questions.length);
@@ -147,12 +226,27 @@ export class ContentProcessor {
   }
 
   /**
-   * Import single QA question to database
+   * Import single QA question to database with funnel navigation
    */
   static async importSingleQuestion(content: StructuredQAContent): Promise<void> {
     const topic = this.generateTopic(content);
     const excerpt = content.shortExplanation.substring(0, 200) + '...';
     const fullContent = `${content.detailedExplanation}${content.tip ? `\n\n**Tip:** ${content.tip}` : ''}`;
+
+    // Generate next step based on funnel stage
+    let nextStepUrl = '';
+    let nextStepText = '';
+    
+    if (content.funnelStage === 'TOFU') {
+      nextStepText = 'Explore detailed guides';
+      nextStepUrl = '/qa?stage=MOFU'; // Link to MOFU articles
+    } else if (content.funnelStage === 'MOFU') {
+      nextStepText = 'Ready to take action?';
+      nextStepUrl = '/qa?stage=BOFU'; // Link to BOFU articles  
+    } else if (content.funnelStage === 'BOFU') {
+      nextStepText = 'Chat with our AI advisor';
+      nextStepUrl = '/book-viewing'; // Link to chatbot/booking page
+    }
 
     const qaData = {
       title: content.title,
@@ -168,6 +262,8 @@ export class ContentProcessor {
       target_audience: content.targetAudience,
       intent: content.intent,
       location_focus: content.locationFocus,
+      next_step_url: nextStepUrl,
+      next_step_text: nextStepText,
       markdown_frontmatter: {
         title: content.title,
         slug: content.slug,
