@@ -7,7 +7,7 @@ import { trackCTAClick, trackFunnelConversion, trackFunnelProgression } from '@/
 import { cn } from '@/lib/utils';
 
 interface FunnelCTAProps {
-  currentStage: 'TOFU' | 'MOFU' | 'BOFU';
+  currentStage: 'exploration' | 'research' | 'decision';
   articleSlug: string;
   nextStepRecommendations?: Array<{
     slug: string;
@@ -19,25 +19,25 @@ interface FunnelCTAProps {
 }
 
 const stageConfig = {
-  TOFU: {
+  exploration: {
     label: 'Learn',
     icon: Lightbulb,
     color: 'bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-800',
-    nextStage: 'MOFU',
+    nextStage: 'research',
     nextLabel: 'Compare',
     description: 'Continue exploring your options',
     ctaText: 'Explore Comparison Guides',
   },
-  MOFU: {
+  research: {
     label: 'Compare', 
     icon: Target,
     color: 'bg-orange-500/10 text-orange-600 border-orange-200 dark:border-orange-800',
-    nextStage: 'BOFU',
+    nextStage: 'decision',
     nextLabel: 'Decide',
     description: 'Ready to take the next step?',
     ctaText: 'Get Professional Help',
   },
-  BOFU: {
+  decision: {
     label: 'Decide',
     icon: CheckCircle,
     color: 'bg-green-500/10 text-green-600 border-green-200 dark:border-green-800',
@@ -60,14 +60,14 @@ export const FunnelCTA = ({
   const handleCTAClick = (destination: string, ctaText: string) => {
     trackCTAClick('funnel_cta', ctaText, destination);
     
-    // Track funnel progression for BOFU conversions
-    if (currentStage === 'BOFU' && ctaText === 'Book A Viewing') {
+    // Track funnel progression for decision conversions
+    if (currentStage === 'decision' && ctaText === 'Book A Viewing') {
       trackFunnelConversion('viewing_booking', articleSlug);
     }
     
     // Track funnel progression between stages
-    if (currentStage !== 'BOFU') {
-      const nextStage = currentStage === 'TOFU' ? 'MOFU' : 'BOFU';
+    if (currentStage !== 'decision') {
+      const nextStage = currentStage === 'exploration' ? 'research' : 'decision';
       trackFunnelProgression(currentStage, nextStage, articleSlug);
     }
   };
@@ -103,16 +103,16 @@ export const FunnelCTA = ({
           <div className="flex items-center gap-1">
             <div className={cn(
               "w-8 h-2 rounded-full transition-all duration-300",
-              currentStage === 'TOFU' ? "bg-muted" : "bg-orange-500 shadow-sm"
+              currentStage === 'exploration' ? "bg-muted" : "bg-orange-500 shadow-sm"
             )}>
               <div className={cn(
                 "h-full rounded-full transition-all duration-500",
-                currentStage === 'TOFU' ? "w-0 bg-orange-500" : "w-full bg-orange-500"
+                currentStage === 'exploration' ? "w-0 bg-orange-500" : "w-full bg-orange-500"
               )} />
             </div>
             <span className={cn(
               "text-xs font-medium transition-colors duration-300",
-              currentStage === 'TOFU' ? "text-muted-foreground" : "text-orange-600"
+              currentStage === 'exploration' ? "text-muted-foreground" : "text-orange-600"
             )}>Compare</span>
           </div>
           
@@ -121,16 +121,16 @@ export const FunnelCTA = ({
           <div className="flex items-center gap-1">
             <div className={cn(
               "w-8 h-2 rounded-full transition-all duration-300",
-              currentStage === 'BOFU' ? "bg-green-500 shadow-sm" : "bg-muted"
+              currentStage === 'decision' ? "bg-green-500 shadow-sm" : "bg-muted"
             )}>
               <div className={cn(
                 "h-full rounded-full transition-all duration-500",
-                currentStage === 'BOFU' ? "w-full bg-green-500" : "w-0 bg-green-500"
+                currentStage === 'decision' ? "w-full bg-green-500" : "w-0 bg-green-500"
               )} />
             </div>
             <span className={cn(
               "text-xs font-medium transition-colors duration-300",
-              currentStage === 'BOFU' ? "text-green-600" : "text-muted-foreground"
+              currentStage === 'decision' ? "text-green-600" : "text-muted-foreground"
             )}>Decide</span>
           </div>
         </div>
@@ -177,16 +177,16 @@ export const FunnelCTA = ({
       <Card className="p-6 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20">
         <div className="text-center space-y-4">
           <h4 className="font-semibold text-foreground">
-            {currentStage === 'BOFU' ? 'Ready to View Your Future Home?' : 'Ready for the Next Step?'}
+            {currentStage === 'decision' ? 'Ready to View Your Future Home?' : 'Ready for the Next Step?'}
           </h4>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            {currentStage === 'BOFU' 
+            {currentStage === 'decision' 
               ? 'Schedule a private viewing of exclusive Costa del Sol properties. Limited availability - book today.'
               : 'Continue your journey with our comprehensive guides and expert insights.'
             }
           </p>
           
-          {currentStage === 'BOFU' ? (
+          {currentStage === 'decision' ? (
             <div className="space-y-3">
               <Button 
                 size="lg" 

@@ -6,7 +6,7 @@ import { ArrowRight, MessageSquare, FileText, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface FunnelNavigationProps {
-  currentStage: 'TOFU' | 'MOFU' | 'BOFU';
+  currentStage: 'exploration' | 'research' | 'decision';
   nextStepUrl?: string;
   nextStepText?: string;
   className?: string;
@@ -19,21 +19,21 @@ export function FunnelNavigation({
   className = '' 
 }: FunnelNavigationProps) {
   const stageConfig = {
-    TOFU: {
+    exploration: {
       name: 'Getting Started',
       description: 'Learn the basics',
       icon: FileText,
       color: 'bg-blue-100 text-blue-800',
-      nextDefault: { url: '/qa?stage=MOFU', text: 'Explore detailed guides' }
+      nextDefault: { url: '/qa?stage=research', text: 'Explore detailed guides' }
     },
-    MOFU: {
+    research: {
       name: 'Deep Dive',
       description: 'Detailed information',
       icon: Users,
       color: 'bg-orange-100 text-orange-800',
-      nextDefault: { url: '/qa?stage=BOFU', text: 'Ready to take action?' }
+      nextDefault: { url: '/qa?stage=decision', text: 'Ready to take action?' }
     },
-    BOFU: {
+    decision: {
       name: 'Ready to Act',
       description: 'Decision time',
       icon: MessageSquare,
@@ -73,13 +73,13 @@ export function FunnelNavigation({
         </div>
         
         <div className="mt-3 flex gap-1">
-          {(['TOFU', 'MOFU', 'BOFU'] as const).map((stage, index) => (
+          {(['exploration', 'research', 'decision'] as const).map((stage, index) => (
             <div 
               key={stage}
               className={`flex-1 h-2 rounded-full ${
                 stage === currentStage 
                   ? 'bg-primary' 
-                  : index < ['TOFU', 'MOFU', 'BOFU'].indexOf(currentStage)
+                  : index < ['exploration', 'research', 'decision'].indexOf(currentStage)
                   ? 'bg-primary/60'
                   : 'bg-muted'
               }`}

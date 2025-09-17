@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import { ReadingProgressBar } from '@/components/ReadingProgressBar';
 import { FunnelCTA } from '@/components/FunnelCTA';
-import { LeadCaptureForm } from '@/components/LeadCaptureForm';
+import { BookingChatbot } from '@/components/BookingChatbot';
 import { AuthorCredentialsSchema } from '@/components/AuthorCredentialsSchema';
 import { ReviewsSchema } from '@/components/ReviewsSchema';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
@@ -23,6 +23,16 @@ import { generateEnhancedQAArticleSchema, generateAIEnhancedOrganizationSchema }
 
 const QAPost = () => {
   const { slug } = useParams();
+
+  // Map legacy stage names to new user-friendly names
+  const mapStageToUserFriendly = (stage: string): 'exploration' | 'research' | 'decision' => {
+    switch (stage?.toUpperCase()) {
+      case 'TOFU': return 'exploration';
+      case 'MOFU': return 'research'; 
+      case 'BOFU': return 'decision';
+      default: return 'exploration';
+    }
+  };
 
   const { data: article, isLoading, error } = useQuery({
     queryKey: ['qa-article', slug],
@@ -501,8 +511,8 @@ const QAPost = () => {
                     </p>
                   </div>
                   
-                  <LeadCaptureForm 
-                    stage={article.funnel_stage as 'TOFU' | 'MOFU' | 'BOFU'}
+                  <BookingChatbot 
+                    stage={mapStageToUserFriendly(article.funnel_stage)}
                     source={`qa-article-${article.slug}`}
                     className="mb-6"
                   />
@@ -542,7 +552,7 @@ const QAPost = () => {
               </Card>
               
               <FunnelNavigation 
-                currentStage={article.funnel_stage as 'TOFU' | 'MOFU' | 'BOFU'}
+                currentStage={mapStageToUserFriendly(article.funnel_stage)}
                 nextStepUrl={article.next_step_url || undefined}
                 nextStepText={article.next_step_text || undefined}
               />
