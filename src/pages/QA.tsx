@@ -65,7 +65,8 @@ const QA = () => {
         article.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       
       const matchesStage = !selectedStage || article.funnel_stage === selectedStage;
-      const matchesTopic = !selectedTopic || article.topic === selectedTopic;
+      // Case-insensitive topic matching to handle variations like "lifestyle" vs "Lifestyle"
+      const matchesTopic = !selectedTopic || article.topic?.toLowerCase() === selectedTopic?.toLowerCase();
       
       return matchesSearch && matchesStage && matchesTopic;
     });
@@ -116,18 +117,22 @@ const QA = () => {
   const getTopicColor = (topic: string) => {
     const colors: Record<string, string> = {
       'Getting Started': 'bg-purple-500/10 text-purple-700 border-purple-200',
-      'Legal & Documentation': 'bg-red-500/10 text-red-700 border-red-200',
-      'Financing & Mortgages': 'bg-indigo-500/10 text-indigo-700 border-indigo-200',
-      'Property Search': 'bg-orange-500/10 text-orange-700 border-orange-200',
+      'Legal & Process Timeline': 'bg-red-500/10 text-red-700 border-red-200',
+      'Investment & Financing': 'bg-indigo-500/10 text-indigo-700 border-indigo-200',
+      'Location Intelligence': 'bg-orange-500/10 text-orange-700 border-orange-200',
+      'Market Intelligence & Timing': 'bg-amber-500/10 text-amber-700 border-amber-200',
+      'Property Types & Features': 'bg-blue-500/10 text-blue-700 border-blue-200',
       'Investment Strategy': 'bg-teal-500/10 text-teal-700 border-teal-200',
       'International Buyer Journey': 'bg-cyan-500/10 text-cyan-700 border-cyan-200',
       'Property Maintenance & Management': 'bg-lime-500/10 text-lime-700 border-lime-200',
       'Lifestyle': 'bg-pink-500/10 text-pink-700 border-pink-200',
-      'Rental Investment': 'bg-violet-500/10 text-violet-700 border-violet-200',
-      'Renovation & Development': 'bg-rose-500/10 text-rose-700 border-rose-200',
-      'Insurance & Protection': 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
-      'Utilities & Services': 'bg-sky-500/10 text-sky-700 border-sky-200',
-      'Transportation & Accessibility': 'bg-stone-500/10 text-stone-700 border-stone-200',
+      'Service': 'bg-sky-500/10 text-sky-700 border-sky-200',
+      'Finance': 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
+      // Handle case variations
+      'lifestyle': 'bg-pink-500/10 text-pink-700 border-pink-200',
+      'service': 'bg-sky-500/10 text-sky-700 border-sky-200',
+      'finance': 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
+      'legal': 'bg-red-500/10 text-red-700 border-red-200',
       'Miscellaneous': 'bg-gray-500/10 text-gray-700 border-gray-200'
     };
     return colors[topic] || 'bg-gray-500/10 text-gray-700 border-gray-200';
