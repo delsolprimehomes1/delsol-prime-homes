@@ -24,6 +24,8 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOverHero, setIsOverHero] = useState(true);
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language as SupportedLanguage;
 
   // Scroll detection using scroll event
   useEffect(() => {
@@ -59,7 +61,16 @@ const Navbar = () => {
     { code: 'da', name: 'Dansk', flag: '🇩🇰' },
   ];
 
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+  const selectedLanguage = languages.find(lang => lang.code === currentLanguage) || languages[0];
+
+  const handleLanguageChange = (language: { code: string; name: string; flag: string }) => {
+    i18n.changeLanguage(language.code);
+    // Update URL to include language parameter
+    const currentPath = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('lang', language.code);
+    window.history.pushState({}, '', `${currentPath}?${searchParams.toString()}`);
+  };
 
   return (
     <nav className={cn(
@@ -122,7 +133,7 @@ const Navbar = () => {
                 {languages.map((language) => (
                   <DropdownMenuItem
                     key={language.code}
-                    onClick={() => setSelectedLanguage(language)}
+                    onClick={() => handleLanguageChange(language)}
                     className="flex items-center gap-3 cursor-pointer hover:bg-primary/10 focus:bg-primary/10"
                   >
                     <span className="text-lg">{language.flag}</span>
@@ -185,7 +196,7 @@ const Navbar = () => {
                       <button
                         key={language.code}
                         onClick={() => {
-                          setSelectedLanguage(language);
+                          handleLanguageChange(language);
                           setIsMobileMenuOpen(false);
                         }}
                         className={cn(

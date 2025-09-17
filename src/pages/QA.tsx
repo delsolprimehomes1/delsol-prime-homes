@@ -3,12 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { QACard } from '@/components/QACard';
 import { QASearch } from '@/components/QASearch';
 import { QAProgress } from '@/components/QAProgress';
 import { QAClusterStats } from '@/components/QAClusterStats';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { MultilingualAlert } from '@/components/MultilingualAlert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { trackEvent } from '@/utils/analytics';
@@ -27,6 +30,16 @@ const QA = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [viewMode, setViewMode] = useState<'clusters' | 'stages'>('clusters');
   const { i18n } = useTranslation();
+  const [searchParams] = useSearchParams();
+  
+  // Initialize language from URL parameter
+  useEffect(() => {
+    const langParam = searchParams.get('lang');
+    if (langParam && langParam !== i18n.language) {
+      i18n.changeLanguage(langParam);
+    }
+  }, [searchParams, i18n]);
+  
   const currentLanguage = i18n.language as SupportedLanguage;
 
   // Breadcrumb items
@@ -181,6 +194,16 @@ const QA = () => {
         <meta name="twitter:description" content="AI-powered multilingual FAQ hub with {articles.length}+ expert answers" />
         <meta name="twitter:image" content="https://delsolprimehomes.com/assets/qa-hub-twitter.jpg" />
         
+        {/* Multilingual hreflang tags for QA Hub */}
+        <link rel="alternate" hrefLang="en" href="https://delsolprimehomes.com/qa" />
+        <link rel="alternate" hrefLang="nl" href="https://delsolprimehomes.com/qa?lang=nl" />
+        <link rel="alternate" hrefLang="fr" href="https://delsolprimehomes.com/qa?lang=fr" />
+        <link rel="alternate" hrefLang="de" href="https://delsolprimehomes.com/qa?lang=de" />
+        <link rel="alternate" hrefLang="pl" href="https://delsolprimehomes.com/qa?lang=pl" />
+        <link rel="alternate" hrefLang="sv" href="https://delsolprimehomes.com/qa?lang=sv" />
+        <link rel="alternate" hrefLang="da" href="https://delsolprimehomes.com/qa?lang=da" />
+        <link rel="alternate" hrefLang="x-default" href="https://delsolprimehomes.com/qa" />
+        
         {/* Enhanced JSON-LD Structured Data for AI/LLM Optimization */}
         <script type="application/ld+json">
           {JSON.stringify(multilingualFAQSchema)}
@@ -228,13 +251,24 @@ const QA = () => {
           </div>
         </section>
         
+        {/* Multilingual Alert */}
+        {articles.length === 0 && currentLanguage !== 'en' && (
+          <MultilingualAlert currentPath="/qa" />
+        )}
+
         {/* Hero Section */}
         <section className="luxury-gradient py-16 sm:py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
-                Frequently Asked Questions
-              </h1>
+              <div className="flex items-center justify-center mb-6">
+                <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mr-4 animate-fade-in">
+                  Frequently Asked Questions
+                </h1>
+                <LanguageSwitcher 
+                  currentPath="/qa"
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                />
+              </div>
               <p className="text-lg sm:text-xl text-white/90 mb-8 animate-fade-in animation-delay-200">
                 Expert answers to help you navigate your Costa del Sol property journey
               </p>

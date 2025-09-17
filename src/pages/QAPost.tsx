@@ -1,8 +1,9 @@
 import React from 'react';
-import { useParams, Navigate, Link } from 'react-router-dom';
+import { useParams, Navigate, Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import { ReadingProgressBar } from '@/components/ReadingProgressBar';
 import { FunnelCTA } from '@/components/FunnelCTA';
@@ -11,6 +12,8 @@ import { AuthorCredentialsSchema } from '@/components/AuthorCredentialsSchema';
 import { ReviewsSchema } from '@/components/ReviewsSchema';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { FunnelNavigation } from '@/components/FunnelNavigation';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { MultilingualAlert } from '@/components/MultilingualAlert';
 import { useSmartRecommendations } from '@/hooks/useSmartRecommendations';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,6 +29,16 @@ import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/uti
 
 const QAPost = () => {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
+  const { i18n } = useTranslation();
+  
+  // Initialize language from URL parameter
+  React.useEffect(() => {
+    const langParam = searchParams.get('lang');
+    if (langParam && langParam !== i18n.language) {
+      i18n.changeLanguage(langParam);
+    }
+  }, [searchParams, i18n]);
 
   // Map legacy stage names to new user-friendly names
   const mapStageToUserFriendly = (stage: string | null | undefined): 'exploration' | 'research' | 'decision' => {
@@ -286,6 +299,16 @@ const QAPost = () => {
           {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
         </script>
         
+        {/* Multilingual hreflang tags */}
+        <link rel="alternate" hrefLang="en" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
+        <link rel="alternate" hrefLang="nl" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=nl`} />
+        <link rel="alternate" hrefLang="fr" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=fr`} />
+        <link rel="alternate" hrefLang="de" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=de`} />
+        <link rel="alternate" hrefLang="pl" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=pl`} />
+        <link rel="alternate" hrefLang="sv" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=sv`} />
+        <link rel="alternate" hrefLang="da" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=da`} />
+        <link rel="alternate" hrefLang="x-default" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
+        
         {/* AI-Specific Structured Data for Voice Search and LLM Citation */}
         <script type="application/ld+json">
           {JSON.stringify({
@@ -369,11 +392,18 @@ const QAPost = () => {
       <Navbar />
       
       <main className="min-h-screen pt-20">
+        {/* Multilingual Alert */}
+        <MultilingualAlert currentPath={`/qa/${article.slug}`} />
+
         {/* Breadcrumb Navigation */}
         <section className="py-4 bg-background border-b">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto flex items-center justify-between">
               <Breadcrumb items={breadcrumbItems} />
+              <LanguageSwitcher 
+                currentPath={`/qa/${article.slug}`}
+                variant="compact"
+              />
             </div>
           </div>
         </section>
