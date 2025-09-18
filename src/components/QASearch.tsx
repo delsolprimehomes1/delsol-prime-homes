@@ -17,19 +17,20 @@ export const QASearch = ({
   onTopicChange
 }: QASearchProps) => {
   const topicClusters = [
-    { value: '', label: 'All Topics', color: 'bg-muted text-foreground' },
-    { value: 'Getting Started', label: 'Getting Started', color: 'bg-purple-500/10 text-purple-700 border-purple-200' },
-    { value: 'Legal & Process Timeline', label: 'Legal & Process', color: 'bg-red-500/10 text-red-700 border-red-200' },
-    { value: 'Investment & Financing', label: 'Financing', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
-    { value: 'Location Intelligence', label: 'Property Search', color: 'bg-orange-500/10 text-orange-700 border-orange-200' },
-    { value: 'Market Intelligence & Timing', label: 'Market Timing', color: 'bg-amber-500/10 text-amber-700 border-amber-200' },
-    { value: 'Property Types & Features', label: 'Property Types', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
-    { value: 'Investment Strategy', label: 'Investment', color: 'bg-teal-500/10 text-teal-700 border-teal-200' },
-    { value: 'International Buyer Journey', label: 'International', color: 'bg-cyan-500/10 text-cyan-700 border-cyan-200' },
-    { value: 'Property Maintenance & Management', label: 'Maintenance', color: 'bg-lime-500/10 text-lime-700 border-lime-200' },
-    { value: 'Lifestyle', label: 'Lifestyle', color: 'bg-pink-500/10 text-pink-700 border-pink-200' },
-    { value: 'Service', label: 'Services', color: 'bg-sky-500/10 text-sky-700 border-sky-200' },
-    { value: 'Finance', label: 'Finance', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-200' }
+    { value: '', label: 'All Topics (154)', color: 'bg-muted text-foreground' },
+    { value: 'Lifestyle', label: 'Lifestyle (46)', color: 'bg-pink-500/10 text-pink-700 border-pink-200' },
+    { value: 'Investment', label: 'Investment (19)', color: 'bg-teal-500/10 text-teal-700 border-teal-200' },
+    { value: 'General', label: 'General (15)', color: 'bg-purple-500/10 text-purple-700 border-purple-200' },
+    { value: 'Location', label: 'Location (14)', color: 'bg-orange-500/10 text-orange-700 border-orange-200' },
+    { value: 'Property Types', label: 'Property Types (12)', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
+    { value: 'Market Intelligence & Timing', label: 'Market Timing (6)', color: 'bg-amber-500/10 text-amber-700 border-amber-200' },
+    { value: 'Investment & Financing', label: 'Financing (6)', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
+    { value: 'Legal & Process Timeline', label: 'Legal & Process (6)', color: 'bg-red-500/10 text-red-700 border-red-200' },
+    { value: 'Property Types & Features', label: 'Property Features (6)', color: 'bg-cyan-500/10 text-cyan-700 border-cyan-200' },
+    { value: 'Location Intelligence', label: 'Property Search (6)', color: 'bg-lime-500/10 text-lime-700 border-lime-200' },
+    { value: 'Finance', label: 'Finance (5)', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-200' },
+    { value: 'Service', label: 'Services (4)', color: 'bg-sky-500/10 text-sky-700 border-sky-200' },
+    { value: 'Infrastructure', label: 'Infrastructure (3)', color: 'bg-violet-500/10 text-violet-700 border-violet-200' }
   ];
 
   return (
