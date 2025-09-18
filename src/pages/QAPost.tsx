@@ -29,7 +29,9 @@ import { QuickAnswerSection } from '@/components/QuickAnswerSection';
 import { KeyTakeawaysSection } from '@/components/KeyTakeawaysSection';
 import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
 import { NextStepsSection } from '@/components/NextStepsSection';
+import { AIEnhancedContent } from '@/components/AIEnhancedContent';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
+import { generateMaximalAISchema } from '@/utils/comprehensive-schemas';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -176,6 +178,12 @@ const QAPost = () => {
     [article, recommendations]
   );
   
+  // Generate maximal AI schema for best discovery
+  const maximalAISchema = React.useMemo(() => 
+    article ? generateMaximalAISchema(article, recommendations) : null, 
+    [article, recommendations]
+  );
+  
   const aiOrganizationSchema = React.useMemo(() => 
     generateAIEnhancedOrganizationSchema(article?.language || 'en'), 
     [article?.language]
@@ -307,6 +315,13 @@ const QAPost = () => {
         {enhancedArticleSchema && (
           <script type="application/ld+json">
             {JSON.stringify(enhancedArticleSchema)}
+          </script>
+        )}
+        
+        {/* Maximal AI Discovery Schema */}
+        {maximalAISchema && (
+          <script type="application/ld+json">
+            {JSON.stringify(maximalAISchema)}
           </script>
         )}
         
@@ -506,16 +521,14 @@ const QAPost = () => {
           </section>
         )}
 
-        {/* AI-Optimized Content Section */}
-        {aiOptimizedContent && (
-          <section className="py-8">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto">
-                <AIOptimizedContent article={article} />
-              </div>
+        {/* AI-Enhanced Content Section */}
+        <section className="py-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <AIEnhancedContent article={article} />
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* Article Content */}
         <section className="py-8 sm:py-12">
