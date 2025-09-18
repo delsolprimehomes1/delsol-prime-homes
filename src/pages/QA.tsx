@@ -293,6 +293,7 @@ const QA = () => {
                 onStageChange={setSelectedStage}
                 selectedTopic={selectedTopic}
                 onTopicChange={setSelectedTopic}
+                hideStageFilter={true}
               />
             </div>
           </div>
