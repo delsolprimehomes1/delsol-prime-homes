@@ -25,6 +25,10 @@ import { generateQAArticleSchema, generateAIServiceSchema, generateSpeakableSche
 import { generateEnhancedQAArticleSchema, generateAIEnhancedOrganizationSchema } from '@/utils/enhanced-schemas';
 import { AIOptimizedContent } from '@/components/AIOptimizedContent';
 import { SchemaValidator } from '@/components/SchemaValidator';
+import { QuickAnswerSection } from '@/components/QuickAnswerSection';
+import { KeyTakeawaysSection } from '@/components/KeyTakeawaysSection';
+import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
+import { NextStepsSection } from '@/components/NextStepsSection';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
 
 const QAPost = () => {
@@ -461,37 +465,46 @@ const QAPost = () => {
           </div>
         </section>
 
-        {/* Quick Answer Section */}
+        {/* Enhanced Quick Answer Section */}
         <section className="py-8 sm:py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <Card className="p-6 sm:p-8 bg-primary/5 border-primary/20 animate-fade-in animation-delay-400">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <ArrowRight className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-foreground mb-4 speakable">Quick Answer</h2>
-                    <div className="short-answer text-lg text-muted-foreground leading-relaxed">
-                      {article.excerpt}
-                    </div>
-                    <div className="mt-6">
-                      <Button 
-                        asChild
-                        className="bg-primary text-white hover:bg-primary/90"
-                      >
-                        <a href={getCTALink(article.funnel_stage)}>
-                          {getCTAText(article.funnel_stage)}
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+            <div className="max-w-4xl mx-auto animate-fade-in animation-delay-400">
+              <QuickAnswerSection 
+                title={article.title}
+                excerpt={article.excerpt}
+                ctaText={getCTAText(article.funnel_stage)}
+                ctaLink={getCTALink(article.funnel_stage)}
+                readingTime={readingTime}
+              />
             </div>
           </div>
         </section>
+
+        {/* Key Takeaways Section */}
+        {aiOptimizedContent && (
+          <section className="py-8">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-4xl mx-auto animate-fade-in animation-delay-500">
+                <KeyTakeawaysSection takeaways={aiOptimizedContent.keyPoints} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Voice Search Summary */}
+        {aiOptimizedContent && (
+          <section className="py-8">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-4xl mx-auto animate-fade-in animation-delay-600">
+                <VoiceSearchSummary 
+                  summary={aiOptimizedContent.aiSummary}
+                  keywords={aiOptimizedContent.voiceSearchKeywords}
+                  readingTime={readingTime}
+                />
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* AI-Optimized Content Section */}
         {aiOptimizedContent && (
@@ -628,6 +641,14 @@ const QAPost = () => {
                   </div>
                 </div>
               </Card>
+              
+              {/* Next Steps Section */}
+              <NextStepsSection 
+                funnelStage={article.funnel_stage}
+                topic={article.topic}
+                city={article.city}
+                className="mb-6"
+              />
               
               <FunnelNavigation 
                 currentStage={mapStageToUserFriendly(article.funnel_stage)}
