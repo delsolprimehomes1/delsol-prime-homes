@@ -142,11 +142,8 @@ const QAHub = () => {
                 <QASearch 
                   searchTerm={searchTerm} 
                   onSearchChange={setSearchTerm} 
-                  selectedStage={selectedStage} 
-                  onStageChange={setSelectedStage}
                   selectedTopic={selectedTopic}
                   onTopicChange={setSelectedTopic}
-                  hideStageFilter={false} 
                 />
               </div>
             </div>

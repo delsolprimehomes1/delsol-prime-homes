@@ -1,34 +1,21 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, X, Filter, FolderOpen } from 'lucide-react';
+import { Search, X, FolderOpen } from 'lucide-react';
 
 interface QASearchProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
-  selectedStage: string;
-  onStageChange: (stage: string) => void;
   selectedTopic: string;
   onTopicChange: (topic: string) => void;
-  hideStageFilter?: boolean;
 }
 
 export const QASearch = ({ 
   searchTerm, 
   onSearchChange, 
-  selectedStage, 
-  onStageChange,
   selectedTopic,
-  onTopicChange,
-  hideStageFilter = false 
+  onTopicChange
 }: QASearchProps) => {
-  const stages = [
-    { value: '', label: 'All Questions', color: 'bg-muted text-foreground' },
-    { value: 'TOFU', label: 'Getting Started', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
-    { value: 'MOFU', label: 'Researching', color: 'bg-amber-500/10 text-amber-700 border-amber-200' },
-    { value: 'BOFU', label: 'Ready to Buy', color: 'bg-green-500/10 text-green-700 border-green-200' }
-  ];
-
   const topicClusters = [
     { value: '', label: 'All Topics', color: 'bg-muted text-foreground' },
     { value: 'Getting Started', label: 'Getting Started', color: 'bg-purple-500/10 text-purple-700 border-purple-200' },
@@ -92,32 +79,6 @@ export const QASearch = ({
         </div>
       </div>
 
-      {/* Stage Filters */}
-      {!hideStageFilter && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-white/70">
-            <Filter className="w-4 h-4" />
-            <span className="text-sm font-medium">Filter by Stage</span>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:justify-center gap-2 px-4 sm:px-0">
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2">
-              {stages.map((stage) => (
-                <Badge
-                  key={stage.value}
-                  className={`cursor-pointer transition-all duration-200 hover:scale-105 px-3 py-2 sm:px-4 text-center touch-target-44 ${
-                    selectedStage === stage.value
-                      ? 'bg-white text-primary shadow-lg'
-                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                  }`}
-                  onClick={() => onStageChange(stage.value)}
-                >
-                  {stage.label}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

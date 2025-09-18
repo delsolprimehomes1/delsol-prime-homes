@@ -289,11 +289,8 @@ const QA = () => {
               <QASearch 
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
-                selectedStage={selectedStage}
-                onStageChange={setSelectedStage}
                 selectedTopic={selectedTopic}
                 onTopicChange={setSelectedTopic}
-                hideStageFilter={true}
               />
             </div>
           </div>
