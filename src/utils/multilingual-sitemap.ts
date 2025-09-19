@@ -157,25 +157,106 @@ export const generateMultilingualSitemapXML = (
   return xml;
 };
 
-// Additional Phase 3 sitemap functions
+// Real Phase 3 sitemap functions
 export const generateAllLanguageSitemaps = async () => {
-  // Mock implementation for Phase 3
-  return {
-    sitemaps: [],
-    sitemapIndex: { sitemaps: [] },
-    totalUrls: 0
+  const { supabase } = await import('@/integrations/supabase/client');
+  
+  // Fetch all published articles
+  const { data: articles } = await supabase
+    .from('qa_articles')
+    .select('id, slug, title, content, language, last_updated, created_at')
+    .order('created_at', { ascending: false });
+  
+  if (!articles) return { sitemaps: [], sitemapIndex: { sitemaps: [] }, totalUrls: 0 };
+  
+  // Group articles by language
+  const languageGroups = articles.reduce((acc, article) => {
+    const lang = article.language || 'en';
+    if (!acc[lang]) acc[lang] = [];
+    acc[lang].push(article);
+    return acc;
+  }, {} as Record<string, typeof articles>);
+  
+  const baseUrl = 'https://delsolprimehomes.com';
+  const sitemaps = [];
+  let totalUrls = 0;
+  
+  // Generate sitemap for each language
+  for (const [language, langArticles] of Object.entries(languageGroups)) {
+    const urls = generateMultilingualQASitemapUrls(langArticles, baseUrl);
+    const mainUrls = generateMultilingualMainPageUrls(baseUrl);
+    const allUrls = [...mainUrls, ...urls];
+    
+    sitemaps.push({
+      language,
+      urls: allUrls,
+      count: allUrls.length,
+      xml: generateMultilingualSitemapXML(langArticles, baseUrl)
+    });
+    
+    totalUrls += allUrls.length;
+  }
+  
+  // Generate sitemap index
+  const sitemapIndex = {
+    sitemaps: sitemaps.map(s => ({
+      loc: `${baseUrl}/sitemap-${s.language}.xml`,
+      lastmod: new Date().toISOString().split('T')[0]
+    }))
   };
+  
+  return { sitemaps, sitemapIndex, totalUrls };
 };
 
 export const writeSitemapFiles = async () => {
-  // Mock implementation for Phase 3
-  return {
-    indexXML: '',
-    languageSitemaps: []
-  };
+  const { sitemaps, sitemapIndex } = await generateAllLanguageSitemaps();
+  
+  // Generate sitemap index XML
+  let indexXML = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+  
+  sitemapIndex.sitemaps.forEach(sitemap => {
+    indexXML += `
+  <sitemap>
+    <loc>${sitemap.loc}</loc>
+    <lastmod>${sitemap.lastmod}</lastmod>
+  </sitemap>`;
+  });
+  
+  indexXML += `
+</sitemapindex>`;
+  
+  // Prepare language sitemaps
+  const languageSitemaps = sitemaps.map(s => ({
+    language: s.language,
+    filename: `sitemap-${s.language}.xml`,
+    xml: s.xml,
+    count: s.count
+  }));
+  
+  return { indexXML, languageSitemaps };
 };
 
 export const getSitemapStatistics = async () => {
-  // Mock implementation for Phase 3
-  return {};
+  const { supabase } = await import('@/integrations/supabase/client');
+  
+  // Get article counts by language
+  const { data: stats } = await supabase
+    .from('qa_articles')
+    .select('language, last_updated')
+    .order('last_updated', { ascending: false });
+  
+  if (!stats) return {};
+  
+  // Group by language and count
+  const languageStats = stats.reduce((acc, article) => {
+    const lang = article.language || 'en';
+    if (!acc[lang]) {
+      acc[lang] = { articles: 0, lastUpdate: article.last_updated || new Date().toISOString() };
+    }
+    acc[lang].articles++;
+    return acc;
+  }, {} as Record<string, { articles: number; lastUpdate: string }>);
+  
+  return languageStats;
 };
