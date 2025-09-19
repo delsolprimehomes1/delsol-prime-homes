@@ -1,0 +1,36 @@
+{
+  "generated_at": "2025-09-19T00:00:00.000Z",
+  "configuration": {
+    "PRIMARY_LOCALE": "en",
+    "SECONDARY_LOCALES": ["es", "de", "nl", "fr"],
+    "SITE_URL": "https://delsolprimehomes.com",
+    "DEFAULT_CITY": "Costa del Sol",
+    "DEFAULT_COORDS": { "lat": 36.5105, "lng": -4.8803 },
+    "CONTENT_ROOT": "/qa",
+    "FAQ_ROOT": "/faq",
+    "MIN_BODY_CHARS": 1200,
+    "AI_SCORE_TARGET": 9.8,
+    "TOTAL_ARTICLES": 168
+  },
+  "optimization_status": {
+    "phase_1_complete": false,
+    "current_average_score": 0.0,
+    "voice_search_ready": 0,
+    "citation_ready": 0,
+    "articles_above_target": 0,
+    "multilingual_content": 0
+  },
+  "phase_1_goals": {
+    "calculate_ai_scores": "Calculate ai_optimization_score for all 168 articles",
+    "voice_search_flags": "Set voice_search_ready=true for question-format articles",
+    "citation_flags": "Set citation_ready=true for articles ≥1200 chars with excerpts",
+    "speakable_selectors": "Add enhanced speakable markup targeting",
+    "metadata_injection": "Add meta tags and data attributes for AI discovery"
+  },
+  "expected_outcomes": {
+    "target_average_score": 9.8,
+    "voice_ready_target": "90%+",
+    "citation_ready_target": "85%+",
+    "optimization_ready": "100% articles scored and flagged"
+  }
+}
