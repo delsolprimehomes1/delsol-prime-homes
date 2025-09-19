@@ -31,6 +31,9 @@ import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
 import { NextStepsSection } from '@/components/NextStepsSection';
 import { AIEnhancedContent } from '@/components/AIEnhancedContent';
 import { AIContentOptimizer } from '@/components/AIContentOptimizer';
+import EnhancedQAContent from '@/components/EnhancedQAContent';
+import ContentQualityIndicator from '@/components/ContentQualityIndicator';
+import { checkContentQuality, checkVoiceFriendly } from '@/utils/content-quality-guard';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
 import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
 
@@ -172,6 +175,17 @@ const QAPost = () => {
   const readingTime = article?.content 
     ? Math.ceil(article.content.split(' ').length / 200) 
     : 0;
+
+  // Perform content quality checks
+  const qualityCheck = React.useMemo(() => 
+    article ? checkContentQuality(article) : null, 
+    [article]
+  );
+  
+  const voiceCheck = React.useMemo(() => 
+    article ? checkVoiceFriendly(article.content || '', article.title || '') : null,
+    [article]
+  );
 
   // Generate enhanced schemas for AI/LLM optimization
   const enhancedArticleSchema = React.useMemo(() => 
@@ -442,156 +456,30 @@ const QAPost = () => {
             </div>
           </div>
         </section>
-        {/* Article Header */}
-        <section className="py-12 sm:py-16 bg-muted/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-4 mb-6 animate-fade-in">
-                <Badge className={`${stageColors[article.funnel_stage as keyof typeof stageColors]} px-3 py-1`}>
-                  {stageLabels[article.funnel_stage as keyof typeof stageLabels]}
-                </Badge>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm">Updated {article.last_updated}</span>
-                  <span className="mx-2">•</span>
-                  <Clock className="w-4 h-4" />
-                  <span className="text-sm">{readingTime} min read</span>
-                </div>
-              </div>
-              
-              <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 animate-fade-in animation-delay-100">
-                {article.title}
-              </h1>
-              
-              <div className="short-answer text-lg sm:text-xl text-muted-foreground mb-8 p-6 bg-background/80 rounded-lg border animate-fade-in animation-delay-200">
-                {article.excerpt}
-              </div>
-              
-              {article.tags && article.tags.length > 0 && (
-                <div className="flex items-center gap-2 flex-wrap animate-fade-in animation-delay-300">
-                  <Tag className="w-4 h-4 text-muted-foreground" />
-                  {article.tags.map((tag: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
 
-        {/* Enhanced Quick Answer Section */}
+        {/* Enhanced QA Content - Phase 2 Structure */}
         <section className="py-8 sm:py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto animate-fade-in animation-delay-400">
-              <QuickAnswerSection 
-                title={article.title}
-                excerpt={article.excerpt}
-                ctaText={getCTAText(article.funnel_stage)}
-                ctaLink={getCTALink(article.funnel_stage)}
-                readingTime={readingTime}
-              />
+            <div className="max-w-4xl mx-auto">
+              <EnhancedQAContent article={article} />
             </div>
           </div>
         </section>
 
-        {/* Key Takeaways Section */}
-        {aiOptimizedContent && (
-          <section className="py-8">
+        {/* Content Quality Indicator - Development Tool */}
+        {qualityCheck && voiceCheck && !qualityCheck.isValid && (
+          <section className="py-6 bg-muted/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto animate-fade-in animation-delay-500">
-                <KeyTakeawaysSection takeaways={aiOptimizedContent.keyPoints} />
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Voice Search Summary */}
-        {aiOptimizedContent && (
-          <section className="py-8">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto animate-fade-in animation-delay-600">
-                <VoiceSearchSummary 
-                  summary={aiOptimizedContent.aiSummary}
-                  keywords={aiOptimizedContent.voiceSearchKeywords}
+              <div className="max-w-4xl mx-auto">
+                <ContentQualityIndicator 
+                  qualityCheck={qualityCheck}
+                  voiceCheck={voiceCheck}
                   readingTime={readingTime}
                 />
               </div>
             </div>
           </section>
         )}
-
-        {/* AI-Enhanced Content Section */}
-        <section className="py-8">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto space-y-8">
-              <AIContentOptimizer article={article as any} />
-              <AIEnhancedContent article={article} />
-            </div>
-          </div>
-        </section>
-
-        {/* Article Content */}
-        <section className="py-8 sm:py-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="space-y-8 animate-fade-in animation-delay-500">
-                {/* Split content into sections for better readability */}
-                {article.content.split('\n\n').filter(section => section.trim()).map((section, index) => {
-                  const processedSection = processMarkdownContent(section);
-                  
-                  // Check if this is a header section
-                  const isHeader = section.includes('#');
-                  const isListSection = section.includes('- ') || section.includes('* ');
-                  
-                  return (
-                    <div key={index} className="space-y-4">
-                      <div 
-                        className={`qa-content detailed-content ${isHeader ? 'speakable' : ''} ${
-                          isListSection ? 'bg-muted/30 p-6 rounded-lg border-l-4 border-l-primary/30' : ''
-                        } ${isHeader ? 'mb-8' : 'mb-6'}`}
-                        dangerouslySetInnerHTML={{ __html: processedSection }}
-                      />
-                      
-                      {/* Add mid-content CTA after every 3rd section */}
-                      {index > 0 && (index + 1) % 3 === 0 && (
-                        <Card className="p-6 bg-accent/5 border-accent/20 text-center">
-                          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="text-left sm:text-left">
-                              <h3 className="font-semibold text-foreground mb-2">
-                                Need More Information?
-                              </h3>
-                              <p className="text-muted-foreground text-sm">
-                                Get personalized guidance for your Costa del Sol property journey
-                              </p>
-                            </div>
-                            <Button 
-                              variant="outline" 
-                              asChild
-                              className="flex-shrink-0"
-                              onClick={() => trackEvent('cta_click', { 
-                                type: 'mid_content', 
-                                destination: recommendations[0] ? `/qa/${recommendations[0].slug}` : '/qa',
-                                recommended_article: recommendations[0]?.slug,
-                                article_slug: article.slug 
-                              })}
-                            >
-                              <Link to={recommendations[0] ? `/qa/${recommendations[0].slug}` : '/qa'}>
-                                Learn More
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </Card>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Funnel CTA Section with Lead Capture */}
         <section className="py-12 bg-muted/50 animate-fade-in animation-delay-500">
