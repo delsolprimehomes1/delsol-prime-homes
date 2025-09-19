@@ -25,6 +25,7 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
   
   // Generate optimized content
   const shortAnswer = extractShortAnswer(article.content || '', article.title || '');
+  const processedShortAnswer = processMarkdownContent(shortAnswer);
   const quickAnswerBullets = generateQuickAnswer(article.content || '', article.title || '', article.topic || '');
   const formattedBullets = formatQuickAnswerBullets(quickAnswerBullets);
   const voiceKeywords = generateVoiceKeywords(article.title || '', article.content || '', article.topic || '');
@@ -147,9 +148,12 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
               <Mic className="w-5 h-5" />
               Quick Answer
             </h2>
-            <div className="text-foreground leading-relaxed">
-              {shortAnswer || 'Short answer being generated...'}
-            </div>
+            <div 
+              className="text-foreground leading-relaxed"
+              dangerouslySetInnerHTML={{ 
+                __html: processedShortAnswer || 'Short answer being generated...' 
+              }}
+            />
           </div>
         </section>
 
