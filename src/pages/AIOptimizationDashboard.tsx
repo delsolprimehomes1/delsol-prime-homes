@@ -9,6 +9,7 @@ import { CheckCircle, AlertTriangle, Zap, BarChart3, Globe, Bot, Mic, FileText, 
 import { toast } from 'sonner';
 import { analyzeAllQAArticles, generateAIDiscoveryExport, validateAIOptimization } from '@/utils/bulk-qa-optimization';
 import { ComprehensiveAIOptimizer } from '@/components/ComprehensiveAIOptimizer';
+import { ComprehensiveAIOptimizerV2 } from '@/components/ComprehensiveAIOptimizerV2';
 import { batchOptimizeForVoiceSearch } from '@/utils/voice-search-optimizer';
 
 interface OptimizationReport {
@@ -156,12 +157,17 @@ const AIOptimizationDashboard: React.FC = () => {
         </Alert>
       )}
 
-      <Tabs defaultValue="comprehensive" className="space-y-4">
+      <Tabs defaultValue="comprehensive-v2" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="comprehensive">Comprehensive Optimizer</TabsTrigger>
+          <TabsTrigger value="comprehensive-v2">Advanced Optimizer</TabsTrigger>
+          <TabsTrigger value="comprehensive">Legacy Optimizer</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="validation">Validation Results</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="comprehensive-v2" className="space-y-4">
+          <ComprehensiveAIOptimizerV2 />
+        </TabsContent>
 
         <TabsContent value="comprehensive" className="space-y-4">
           <ComprehensiveAIOptimizer />
