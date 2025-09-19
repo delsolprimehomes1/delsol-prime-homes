@@ -211,37 +211,51 @@ export const batchScoreAllArticles = async (): Promise<{
   let articlesAboveTarget = 0;
   const TARGET_SCORE = 9.8;
 
-  // Process each article
-  for (const article of articles || []) {
-    const scoreResult = calculateAIScore(article);
-    results.push(scoreResult);
+  // Process each article in batches to avoid timeout
+  const batchSize = 10;
+  for (let i = 0; i < articles.length; i += batchSize) {
+    const batch = articles.slice(i, i + batchSize);
     
-    totalScore += scoreResult.currentScore;
-    if (scoreResult.voice_search_ready) voiceReadyCount++;
-    if (scoreResult.citation_ready) citationReadyCount++;
-    if (scoreResult.currentScore >= TARGET_SCORE) articlesAboveTarget++;
+    for (const article of batch) {
+      try {
+        const scoreResult = calculateAIScore(article);
+        results.push(scoreResult);
+        
+        totalScore += scoreResult.currentScore;
+        if (scoreResult.voice_search_ready) voiceReadyCount++;
+        if (scoreResult.citation_ready) citationReadyCount++;
+        if (scoreResult.currentScore >= TARGET_SCORE) articlesAboveTarget++;
 
-    // Update article in database with new scores
-    const { error: updateError } = await supabase
-      .from('qa_articles')
-      .update({
-        ai_optimization_score: scoreResult.currentScore,
-        voice_search_ready: scoreResult.voice_search_ready,
-        citation_ready: scoreResult.citation_ready,
-        markdown_frontmatter: {
-          ...((typeof article.markdown_frontmatter === 'object' && article.markdown_frontmatter !== null) ? article.markdown_frontmatter : {}),
-          ai_metrics: scoreResult.metrics as any,
-          speakable_selectors: scoreResult.speakable_selectors,
-          last_scored_at: new Date().toISOString(),
-          recommendations: scoreResult.recommendations
+        // Update article in database with new scores
+        const { error: updateError } = await supabase
+          .from('qa_articles')
+          .update({
+            ai_optimization_score: scoreResult.currentScore,
+            voice_search_ready: scoreResult.voice_search_ready,
+            citation_ready: scoreResult.citation_ready,
+            markdown_frontmatter: {
+              ...((typeof article.markdown_frontmatter === 'object' && article.markdown_frontmatter !== null) ? article.markdown_frontmatter : {}),
+              ai_metrics: scoreResult.metrics as any,
+              speakable_selectors: scoreResult.speakable_selectors,
+              last_scored_at: new Date().toISOString(),
+              recommendations: scoreResult.recommendations
+            }
+          })
+          .eq('id', article.id);
+
+        if (updateError) {
+          console.error(`Error updating article ${article.slug}:`, updateError);
+        } else {
+          console.log(`✅ Scored ${article.slug}: ${scoreResult.currentScore}/10`);
         }
-      })
-      .eq('id', article.id);
-
-    if (updateError) {
-      console.error(`Error updating article ${article.slug}:`, updateError);
-    } else {
-      console.log(`✅ Scored ${article.slug}: ${scoreResult.currentScore}/10`);
+      } catch (error) {
+        console.error(`Error processing article ${article.slug}:`, error);
+      }
+    }
+    
+    // Small delay between batches to prevent overwhelming
+    if (i + batchSize < articles.length) {
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
 

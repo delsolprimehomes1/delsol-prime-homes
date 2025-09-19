@@ -5,6 +5,7 @@ import AIOptimizationDashboard from '@/components/AIOptimizationDashboard';
 import Phase2ContentEnhancer from '@/components/Phase2ContentEnhancer';
 import Phase3MultilingualDashboard from '@/components/Phase3MultilingualDashboard';
 import ComprehensiveAIActivator from '@/components/ComprehensiveAIActivator';
+import AIScoreFixDashboard from '@/components/AIScoreFixDashboard';
 
 const AIOptimizationPage: React.FC = () => {
   return (
@@ -29,13 +30,18 @@ const AIOptimizationPage: React.FC = () => {
               </p>
             </div>
             
-            <Tabs defaultValue="comprehensive" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+            <Tabs defaultValue="fix" className="w-full">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="fix">🔧 Fix Scores</TabsTrigger>
                 <TabsTrigger value="comprehensive">⚡ Activate All</TabsTrigger>
                 <TabsTrigger value="phase1">Phase 1: AI Scoring</TabsTrigger>
                 <TabsTrigger value="phase2">Phase 2: Content Enhancement</TabsTrigger>
                 <TabsTrigger value="phase3">Phase 3: Multilingual</TabsTrigger>
               </TabsList>
+              
+              <TabsContent value="fix" className="space-y-6">
+                <AIScoreFixDashboard />
+              </TabsContent>
               
               <TabsContent value="comprehensive" className="space-y-6">
                 <ComprehensiveAIActivator />
