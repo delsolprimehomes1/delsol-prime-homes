@@ -96,3 +96,78 @@ export const redirectToLanguageVersion = (
   const targetUrl = `${fallbackPath}?lang=${targetLanguage}`;
   window.location.href = targetUrl;
 };
+
+// Additional Phase 3 functions for multilingual SEO
+export interface HreflangLinks {
+  links: Array<{
+    hreflang: string;
+    href: string;
+  }>;
+  canonical: string;
+  defaultLanguage: string;
+}
+
+// Generate hreflang links for an article
+export const generateHreflangLinks = (
+  slug: string, 
+  availableLanguages: string[], 
+  currentLanguage: string = 'en'
+): HreflangLinks => {
+  const baseUrl = 'https://delsolprimehomes.com';
+  const links: Array<{ hreflang: string; href: string }> = [];
+  
+  availableLanguages.forEach(lang => {
+    const href = lang === 'en' 
+      ? `${baseUrl}/qa/${slug}`
+      : `${baseUrl}/qa/${lang}/${slug}`;
+    
+    links.push({
+      hreflang: lang,
+      href
+    });
+  });
+  
+  // Add x-default link (English)
+  links.push({
+    hreflang: 'x-default',
+    href: `${baseUrl}/qa/${slug}`
+  });
+  
+  const canonical = currentLanguage === 'en'
+    ? `${baseUrl}/qa/${slug}`
+    : `${baseUrl}/qa/${currentLanguage}/${slug}`;
+  
+  return {
+    links,
+    canonical,
+    defaultLanguage: 'en'
+  };
+};
+
+// Generate sameAs URLs for JSON-LD
+export const generateSameAsURLs = (slug: string, availableLanguages: string[]): string[] => {
+  const baseUrl = 'https://delsolprimehomes.com';
+  const sameAsURLs: string[] = [];
+  
+  availableLanguages.forEach(lang => {
+    const url = lang === 'en' 
+      ? `${baseUrl}/qa/${slug}`
+      : `${baseUrl}/qa/${lang}/${slug}`;
+    sameAsURLs.push(url);
+  });
+  
+  return sameAsURLs;
+};
+
+// Generate OpenGraph locale tags
+export const generateOpenGraphLocales = (availableLanguages: string[]): string[] => {
+  const localeMap: Record<string, string> = {
+    'en': 'en_GB',
+    'es': 'es_ES',
+    'de': 'de_DE',
+    'nl': 'nl_NL',
+    'fr': 'fr_FR'
+  };
+  
+  return availableLanguages.map(lang => localeMap[lang] || localeMap['en']);
+};
