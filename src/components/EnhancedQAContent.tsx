@@ -5,6 +5,7 @@ import { Clock, Mic, Quote, AlertTriangle } from 'lucide-react';
 import { checkContentQuality, generateNoIndexMeta, extractShortAnswer, generateQuickAnswer, checkVoiceFriendly } from '@/utils/content-quality-guard';
 import { formatForVoice, formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
 import { detectArticleCity, generateGeoMetadata, generatePlaceSchema } from '@/utils/geo-data';
+import { processMarkdownContent } from '@/utils/markdown';
 import ServiceAreasSection from './ServiceAreasSection';
 import FreshnessIndicator from './FreshnessIndicator';
 import { Helmet } from 'react-helmet-async';
@@ -39,6 +40,7 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
   
   // Generate voice-optimized content
   const voiceOptimizedContent = formatForVoice(article.content || '', article.title || '');
+  const processedContent = processMarkdownContent(voiceOptimizedContent);
   
   // Generate noindex meta if needed
   const noIndexMeta = generateNoIndexMeta(qualityCheck.shouldNoIndex);
@@ -182,7 +184,7 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         <article className="body prose prose-lg max-w-none">
           <div 
             className="content-body"
-            dangerouslySetInnerHTML={{ __html: voiceOptimizedContent }}
+            dangerouslySetInnerHTML={{ __html: processedContent }}
           />
         </article>
 
