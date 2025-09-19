@@ -36,6 +36,7 @@ import ContentQualityIndicator from '@/components/ContentQualityIndicator';
 import { checkContentQuality, checkVoiceFriendly } from '@/utils/content-quality-guard';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
 import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
+import { injectAIMetaTags } from '@/lib/aiScoring';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -216,7 +217,7 @@ const QAPost = () => {
     []
   );
 
-  // Track page view
+  // Track page view and inject AI meta tags
   React.useEffect(() => {
     if (article) {
       trackEvent('qa_article_view', {
@@ -224,6 +225,11 @@ const QAPost = () => {
         funnel_stage: article.funnel_stage,
         topic: article.topic
       });
+      
+      // Inject AI optimization meta tags
+      if (article.ai_optimization_score) {
+        injectAIMetaTags(article, article.ai_optimization_score);
+      }
     }
   }, [article]);
 
