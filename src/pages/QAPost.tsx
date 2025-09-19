@@ -30,8 +30,9 @@ import { KeyTakeawaysSection } from '@/components/KeyTakeawaysSection';
 import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
 import { NextStepsSection } from '@/components/NextStepsSection';
 import { AIEnhancedContent } from '@/components/AIEnhancedContent';
+import { AIContentOptimizer } from '@/components/AIContentOptimizer';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
-import { generateMaximalAISchema } from '@/utils/comprehensive-schemas';
+import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
 
 const QAPost = () => {
   const { slug } = useParams();
@@ -180,7 +181,7 @@ const QAPost = () => {
   
   // Generate maximal AI schema for best discovery
   const maximalAISchema = React.useMemo(() => 
-    article ? generateMaximalAISchema(article, recommendations) : null, 
+    article ? generateMaximalAISchema(article as any, (recommendations as any) || []) : null, 
     [article, recommendations]
   );
   
@@ -524,7 +525,8 @@ const QAPost = () => {
         {/* AI-Enhanced Content Section */}
         <section className="py-8">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto space-y-8">
+              <AIContentOptimizer article={article as any} />
               <AIEnhancedContent article={article} />
             </div>
           </div>
