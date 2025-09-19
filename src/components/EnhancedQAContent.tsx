@@ -4,6 +4,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Clock, Mic, Quote, AlertTriangle } from 'lucide-react';
 import { checkContentQuality, generateNoIndexMeta, extractShortAnswer, generateQuickAnswer, checkVoiceFriendly } from '@/utils/content-quality-guard';
 import { formatForVoice, formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
+import { detectArticleCity, generateGeoMetadata, generatePlaceSchema } from '@/utils/geo-data';
+import ServiceAreasSection from './ServiceAreasSection';
+import FreshnessIndicator from './FreshnessIndicator';
 import { Helmet } from 'react-helmet-async';
 
 interface EnhancedQAContentProps {
@@ -24,6 +27,11 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
   const quickAnswerBullets = generateQuickAnswer(article.content || '', article.title || '', article.topic || '');
   const formattedBullets = formatQuickAnswerBullets(quickAnswerBullets);
   const voiceKeywords = generateVoiceKeywords(article.title || '', article.content || '', article.topic || '');
+  
+  // Geographic and freshness data
+  const articleCity = detectArticleCity(article);
+  const geoData = generateGeoMetadata(articleCity);
+  const placeSchema = generatePlaceSchema(geoData);
   
   // Calculate reading time
   const wordCount = (article.content || '').replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
@@ -46,6 +54,36 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         <meta name="voice-search-ready" content={voiceCheck.score >= 75 ? "true" : "false"} />
         <meta name="citation-ready" content={qualityCheck.isValid ? "true" : "false"} />
         <meta name="content-quality" content={qualityCheck.meetsMinimum ? "high" : "low"} />
+        <meta name="geo-area-served" content={geoData.areaServed.join(', ')} />
+        <meta name="geo-main-city" content={geoData.mainCity || 'Costa del Sol'} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': ['QAPage', 'Article'],
+              'headline': article.title,
+              'description': shortAnswer,
+              'mainEntity': {
+                '@type': 'Question',
+                'name': article.title,
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': shortAnswer
+                }
+              },
+              'speakable': {
+                '@type': 'SpeakableSpecification',
+                'cssSelector': ['.short-answer', '.quick-answer']
+              },
+              'dateModified': article.updated_at || article.created_at,
+              'datePublished': article.created_at,
+              'locationCreated': placeSchema,
+              'spatialCoverage': placeSchema,
+              'areaServed': geoData.areaServed
+            })
+          }}
+        />
       </Helmet>
 
       <div className={`enhanced-qa-content ${className}`} data-article-id={article.id}>
@@ -85,6 +123,14 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
             <div className="text-sm text-muted-foreground">
               {qualityCheck.charCount} characters
             </div>
+          </div>
+          
+          {/* Freshness and geo indicators */}
+          <div className="mb-6">
+            <FreshnessIndicator 
+              lastUpdated={article.updated_at || article.created_at}
+              dateModified={article.updated_at}
+            />
           </div>
         </header>
 
@@ -126,6 +172,11 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
             </ul>
           </div>
         </section>
+
+        {/* Service Areas Section */}
+        <div className="mb-8">
+          <ServiceAreasSection geoData={geoData} />
+        </div>
 
         {/* Main Article Content */}
         <article className="body prose prose-lg max-w-none">
