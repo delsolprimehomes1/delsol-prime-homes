@@ -379,9 +379,55 @@ export type Database = {
         }
         Relationships: []
       }
+      qa_article_translations: {
+        Row: {
+          created_at: string | null
+          id: string
+          source_article_id: string
+          target_language: string
+          translated_content: string
+          translated_excerpt: string
+          translated_title: string
+          translation_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          source_article_id: string
+          target_language: string
+          translated_content: string
+          translated_excerpt: string
+          translated_title: string
+          translation_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          source_article_id?: string
+          target_language?: string
+          translated_content?: string
+          translated_excerpt?: string
+          translated_title?: string
+          translation_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qa_article_translations_source_article_id_fkey"
+            columns: ["source_article_id"]
+            isOneToOne: false
+            referencedRelation: "qa_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       qa_articles: {
         Row: {
+          ai_optimization_score: number | null
           alt_text: string | null
+          citation_ready: boolean | null
           city: string
           content: string
           created_at: string
@@ -394,6 +440,7 @@ export type Database = {
           last_updated: string
           location_focus: string | null
           markdown_frontmatter: Json | null
+          multilingual_parent_id: string | null
           next_step_text: string | null
           next_step_url: string | null
           parent_id: string | null
@@ -403,9 +450,12 @@ export type Database = {
           title: string
           topic: string
           updated_at: string
+          voice_search_ready: boolean | null
         }
         Insert: {
+          ai_optimization_score?: number | null
           alt_text?: string | null
+          citation_ready?: boolean | null
           city?: string
           content: string
           created_at?: string
@@ -418,6 +468,7 @@ export type Database = {
           last_updated?: string
           location_focus?: string | null
           markdown_frontmatter?: Json | null
+          multilingual_parent_id?: string | null
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
@@ -427,9 +478,12 @@ export type Database = {
           title: string
           topic: string
           updated_at?: string
+          voice_search_ready?: boolean | null
         }
         Update: {
+          ai_optimization_score?: number | null
           alt_text?: string | null
+          citation_ready?: boolean | null
           city?: string
           content?: string
           created_at?: string
@@ -442,6 +496,7 @@ export type Database = {
           last_updated?: string
           location_focus?: string | null
           markdown_frontmatter?: Json | null
+          multilingual_parent_id?: string | null
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
@@ -451,8 +506,16 @@ export type Database = {
           title?: string
           topic?: string
           updated_at?: string
+          voice_search_ready?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "qa_articles_multilingual_parent_id_fkey"
+            columns: ["multilingual_parent_id"]
+            isOneToOne: false
+            referencedRelation: "qa_articles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "qa_articles_parent_id_fkey"
             columns: ["parent_id"]
