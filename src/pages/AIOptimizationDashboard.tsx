@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import AIOptimizationDashboard from '@/components/AIOptimizationDashboard';
+import Phase3MultilingualDashboard from '@/components/Phase3MultilingualDashboard';
 
 const AIOptimizationPage: React.FC = () => {
   return (
@@ -25,7 +26,10 @@ const AIOptimizationPage: React.FC = () => {
               </p>
             </div>
             
-            <AIOptimizationDashboard />
+            <div className="space-y-8">
+              <AIOptimizationDashboard />
+              <Phase3MultilingualDashboard />
+            </div>
           </div>
         </div>
       </main>
