@@ -9,12 +9,14 @@ import { QACard } from '@/components/QACard';
 import { QASearch } from '@/components/QASearch';
 import { QAProgress } from '@/components/QAProgress';
 import { QAClusterStats } from '@/components/QAClusterStats';
+import ClusteredQADisplay from '@/components/ClusteredQADisplay';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MultilingualAlert } from '@/components/MultilingualAlert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { trackEvent } from '@/utils/analytics';
+import { ClusterManager } from '@/utils/cluster-manager';
 import { generateMultilingualFAQSchema } from '@/utils/multilingual-schemas';
 import { 
   generateComprehensiveFAQSchema,
@@ -80,6 +82,13 @@ const QA = () => {
       
       if (error) throw error;
       return data;
+    }
+  });
+
+  const { data: clusters = [], isLoading: clustersLoading } = useQuery({
+    queryKey: ['qa-clusters', currentLanguage],
+    queryFn: async () => {
+      return await ClusterManager.getAllClustersWithArticles(currentLanguage);
     }
   });
 
