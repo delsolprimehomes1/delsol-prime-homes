@@ -130,15 +130,23 @@ Always thank the user and close with reassurance and clear next steps.
     // Update or create lead in database
     let updatedLead;
     if (leadId) {
+      // Get existing lead first
+      const { data: existingLead } = await supabaseClient
+        .from('leads')
+        .select('conversation_log')
+        .eq('id', leadId)
+        .single();
+
       // Update existing lead
       const { data: lead, error } = await supabaseClient
         .from('leads')
         .update({
           stage: nextStage,
-          conversation_log: supabaseClient.sql`conversation_log || ${JSON.stringify([
+          conversation_log: [
+            ...(existingLead?.conversation_log || []),
             { role: 'user', content: message, timestamp: new Date().toISOString() },
             { role: 'assistant', content: aiResponse, timestamp: new Date().toISOString() }
-          ])}`,
+          ],
           updated_at: new Date().toISOString(),
           ...(firstName && { first_name: firstName }),
           ...(lastName && { last_name: lastName }),
@@ -185,7 +193,7 @@ Always thank the user and close with reassurance and clear next steps.
   } catch (error) {
     console.error('Error in AI advisor chat:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
       response: "I'm sorry, I'm having trouble right now. Please try again in a moment or call us directly."
     }), {
       status: 500,

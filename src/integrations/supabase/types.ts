@@ -427,12 +427,19 @@ export type Database = {
         Row: {
           ai_optimization_score: number | null
           alt_text: string | null
+          appointment_booking_enabled: boolean | null
           citation_ready: boolean | null
           city: string
+          cluster_id: string | null
+          cluster_position: number | null
+          cluster_title: string | null
           content: string
           created_at: string
           excerpt: string
           funnel_stage: string
+          h1_title: string | null
+          h2_title: string | null
+          h3_title: string | null
           id: string
           image_url: string | null
           intent: string | null
@@ -444,23 +451,33 @@ export type Database = {
           next_step_text: string | null
           next_step_url: string | null
           parent_id: string | null
+          points_to_bofu_id: string | null
+          points_to_mofu_id: string | null
           slug: string
           tags: string[] | null
           target_audience: string | null
           title: string
           topic: string
           updated_at: string
+          variation_group: string | null
           voice_search_ready: boolean | null
         }
         Insert: {
           ai_optimization_score?: number | null
           alt_text?: string | null
+          appointment_booking_enabled?: boolean | null
           citation_ready?: boolean | null
           city?: string
+          cluster_id?: string | null
+          cluster_position?: number | null
+          cluster_title?: string | null
           content: string
           created_at?: string
           excerpt: string
           funnel_stage: string
+          h1_title?: string | null
+          h2_title?: string | null
+          h3_title?: string | null
           id?: string
           image_url?: string | null
           intent?: string | null
@@ -472,23 +489,33 @@ export type Database = {
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
+          points_to_bofu_id?: string | null
+          points_to_mofu_id?: string | null
           slug: string
           tags?: string[] | null
           target_audience?: string | null
           title: string
           topic: string
           updated_at?: string
+          variation_group?: string | null
           voice_search_ready?: boolean | null
         }
         Update: {
           ai_optimization_score?: number | null
           alt_text?: string | null
+          appointment_booking_enabled?: boolean | null
           citation_ready?: boolean | null
           city?: string
+          cluster_id?: string | null
+          cluster_position?: number | null
+          cluster_title?: string | null
           content?: string
           created_at?: string
           excerpt?: string
           funnel_stage?: string
+          h1_title?: string | null
+          h2_title?: string | null
+          h3_title?: string | null
           id?: string
           image_url?: string | null
           intent?: string | null
@@ -500,15 +527,39 @@ export type Database = {
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
+          points_to_bofu_id?: string | null
+          points_to_mofu_id?: string | null
           slug?: string
           tags?: string[] | null
           target_audience?: string | null
           title?: string
           topic?: string
           updated_at?: string
+          variation_group?: string | null
           voice_search_ready?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_qa_articles_cluster_id"
+            columns: ["cluster_id"]
+            isOneToOne: false
+            referencedRelation: "qa_clusters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_qa_articles_points_to_bofu"
+            columns: ["points_to_bofu_id"]
+            isOneToOne: false
+            referencedRelation: "qa_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_qa_articles_points_to_mofu"
+            columns: ["points_to_mofu_id"]
+            isOneToOne: false
+            referencedRelation: "qa_articles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "qa_articles_multilingual_parent_id_fkey"
             columns: ["multilingual_parent_id"]
@@ -524,6 +575,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      qa_clusters: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          language: string
+          sort_order: number | null
+          title: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          language?: string
+          sort_order?: number | null
+          title: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          language?: string
+          sort_order?: number | null
+          title?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       search_console_data: {
         Row: {
@@ -720,6 +807,39 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_integrations: {
+        Row: {
+          configuration: Json | null
+          created_at: string
+          id: string
+          integration_type: string
+          is_active: boolean | null
+          name: string
+          updated_at: string
+          webhook_url: string
+        }
+        Insert: {
+          configuration?: Json | null
+          created_at?: string
+          id?: string
+          integration_type: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string
+          webhook_url: string
+        }
+        Update: {
+          configuration?: Json | null
+          created_at?: string
+          id?: string
+          integration_type?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string
+          webhook_url?: string
         }
         Relationships: []
       }
