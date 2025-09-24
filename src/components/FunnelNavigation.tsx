@@ -110,30 +110,55 @@ export function FunnelNavigation({
     if (currentStage === 'exploration' && nextMofuArticle) {
       // TOFU article linking to specific MOFU article with compelling preview
       finalNextStepUrl = `/qa/${nextMofuArticle.slug}`;
-      const previewTitle = nextMofuArticle.title.length > 40 
-        ? nextMofuArticle.title.substring(0, 37) + '...' 
-        : nextMofuArticle.title;
-      finalNextStepText = finalNextStepText || `Next: ${previewTitle} →`;
+      
+      // Enhanced preview with topic-aware copy and extended character limit
+      let enhancedPreview = nextMofuArticle.title;
+      
+      // Add topic-specific enhancements for better engagement
+      if (nextMofuArticle.title.toLowerCase().includes('golf') || 
+          nextMofuArticle.title.toLowerCase().includes('lifestyle')) {
+        enhancedPreview = nextMofuArticle.title.includes('UK') || nextMofuArticle.title.includes('Irish') 
+          ? nextMofuArticle.title 
+          : `${nextMofuArticle.title} (for UK & Irish expats)`;
+      }
+      
+      // Extended character limit for better previews (70 chars instead of 40)
+      const previewTitle = enhancedPreview.length > 70 
+        ? enhancedPreview.substring(0, 67) + '...' 
+        : enhancedPreview;
+      
+      // Always use specific article preview, never fallback when article exists
+      finalNextStepText = `Next: ${previewTitle} →`;
     } else if (currentStage === 'research' && nextBofuArticle) {
       // MOFU article linking to specific BOFU article with action-focused copy
       finalNextStepUrl = `/qa/${nextBofuArticle.slug}`;
-      const actionTitle = nextBofuArticle.title.includes('buy') || nextBofuArticle.title.includes('purchase')
-        ? 'Final steps before buying →'
-        : 'What to confirm before investing →';
-      finalNextStepText = finalNextStepText || actionTitle;
+      
+      // Enhanced action-focused copy based on article content
+      let actionTitle;
+      if (nextBofuArticle.title.toLowerCase().includes('buy') || nextBofuArticle.title.toLowerCase().includes('purchase')) {
+        actionTitle = 'Final steps before buying →';
+      } else if (nextBofuArticle.title.toLowerCase().includes('invest')) {
+        actionTitle = 'What to confirm before investing →';
+      } else if (nextBofuArticle.title.toLowerCase().includes('legal')) {
+        actionTitle = 'Legal essentials for expats →';
+      } else {
+        actionTitle = `Ready: ${nextBofuArticle.title.substring(0, 35)}... →`;
+      }
+      
+      finalNextStepText = actionTitle;
     } else if (currentStage === 'decision') {
       // BOFU articles should lead to booking with urgency
       finalNextStepUrl = '/book-viewing';
-      finalNextStepText = finalNextStepText || 'Your dream home awaits — book now →';
+      finalNextStepText = 'Your dream home awaits — book now →';
     } else {
-      // Enhanced fallback behavior with stronger CTAs
+      // Only use fallback when no specific articles are available
       finalNextStepUrl = config.nextDefault.url;
       const enhancedDefault = currentStage === 'exploration' 
         ? 'Explore expert research guides →'
         : currentStage === 'research'
         ? 'Ready to take action? →'
         : 'Schedule your consultation →';
-      finalNextStepText = finalNextStepText || enhancedDefault;
+      finalNextStepText = enhancedDefault;
     }
   }
 
