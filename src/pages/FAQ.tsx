@@ -139,12 +139,18 @@ const QAHub = () => {
                 Expand any question below for comprehensive guidance on your Costa del Sol property journey.
               </p>
               <div className="animate-fade-in animation-delay-400">
-                <QASearch 
-                  searchTerm={searchTerm} 
-                  onSearchChange={setSearchTerm} 
-                  selectedTopic={selectedTopic}
-                  onTopicChange={setSelectedTopic}
-                />
+              <QASearch 
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                selectedTopic={selectedTopic}
+                onTopicChange={setSelectedTopic}
+                topicCounts={articles.reduce((acc: Record<string, number>, article) => {
+                  const topic = article.topic || 'Miscellaneous';
+                  acc[topic] = (acc[topic] || 0) + 1;
+                  return acc;
+                }, {})}
+                totalCount={articles.length}
+              />
               </div>
             </div>
           </div>

@@ -291,6 +291,12 @@ const QA = () => {
                 onSearchChange={setSearchTerm}
                 selectedTopic={selectedTopic}
                 onTopicChange={setSelectedTopic}
+                topicCounts={articles.reduce((acc: Record<string, number>, article) => {
+                  const topic = article.topic || 'Miscellaneous';
+                  acc[topic] = (acc[topic] || 0) + 1;
+                  return acc;
+                }, {})}
+                totalCount={articles.length}
               />
             </div>
           </div>

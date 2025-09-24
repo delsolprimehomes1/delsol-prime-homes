@@ -8,29 +8,47 @@ interface QASearchProps {
   onSearchChange: (term: string) => void;
   selectedTopic: string;
   onTopicChange: (topic: string) => void;
+  topicCounts: Record<string, number>;
+  totalCount: number;
 }
 
 export const QASearch = ({ 
   searchTerm, 
   onSearchChange, 
   selectedTopic,
-  onTopicChange
+  onTopicChange,
+  topicCounts,
+  totalCount
 }: QASearchProps) => {
+  const getTopicColor = (topic: string) => {
+    const colors: Record<string, string> = {
+      'Lifestyle': 'bg-pink-500/10 text-pink-700 border-pink-200',
+      'Investment': 'bg-teal-500/10 text-teal-700 border-teal-200',
+      'General': 'bg-purple-500/10 text-purple-700 border-purple-200',
+      'Location': 'bg-orange-500/10 text-orange-700 border-orange-200',
+      'Property Types': 'bg-blue-500/10 text-blue-700 border-blue-200',
+      'Market Intelligence & Timing': 'bg-amber-500/10 text-amber-700 border-amber-200',
+      'Investment & Financing': 'bg-indigo-500/10 text-indigo-700 border-indigo-200',
+      'Legal & Process Timeline': 'bg-red-500/10 text-red-700 border-red-200',
+      'Property Types & Features': 'bg-cyan-500/10 text-cyan-700 border-cyan-200',
+      'Location Intelligence': 'bg-lime-500/10 text-lime-700 border-lime-200',
+      'Finance': 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
+      'Service': 'bg-sky-500/10 text-sky-700 border-sky-200',
+      'Infrastructure': 'bg-violet-500/10 text-violet-700 border-violet-200'
+    };
+    return colors[topic] || 'bg-gray-500/10 text-gray-700 border-gray-200';
+  };
+
+  // Create topic clusters from actual data, sorted by count (descending)
   const topicClusters = [
-    { value: '', label: 'All Topics (154)', color: 'bg-muted text-foreground' },
-    { value: 'Lifestyle', label: 'Lifestyle (46)', color: 'bg-pink-500/10 text-pink-700 border-pink-200' },
-    { value: 'Investment', label: 'Investment (19)', color: 'bg-teal-500/10 text-teal-700 border-teal-200' },
-    { value: 'General', label: 'General (15)', color: 'bg-purple-500/10 text-purple-700 border-purple-200' },
-    { value: 'Location', label: 'Location (14)', color: 'bg-orange-500/10 text-orange-700 border-orange-200' },
-    { value: 'Property Types', label: 'Property Types (12)', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
-    { value: 'Market Intelligence & Timing', label: 'Market Timing (6)', color: 'bg-amber-500/10 text-amber-700 border-amber-200' },
-    { value: 'Investment & Financing', label: 'Financing (6)', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
-    { value: 'Legal & Process Timeline', label: 'Legal & Process (6)', color: 'bg-red-500/10 text-red-700 border-red-200' },
-    { value: 'Property Types & Features', label: 'Property Features (6)', color: 'bg-cyan-500/10 text-cyan-700 border-cyan-200' },
-    { value: 'Location Intelligence', label: 'Property Search (6)', color: 'bg-lime-500/10 text-lime-700 border-lime-200' },
-    { value: 'Finance', label: 'Finance (5)', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-200' },
-    { value: 'Service', label: 'Services (4)', color: 'bg-sky-500/10 text-sky-700 border-sky-200' },
-    { value: 'Infrastructure', label: 'Infrastructure (3)', color: 'bg-violet-500/10 text-violet-700 border-violet-200' }
+    { value: '', label: `All Topics (${totalCount})`, color: 'bg-muted text-foreground' },
+    ...Object.entries(topicCounts)
+      .sort(([,a], [,b]) => b - a) // Sort by count descending
+      .map(([topic, count]) => ({
+        value: topic,
+        label: `${topic} (${count})`,
+        color: getTopicColor(topic)
+      }))
   ];
 
   return (
