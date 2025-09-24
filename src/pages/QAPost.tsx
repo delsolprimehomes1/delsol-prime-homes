@@ -32,8 +32,6 @@ import { NextStepsSection } from '@/components/NextStepsSection';
 import { AIEnhancedContent } from '@/components/AIEnhancedContent';
 import { AIContentOptimizer } from '@/components/AIContentOptimizer';
 import EnhancedQAContent from '@/components/EnhancedQAContent';
-import ContentQualityIndicator from '@/components/ContentQualityIndicator';
-import { checkContentQuality, checkVoiceFriendly } from '@/utils/content-quality-guard';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
 import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
 import { injectAIMetaTags } from '@/lib/aiScoring';
@@ -214,16 +212,6 @@ const QAPost = () => {
     ? Math.ceil(article.content.split(' ').length / 200) 
     : 0;
 
-  // Perform content quality checks
-  const qualityCheck = React.useMemo(() => 
-    article ? checkContentQuality(article) : null, 
-    [article]
-  );
-  
-  const voiceCheck = React.useMemo(() => 
-    article ? checkVoiceFriendly(article.content || '', article.title || '') : null,
-    [article]
-  );
 
   // Generate enhanced schemas for AI/LLM optimization
   const enhancedArticleSchema = React.useMemo(() => 
@@ -509,20 +497,6 @@ const QAPost = () => {
           </div>
         </section>
 
-        {/* Content Quality Indicator - Development Tool */}
-        {import.meta.env.DEV && qualityCheck && voiceCheck && !qualityCheck.isValid && (
-          <section className="py-6 bg-muted/20">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto">
-                <ContentQualityIndicator 
-                  qualityCheck={qualityCheck}
-                  voiceCheck={voiceCheck}
-                  readingTime={readingTime}
-                />
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* Funnel CTA Section with Lead Capture */}
         <section className="py-12 bg-muted/50 animate-fade-in animation-delay-500">
