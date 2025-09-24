@@ -108,6 +108,43 @@ const QAPost = () => {
     enabled: !!slug,
   });
 
+  // Fetch linked articles for the funnel flow
+  const { data: nextMofuArticle } = useQuery({
+    queryKey: ['next-mofu-article', article?.points_to_mofu_id],
+    queryFn: async () => {
+      if (!article?.points_to_mofu_id) return null;
+      
+      const { data, error } = await supabase
+        .from('qa_articles' as any)
+        .select('slug, title')
+        .eq('id', article.points_to_mofu_id)
+        .eq('language', i18n.language)
+        .single();
+        
+      if (error && error.code !== 'PGRST116') throw error;
+      return data as any;
+    },
+    enabled: !!article?.points_to_mofu_id,
+  });
+
+  const { data: nextBofuArticle } = useQuery({
+    queryKey: ['next-bofu-article', article?.points_to_bofu_id],
+    queryFn: async () => {
+      if (!article?.points_to_bofu_id) return null;
+      
+      const { data, error } = await supabase
+        .from('qa_articles' as any)
+        .select('slug, title')
+        .eq('id', article.points_to_bofu_id)
+        .eq('language', i18n.language)
+        .single();
+        
+      if (error && error.code !== 'PGRST116') throw error;
+      return data as any;
+    },
+    enabled: !!article?.points_to_bofu_id,
+  });
+
   // Enhanced author credentials with E-E-A-T signals
   const authorCredentials = React.useMemo(() => ({
     name: "Maria Rodriguez",
@@ -511,11 +548,13 @@ const QAPost = () => {
                     </p>
                   </div>
                   
-                  <BookingChatbot 
-                    stage={mapStageToUserFriendly(article.funnel_stage)}
-                    source={`qa-article-${article.slug}`}
-                    className="mb-6"
-                  />
+                  <div data-booking-chatbot>
+                    <BookingChatbot 
+                      stage={mapStageToUserFriendly(article.funnel_stage)}
+                      source={`qa-article-${article.slug}`}
+                      className="mb-6"
+                    />
+                  </div>
                 </div>
               )}
 
@@ -556,6 +595,9 @@ const QAPost = () => {
                 funnelStage={article.funnel_stage}
                 topic={article.topic}
                 city={article.city}
+                nextMofuArticle={nextMofuArticle}
+                nextBofuArticle={nextBofuArticle}
+                appointmentBookingEnabled={article.appointment_booking_enabled}
                 className="mb-6"
               />
               
