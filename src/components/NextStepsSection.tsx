@@ -36,11 +36,11 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
           };
         }
         return {
-          title: 'Explore Market Research',
-          description: 'Learn about property investment opportunities in Costa del Sol',
-          ctaText: 'View Research Guide',
-          ctaLink: '/qa',
-          icon: <Search className="w-5 h-5" />
+          title: 'Speak with Our Expert',
+          description: 'Get personalized guidance and book your property consultation',
+          ctaText: 'Book Your Consultation',
+          ctaLink: '#booking-chatbot',
+          icon: <PhoneCall className="w-5 h-5" />
         };
         
       case 'MOFU':
@@ -54,11 +54,11 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
           };
         }
         return {
-          title: 'Ready for Next Step',
-          description: 'Get ready to make your property investment decision',
-          ctaText: 'View Decision Guide',
-          ctaLink: '/qa',
-          icon: <ArrowRight className="w-5 h-5" />
+          title: 'Speak with Our Expert',
+          description: 'Get personalized guidance and book your property consultation',
+          ctaText: 'Book Your Consultation',
+          ctaLink: '#booking-chatbot',
+          icon: <PhoneCall className="w-5 h-5" />
         };
         
       case 'BOFU':
