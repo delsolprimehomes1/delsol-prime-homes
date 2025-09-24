@@ -41,8 +41,8 @@ export const QASearch = ({
 
   // Create topic clusters from actual data, sorted by count (descending)
   const topicClusters = [
-    { value: '', label: `All Topics (${totalCount})`, color: 'bg-muted text-foreground' },
-    ...Object.entries(topicCounts)
+    { value: '', label: `All Topics (${totalCount || 0})`, color: 'bg-muted text-foreground' },
+    ...Object.entries(topicCounts || {})
       .sort(([,a], [,b]) => b - a) // Sort by count descending
       .map(([topic, count]) => ({
         value: topic,
