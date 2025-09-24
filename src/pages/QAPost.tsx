@@ -605,6 +605,8 @@ const QAPost = () => {
                 currentStage={mapStageToUserFriendly(article.funnel_stage)}
                 nextStepUrl={article.next_step_url || undefined}
                 nextStepText={article.next_step_text || undefined}
+                nextMofuArticle={nextMofuArticle}
+                nextBofuArticle={nextBofuArticle}
               />
             </div>
           </div>

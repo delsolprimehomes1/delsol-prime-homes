@@ -10,12 +10,17 @@ interface FunnelNavigationProps {
   nextStepUrl?: string;
   nextStepText?: string;
   className?: string;
+  // Add linked article data
+  nextMofuArticle?: { slug: string; title: string } | null;
+  nextBofuArticle?: { slug: string; title: string } | null;
 }
 
 export function FunnelNavigation({ 
   currentStage, 
   nextStepUrl, 
   nextStepText,
+  nextMofuArticle,
+  nextBofuArticle,
   className = '' 
 }: FunnelNavigationProps) {
   const stageConfig = {
@@ -96,8 +101,29 @@ export function FunnelNavigation({
 
   const IconComponent = config.icon;
   
-  const finalNextStepUrl = nextStepUrl || config.nextDefault.url;
-  const finalNextStepText = nextStepText || config.nextDefault.text;
+  // Determine next step based on funnel stage and available links
+  let finalNextStepUrl = nextStepUrl;
+  let finalNextStepText = nextStepText;
+  
+  if (!finalNextStepUrl) {
+    if (currentStage === 'exploration' && nextMofuArticle) {
+      // TOFU article linking to specific MOFU article
+      finalNextStepUrl = `/qa/${nextMofuArticle.slug}`;
+      finalNextStepText = finalNextStepText || 'Continue to detailed guide';
+    } else if (currentStage === 'research' && nextBofuArticle) {
+      // MOFU article linking to specific BOFU article
+      finalNextStepUrl = `/qa/${nextBofuArticle.slug}`;
+      finalNextStepText = finalNextStepText || 'Ready to take action';
+    } else if (currentStage === 'decision') {
+      // BOFU articles should lead to booking
+      finalNextStepUrl = '/book-viewing';
+      finalNextStepText = finalNextStepText || 'Book consultation';
+    } else {
+      // Fallback to default behavior
+      finalNextStepUrl = config.nextDefault.url;
+      finalNextStepText = finalNextStepText || config.nextDefault.text;
+    }
+  }
 
   return (
     <Card className={`border-l-4 border-l-primary ${className}`}>
