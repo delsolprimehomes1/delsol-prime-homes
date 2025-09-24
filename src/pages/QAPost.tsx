@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, Calendar, Tag, Clock, Star, Shield, Award, CheckCircle } from 'lucide-react';
 import { processMarkdownContent } from '@/utils/markdown';
-import { trackEvent, trackFunnelProgression } from '@/utils/analytics';
+import { trackEvent, trackFunnelProgression, trackCTAClick } from '@/utils/analytics';
 import { generateQAArticleSchema, generateAIServiceSchema, generateSpeakableSchema, generateOpenGraphData, generateTwitterCardData, generateCanonicalAndHreflang } from '@/utils/schemas';
 import { generateEnhancedQAArticleSchema, generateAIEnhancedOrganizationSchema } from '@/utils/enhanced-schemas';
 import { AIOptimizedContent } from '@/components/AIOptimizedContent';
@@ -29,6 +29,9 @@ import { QuickAnswerSection } from '@/components/QuickAnswerSection';
 import { KeyTakeawaysSection } from '@/components/KeyTakeawaysSection';
 import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
 import { NextStepsSection } from '@/components/NextStepsSection';
+import { FunnelCTATracker } from '@/components/FunnelCTATracker';
+import { EnhancedFunnelProgress } from '@/components/EnhancedFunnelProgress';
+import { EnhancedBOFUConversion } from '@/components/EnhancedBOFUConversion';
 import { AIEnhancedContent } from '@/components/AIEnhancedContent';
 import { AIContentOptimizer } from '@/components/AIContentOptimizer';
 import EnhancedQAContent from '@/components/EnhancedQAContent';
@@ -241,6 +244,25 @@ const QAPost = () => {
     getEnhancedSpeakableSelectors(),
     []
   );
+
+  // Handle funnel CTA clicks with analytics
+  const handleFunnelCTAClick = (ctaType: string, destination: string) => {
+    trackCTAClick(ctaType, article?.funnel_stage || '', destination);
+    
+    // Track funnel progression if moving between stages
+    if (ctaType.includes('next_step') && article) {
+      const currentStage = article.funnel_stage;
+      let nextStage = '';
+      
+      if (currentStage === 'TOFU') nextStage = 'MOFU';
+      else if (currentStage === 'MOFU') nextStage = 'BOFU';
+      else if (currentStage === 'BOFU') nextStage = 'CONVERSION';
+      
+      if (nextStage) {
+        trackFunnelProgression(currentStage, nextStage, article.slug);
+      }
+    }
+  };
 
   // Track page view and inject AI meta tags
   React.useEffect(() => {
@@ -563,6 +585,25 @@ const QAPost = () => {
                   </div>
                 </div>
               </Card>
+              
+              {/* Enhanced Funnel Flow Components */}
+              <div className="space-y-6 mb-8">
+                {/* BOFU Backlink CTA */}
+                <FunnelCTATracker 
+                  funnelStage={article.funnel_stage}
+                  currentSlug={article.slug}
+                  topic={article.topic}
+                />
+                
+                {/* Enhanced Funnel Progress */}
+                <EnhancedFunnelProgress 
+                  currentStage={article.funnel_stage as 'TOFU' | 'MOFU' | 'BOFU'}
+                  topic={article.topic}
+                  totalArticlesInTopic={recommendations.filter(r => r.topic === article.topic).length + 1}
+                  currentPosition={1}
+                  estimatedTimeToConversion={article.funnel_stage === 'TOFU' ? 15 : article.funnel_stage === 'MOFU' ? 8 : 3}
+                />
+              </div>
               
               {/* Next Steps Section */}
               <NextStepsSection 

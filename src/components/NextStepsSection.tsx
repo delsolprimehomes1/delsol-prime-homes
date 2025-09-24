@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, MessageCircle, BookOpen, Search, PhoneCall } from 'lucide-react';
+import { trackCTAClick } from '@/utils/analytics';
 
 interface NextStepsSectionProps {
   funnelStage: string;
@@ -27,45 +28,51 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
     switch (funnelStage) {
       case 'TOFU':
         if (nextMofuArticle) {
+          const previewText = nextMofuArticle.title.length > 60 
+            ? nextMofuArticle.title.substring(0, 57) + '...' 
+            : nextMofuArticle.title;
           return {
-            title: 'Continue Learning',
-            description: `Dive deeper into ${topic} with our expert research guide`,
-            ctaText: 'Continue to Next Step',
+            title: 'Deep Dive Research',
+            description: `Next: ${previewText}`,
+            ctaText: `Explore ${topic} research guide →`,
             ctaLink: `/qa/${nextMofuArticle.slug}`,
-            icon: <BookOpen className="w-5 h-5" />
+            icon: <Search className="w-5 h-5" />
           };
         }
         return {
-          title: 'Speak with Our Expert',
-          description: 'Get personalized guidance and book your property consultation',
-          ctaText: 'Book Your Consultation',
-          ctaLink: '#booking-chatbot',
-          icon: <PhoneCall className="w-5 h-5" />
+          title: 'Ready to Research?',
+          description: 'Explore detailed guides and expert insights for your property journey',
+          ctaText: 'Explore detailed guides →',
+          ctaLink: '/qa?stage=research',
+          icon: <BookOpen className="w-5 h-5" />
         };
         
       case 'MOFU':
         if (nextBofuArticle) {
+          const previewText = nextBofuArticle.title.length > 50 
+            ? nextBofuArticle.title.substring(0, 47) + '...' 
+            : nextBofuArticle.title;
           return {
-            title: 'Ready to Take Action?',
-            description: `Get decision-ready with our ${topic} action guide`,
-            ctaText: 'Ready to Take Action',
+            title: 'Final Decision Steps',
+            description: `Ready to act: ${previewText}`,
+            ctaText: 'What to confirm before buying →',
             ctaLink: `/qa/${nextBofuArticle.slug}`,
             icon: <ArrowRight className="w-5 h-5" />
           };
         }
         return {
-          title: 'Speak with Our Expert',
-          description: 'Get personalized guidance and book your property consultation',
-          ctaText: 'Book Your Consultation',
-          ctaLink: '#booking-chatbot',
-          icon: <PhoneCall className="w-5 h-5" />
+          title: 'Ready for Action?',
+          description: 'Get decision-ready with expert action guides and final confirmations',
+          ctaText: 'View action guides →',
+          ctaLink: '/qa?stage=decision',
+          icon: <ArrowRight className="w-5 h-5" />
         };
         
       case 'BOFU':
         return {
-          title: 'Speak with Our Expert',
-          description: 'Get personalized guidance and book your property consultation',
-          ctaText: 'Book Your Consultation',
+          title: 'Your Dream Home is Waiting',
+          description: 'Schedule your consultation now — our experts are ready to help you secure your perfect property',
+          ctaText: 'Book consultation now →',
           ctaLink: '#booking-chatbot',
           icon: <PhoneCall className="w-5 h-5" />
         };
@@ -114,7 +121,17 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
               variant="default"
               size="sm"
               className="transition-all duration-200 hover:scale-105"
-              onClick={nextStep.ctaLink === '#booking-chatbot' ? handleClick : undefined}
+              onClick={() => {
+                if (nextStep.ctaLink === '#booking-chatbot') {
+                  handleClick();
+                } else {
+                  // Track funnel CTA click for navigation
+                  const ctaType = funnelStage === 'TOFU' ? 'tofu_next_step' : 
+                                 funnelStage === 'MOFU' ? 'mofu_next_step' : 'bofu_conversion';
+                  
+                  trackCTAClick(ctaType, nextStep.ctaText, nextStep.ctaLink);
+                }
+              }}
             >
               {nextStep.ctaLink === '#booking-chatbot' ? (
                 <>

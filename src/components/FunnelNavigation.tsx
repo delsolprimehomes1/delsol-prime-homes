@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, MessageSquare, FileText, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { trackCTAClick, trackFunnelProgression } from '@/utils/analytics';
 
 interface FunnelNavigationProps {
   currentStage: 'exploration' | 'research' | 'decision';
@@ -107,23 +108,51 @@ export function FunnelNavigation({
   
   if (!finalNextStepUrl) {
     if (currentStage === 'exploration' && nextMofuArticle) {
-      // TOFU article linking to specific MOFU article
+      // TOFU article linking to specific MOFU article with compelling preview
       finalNextStepUrl = `/qa/${nextMofuArticle.slug}`;
-      finalNextStepText = finalNextStepText || 'Continue to detailed guide';
+      const previewTitle = nextMofuArticle.title.length > 40 
+        ? nextMofuArticle.title.substring(0, 37) + '...' 
+        : nextMofuArticle.title;
+      finalNextStepText = finalNextStepText || `Next: ${previewTitle} →`;
     } else if (currentStage === 'research' && nextBofuArticle) {
-      // MOFU article linking to specific BOFU article
+      // MOFU article linking to specific BOFU article with action-focused copy
       finalNextStepUrl = `/qa/${nextBofuArticle.slug}`;
-      finalNextStepText = finalNextStepText || 'Ready to take action';
+      const actionTitle = nextBofuArticle.title.includes('buy') || nextBofuArticle.title.includes('purchase')
+        ? 'Final steps before buying →'
+        : 'What to confirm before investing →';
+      finalNextStepText = finalNextStepText || actionTitle;
     } else if (currentStage === 'decision') {
-      // BOFU articles should lead to booking
+      // BOFU articles should lead to booking with urgency
       finalNextStepUrl = '/book-viewing';
-      finalNextStepText = finalNextStepText || 'Book consultation';
+      finalNextStepText = finalNextStepText || 'Your dream home awaits — book now →';
     } else {
-      // Fallback to default behavior
+      // Enhanced fallback behavior with stronger CTAs
       finalNextStepUrl = config.nextDefault.url;
-      finalNextStepText = finalNextStepText || config.nextDefault.text;
+      const enhancedDefault = currentStage === 'exploration' 
+        ? 'Explore expert research guides →'
+        : currentStage === 'research'
+        ? 'Ready to take action? →'
+        : 'Schedule your consultation →';
+      finalNextStepText = finalNextStepText || enhancedDefault;
     }
   }
+
+  const handleCTAClick = () => {
+    // Track CTA click with funnel progression analytics
+    const ctaType = currentStage === 'exploration' ? 'tofu_navigation' : 
+                   currentStage === 'research' ? 'mofu_navigation' : 'bofu_navigation';
+    
+    trackCTAClick(ctaType, finalNextStepText, finalNextStepUrl);
+    
+    // Track funnel progression if moving between stages
+    if (currentStage === 'exploration' && nextMofuArticle) {
+      trackFunnelProgression('TOFU', 'MOFU', nextMofuArticle.slug);
+    } else if (currentStage === 'research' && nextBofuArticle) {
+      trackFunnelProgression('MOFU', 'BOFU', nextBofuArticle.slug);
+    } else if (currentStage === 'decision') {
+      trackFunnelProgression('BOFU', 'CONVERSION', finalNextStepUrl);
+    }
+  };
 
   return (
     <Card className={`border-l-4 border-l-primary ${className}`}>
@@ -141,8 +170,12 @@ export function FunnelNavigation({
             </span>
           </div>
           
-          <Button asChild variant="default" className="group">
-            <Link to={finalNextStepUrl} className="flex items-center gap-2">
+            <Button asChild variant="default" className="group">
+              <Link 
+                to={finalNextStepUrl} 
+                className="flex items-center gap-2"
+                onClick={handleCTAClick}
+              >
               {finalNextStepText}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
