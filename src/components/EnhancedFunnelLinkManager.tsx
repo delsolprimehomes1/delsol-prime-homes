@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Link, Search, Filter, Eye, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowRight, Link, Search, Filter, Eye, Zap, AlertTriangle, CheckCircle, X, CheckCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FunnelJourneyPreview } from './FunnelJourneyPreview';
@@ -35,6 +35,13 @@ interface SmartSuggestion {
   reason: string;
 }
 
+interface RejectedSuggestion {
+  sourceId: string;
+  targetId: string;
+  rejectedAt: number;
+  rejectedBy: string;
+}
+
 export const EnhancedFunnelLinkManager: React.FC = () => {
   const [articles, setArticles] = useState<EnhancedArticle[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<EnhancedArticle[]>([]);
@@ -44,8 +51,10 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [topics, setTopics] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<Map<string, SmartSuggestion[]>>(new Map());
+  const [rejectedSuggestions, setRejectedSuggestions] = useState<RejectedSuggestion[]>([]);
   const [previewArticle, setPreviewArticle] = useState<EnhancedArticle | null>(null);
   const [editingCTA, setEditingCTA] = useState<EnhancedArticle | null>(null);
+  const [bulkApplying, setBulkApplying] = useState(false);
 
   const fetchArticles = async () => {
     try {
@@ -178,8 +187,89 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
     await linkArticles(sourceId, suggestion.targetId, linkType, `Auto-applied: ${suggestion.reason}`);
   };
 
+  const rejectSuggestion = (sourceId: string, targetId: string) => {
+    const newRejection: RejectedSuggestion = {
+      sourceId,
+      targetId,
+      rejectedAt: Date.now(),
+      rejectedBy: 'admin' // In a real app, this would be the current user ID
+    };
+
+    const updatedRejections = [...rejectedSuggestions, newRejection];
+    setRejectedSuggestions(updatedRejections);
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('rejectedSuggestions', JSON.stringify(updatedRejections));
+    
+    toast.success('Suggestion rejected');
+  };
+
+  const isRejected = (sourceId: string, targetId: string): boolean => {
+    return rejectedSuggestions.some(r => r.sourceId === sourceId && r.targetId === targetId);
+  };
+
+  const applyAllHighConfidence = async () => {
+    setBulkApplying(true);
+    let appliedCount = 0;
+    
+    try {
+      for (const [sourceId, articleSuggestions] of suggestions.entries()) {
+        const article = articles.find(a => a.id === sourceId);
+        if (!article) continue;
+
+        const highConfidenceSuggestions = articleSuggestions.filter(
+          s => s.confidence >= 90 && !isRejected(sourceId, s.targetId)
+        );
+
+        if (highConfidenceSuggestions.length > 0) {
+          const topSuggestion = highConfidenceSuggestions[0];
+          const linkType = article.funnel_stage === 'TOFU' ? 'mofu' : 'bofu';
+          
+          await linkArticles(
+            sourceId, 
+            topSuggestion.targetId, 
+            linkType, 
+            `Bulk auto-applied: ${topSuggestion.reason}`
+          );
+          appliedCount++;
+        }
+      }
+
+      toast.success(`Successfully applied ${appliedCount} high-confidence suggestions`);
+      fetchArticles(); // Refresh to show updated links
+    } catch (error) {
+      console.error('Error in bulk apply:', error);
+      toast.error('Failed to apply some suggestions');
+    } finally {
+      setBulkApplying(false);
+    }
+  };
+
+  const getFilteredSuggestions = (sourceId: string, suggestions: SmartSuggestion[]): SmartSuggestion[] => {
+    return suggestions.filter(s => !isRejected(sourceId, s.targetId));
+  };
+
+  const getHighConfidenceCount = (): number => {
+    let count = 0;
+    for (const [sourceId, articleSuggestions] of suggestions.entries()) {
+      const filteredSuggestions = getFilteredSuggestions(sourceId, articleSuggestions);
+      count += filteredSuggestions.filter(s => s.confidence >= 90).length;
+    }
+    return count;
+  };
+
   useEffect(() => {
     fetchArticles();
+    
+    // Load rejected suggestions from localStorage
+    const saved = localStorage.getItem('rejectedSuggestions');
+    if (saved) {
+      try {
+        setRejectedSuggestions(JSON.parse(saved));
+      } catch (error) {
+        console.error('Error loading rejected suggestions:', error);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -289,9 +379,23 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
               </SelectContent>
             </Select>
 
-            <Badge variant="outline" className="justify-center">
-              {filteredArticles.length} Articles
-            </Badge>
+            <div className="flex gap-2">
+              <Badge variant="outline" className="justify-center">
+                {filteredArticles.length} Articles
+              </Badge>
+              {getHighConfidenceCount() > 0 && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={applyAllHighConfidence}
+                  disabled={bulkApplying}
+                  className="flex items-center gap-1"
+                >
+                  <CheckCheck className="w-4 h-4" />
+                  {bulkApplying ? 'Applying...' : `Apply ${getHighConfidenceCount()} High Confidence`}
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -301,7 +405,8 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
         {filteredArticles.map((article) => {
           const linkedArticle = getLinkedArticle(article);
           const targetArticles = getTargetArticles(article.funnel_stage, article.topic);
-          const articleSuggestions = suggestions.get(article.id) || [];
+          const allSuggestions = suggestions.get(article.id) || [];
+          const articleSuggestions = getFilteredSuggestions(article.id, allSuggestions);
           const alignmentColor = getTopicAlignmentColor(article);
           
           return (
@@ -437,29 +542,53 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
                         {/* Smart Suggestions */}
                         {articleSuggestions.length > 0 && (
                           <div className="bg-blue-50 p-3 rounded-lg">
-                            <div className="text-sm font-medium text-blue-800 mb-2 flex items-center gap-1">
-                              <Zap className="w-4 h-4" />
-                              Smart Suggestions
+                            <div className="text-sm font-medium text-blue-800 mb-2 flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <Zap className="w-4 h-4" />
+                                Smart Suggestions
+                              </div>
+                              {articleSuggestions.filter(s => s.confidence >= 90).length > 0 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {articleSuggestions.filter(s => s.confidence >= 90).length} High Confidence
+                                </Badge>
+                              )}
                             </div>
                             <div className="space-y-1">
                               {articleSuggestions.map((suggestion, idx) => (
                                 <div key={idx} className="flex items-center justify-between text-xs">
                                   <div className="flex-1">
                                     <div className="font-medium">{suggestion.title.substring(0, 30)}...</div>
-                                    <div className="text-blue-600">{suggestion.reason} ({suggestion.confidence}%)</div>
+                                    <div className="text-blue-600 flex items-center gap-1">
+                                      {suggestion.reason} ({suggestion.confidence}%)
+                                      {suggestion.confidence >= 90 && (
+                                        <Badge variant="default" className="text-xs px-1 py-0">
+                                          High
+                                        </Badge>
+                                      )}
+                                    </div>
                                   </div>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-6 px-2 text-xs"
-                                    onClick={() => applySuggestion(
-                                      article.id, 
-                                      suggestion, 
-                                      article.funnel_stage === 'TOFU' ? 'mofu' : 'bofu'
-                                    )}
-                                  >
-                                    Apply
-                                  </Button>
+                                  <div className="flex gap-1">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-6 px-2 text-xs"
+                                      onClick={() => applySuggestion(
+                                        article.id, 
+                                        suggestion, 
+                                        article.funnel_stage === 'TOFU' ? 'mofu' : 'bofu'
+                                      )}
+                                    >
+                                      Apply
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                      onClick={() => rejectSuggestion(article.id, suggestion.targetId)}
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </Button>
+                                  </div>
                                 </div>
                               ))}
                             </div>
