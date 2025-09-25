@@ -7,6 +7,12 @@ export function processMarkdownContent(content: string): string {
 
   let processed = content;
 
+  // Remove AI citation artifacts
+  processed = processed.replace(/:contentReference\[oaicite:\d+\]\{index=\d+\}/g, '');
+  
+  // Fix malformed markdown at start of content (e.g., "Málaga**:" -> "**Málaga**:")
+  processed = processed.replace(/^([^*]+)\*\*:/gm, '**$1**:');
+
   // Convert headers (order matters: longest patterns first)
   // Convert #### headers (h4)
   processed = processed.replace(/#### \*\*(.*?)\*\*/g, '<h4 class="text-lg font-semibold mb-3 mt-6 text-foreground">$1</h4>');
