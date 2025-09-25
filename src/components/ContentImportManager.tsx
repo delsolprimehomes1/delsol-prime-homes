@@ -35,6 +35,21 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
   const [topicAnalysis, setTopicAnalysis] = useState<TopicAnalysis[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
+  // Bottleneck fixing states
+  const [isFixing, setIsFixing] = useState(false);
+  const [fixResults, setFixResults] = useState<{
+    articlesCreated: number;
+    linksRebalanced: number;
+    errors: string[];
+    newArticles: Array<{ id: string; title: string; topic: string; stage: string; }>;
+  } | null>(null);
+  const [showFixPreview, setShowFixPreview] = useState(false);
+  const [fixPreview, setFixPreview] = useState<{
+    articlesToCreate: Array<{ title: string; topic: string; stage: string; }>;
+    linksToUpdate: Array<{ sourceTitle: string; newTarget: string; }>;
+    summary: string;
+  } | null>(null);
+  
   const { toast } = useToast();
 
   const handleAnalyzeFunnel = async () => {
@@ -60,6 +75,74 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       });
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handlePreviewFix = async () => {
+    if (bottlenecks.length === 0) {
+      toast({
+        title: "No Bottlenecks",
+        description: "Run analysis first to detect bottlenecks before fixing.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const preview = await SmartLinkingEngine.previewBottleneckFixes(bottlenecks);
+      setFixPreview(preview);
+      setShowFixPreview(true);
+      
+      toast({
+        title: "Preview Ready",
+        description: preview.summary,
+      });
+    } catch (error) {
+      toast({
+        title: "Preview Failed",
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleFixBottlenecks = async () => {
+    if (bottlenecks.length === 0) {
+      toast({
+        title: "No Bottlenecks",
+        description: "Run analysis first to detect bottlenecks before fixing.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsFixing(true);
+    setFixResults(null);
+
+    try {
+      const results = await SmartLinkingEngine.fixBottlenecks(bottlenecks, 'en');
+      setFixResults(results);
+      
+      // Re-run analysis to show updated state
+      await handleAnalyzeFunnel();
+      
+      toast({
+        title: "Bottlenecks Fixed",
+        description: `Created ${results.articlesCreated} articles, rebalanced ${results.linksRebalanced} links`,
+        variant: results.errors.length > 0 ? "destructive" : "default"
+      });
+
+      if (onImportComplete) {
+        onImportComplete();
+      }
+    } catch (error) {
+      toast({
+        title: "Fix Failed",
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: "destructive"
+      });
+    } finally {
+      setIsFixing(false);
     }
   };
 
@@ -338,23 +421,53 @@ Always ask the developer about the available internet infrastructure during your
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button 
-                onClick={handleAnalyzeFunnel}
-                disabled={isAnalyzing}
-                className="w-full"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Analyze Current Funnel
-                  </>
+              <div className="space-y-2">
+                <Button 
+                  onClick={handleAnalyzeFunnel}
+                  disabled={isAnalyzing}
+                  className="w-full"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Analyze Current Funnel
+                    </>
+                  )}
+                </Button>
+
+                {bottlenecks.length > 0 && (
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handlePreviewFix}
+                      disabled={isFixing}
+                      variant="secondary"
+                      className="flex-1"
+                    >
+                      Preview Fix
+                    </Button>
+                    <Button 
+                      onClick={handleFixBottlenecks}
+                      disabled={isFixing}
+                      variant="default"
+                      className="flex-1"
+                    >
+                      {isFixing ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Fixing...
+                        </>
+                      ) : (
+                        'Fix Bottlenecks'
+                      )}
+                    </Button>
+                  </div>
                 )}
-              </Button>
+              </div>
 
               {bottlenecks.length > 0 && (
                 <div className="space-y-4">
@@ -377,6 +490,70 @@ Always ask the developer about the available internet infrastructure during your
                     </Alert>
                   ))}
                 </div>
+              )}
+
+              {/* Fix Preview Modal */}
+              {showFixPreview && fixPreview && (
+                <div className="space-y-4">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      <div className="space-y-2">
+                        <strong>Fix Preview:</strong>
+                        <div>{fixPreview.summary}</div>
+                        <div className="text-xs">
+                          This will create new articles and redistribute links to resolve bottlenecks.
+                        </div>
+                        <div className="flex gap-2 mt-2">
+                          <Button size="sm" onClick={() => setShowFixPreview(false)} variant="secondary">
+                            Cancel
+                          </Button>
+                          <Button size="sm" onClick={handleFixBottlenecks}>
+                            Apply Fix
+                          </Button>
+                        </div>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+
+                  {fixPreview.articlesToCreate.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">Articles to Create:</h4>
+                      {fixPreview.articlesToCreate.map((article, index) => (
+                        <div key={index} className="text-sm bg-green-50 p-2 rounded">
+                          <strong>{article.stage}:</strong> {article.title}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Fix Results */}
+              {fixResults && (
+                <Alert>
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <strong>Bottleneck Fix Complete:</strong>
+                      <ul className="text-sm space-y-1">
+                        <li>✅ Created {fixResults.articlesCreated} new articles</li>
+                        <li>🔄 Rebalanced {fixResults.linksRebalanced} article links</li>
+                        {fixResults.errors.length > 0 && (
+                          <li className="text-red-600">⚠️ {fixResults.errors.length} errors occurred</li>
+                        )}
+                      </ul>
+                      {fixResults.newArticles.length > 0 && (
+                        <div className="text-xs mt-2">
+                          <strong>New Articles:</strong>
+                          {fixResults.newArticles.map((article, index) => (
+                            <div key={index}>{article.stage}: {article.title}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </AlertDescription>
+                </Alert>
               )}
 
               {topicAnalysis.length > 0 && (

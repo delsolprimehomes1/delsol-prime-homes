@@ -314,6 +314,183 @@ export class SmartLinkingEngine {
   }
 
   /**
+   * Automated bottleneck fixing system
+   */
+  static async fixBottlenecks(
+    bottlenecks: Array<{
+      type: 'TOFU_TO_MOFU' | 'MOFU_TO_BOFU';
+      targetArticle: { id: string; title: string; topic: string; funnel_stage: string; };
+      sourceCount: number;
+      sourceArticles: Array<{ id: string; title: string; topic: string; }>;
+    }>,
+    language: string = 'en'
+  ): Promise<{
+    articlesCreated: number;
+    linksRebalanced: number;
+    errors: string[];
+    newArticles: Array<{ id: string; title: string; topic: string; stage: string; }>;
+  }> {
+    const results = {
+      articlesCreated: 0,
+      linksRebalanced: 0,
+      errors: [],
+      newArticles: [] as Array<{ id: string; title: string; topic: string; stage: string; }>
+    };
+
+    for (const bottleneck of bottlenecks) {
+      try {
+        // Step 1: Create 2-3 topic-specific articles to distribute the load
+        const targetStage = bottleneck.type === 'TOFU_TO_MOFU' ? 'MOFU' : 'BOFU';
+        const topicsToCreate = this.identifyTopicsForNewArticles(bottleneck.sourceArticles);
+        
+        const createdArticles = [];
+        for (const topicVariant of topicsToCreate) {
+          try {
+            const newArticleId = await this.autoCreateMissingArticles(topicVariant.topic, targetStage, language);
+            createdArticles.push({
+              id: newArticleId,
+              title: await this.generateNewArticleTitle(topicVariant.topic, targetStage),
+              topic: topicVariant.topic,
+              stage: targetStage
+            });
+            results.articlesCreated++;
+          } catch (error) {
+            results.errors.push(`Failed to create ${targetStage} article for ${topicVariant.topic}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        }
+
+        results.newArticles.push(...createdArticles);
+
+        // Step 2: Intelligently redistribute source articles
+        if (createdArticles.length > 0) {
+          const redistributionCount = await this.redistributeArticles(
+            bottleneck.sourceArticles,
+            [...createdArticles.map(a => ({ id: a.id, topic: a.topic })), 
+             { id: bottleneck.targetArticle.id, topic: bottleneck.targetArticle.topic }],
+            bottleneck.type
+          );
+          results.linksRebalanced += redistributionCount;
+        }
+      } catch (error) {
+        results.errors.push(`Failed to fix bottleneck for ${bottleneck.targetArticle.title}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Identify what topic-specific articles to create based on source articles
+   */
+  private static identifyTopicsForNewArticles(
+    sourceArticles: Array<{ id: string; title: string; topic: string; }>
+  ): Array<{ topic: string; count: number; }> {
+    // Group source articles by topic
+    const topicGroups = new Map<string, number>();
+    sourceArticles.forEach(article => {
+      topicGroups.set(article.topic, (topicGroups.get(article.topic) || 0) + 1);
+    });
+
+    // Return topics that have more than 2 articles
+    return Array.from(topicGroups.entries())
+      .filter(([, count]) => count > 2)
+      .map(([topic, count]) => ({ topic, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3); // Create max 3 new articles per bottleneck
+  }
+
+  /**
+   * Redistribute source articles to new target articles
+   */
+  private static async redistributeArticles(
+    sourceArticles: Array<{ id: string; title: string; topic: string; }>,
+    targetArticles: Array<{ id: string; topic: string; }>,
+    bottleneckType: 'TOFU_TO_MOFU' | 'MOFU_TO_BOFU'
+  ): Promise<number> {
+    let redistributionCount = 0;
+
+    for (const sourceArticle of sourceArticles) {
+      // Find best matching target article based on topic
+      const bestTarget = targetArticles.find(target => target.topic === sourceArticle.topic) 
+        || targetArticles[0]; // Fallback to first target
+
+      if (bestTarget) {
+        try {
+          const updateField = bottleneckType === 'TOFU_TO_MOFU' ? 'points_to_mofu_id' : 'points_to_bofu_id';
+          
+          const { error } = await supabase
+            .from('qa_articles')
+            .update({ [updateField]: bestTarget.id })
+            .eq('id', sourceArticle.id);
+
+          if (!error) {
+            redistributionCount++;
+          }
+        } catch (error) {
+          console.error(`Failed to redistribute article ${sourceArticle.title}:`, error);
+        }
+      }
+    }
+
+    return redistributionCount;
+  }
+
+  /**
+   * Preview what would be created/changed before applying fixes
+   */
+  static async previewBottleneckFixes(
+    bottlenecks: Array<{
+      type: 'TOFU_TO_MOFU' | 'MOFU_TO_BOFU';
+      targetArticle: { id: string; title: string; topic: string; funnel_stage: string; };
+      sourceCount: number;
+      sourceArticles: Array<{ id: string; title: string; topic: string; }>;
+    }>
+  ): Promise<{
+    articlesToCreate: Array<{ title: string; topic: string; stage: string; }>;
+    linksToUpdate: Array<{ sourceTitle: string; newTarget: string; }>;
+    summary: string;
+  }> {
+    const articlesToCreate = [];
+    const linksToUpdate = [];
+
+    for (const bottleneck of bottlenecks) {
+      const targetStage = bottleneck.type === 'TOFU_TO_MOFU' ? 'MOFU' : 'BOFU';
+      const topicsToCreate = this.identifyTopicsForNewArticles(bottleneck.sourceArticles);
+      
+      for (const topicVariant of topicsToCreate) {
+        articlesToCreate.push({
+          title: await this.generateNewArticleTitle(topicVariant.topic, targetStage),
+          topic: topicVariant.topic,
+          stage: targetStage
+        });
+      }
+
+      // Simulate redistribution
+      const topicGroups = new Map<string, string[]>();
+      bottleneck.sourceArticles.forEach(article => {
+        if (!topicGroups.has(article.topic)) {
+          topicGroups.set(article.topic, []);
+        }
+        topicGroups.get(article.topic)?.push(article.title);
+      });
+
+      for (const [topic, articles] of topicGroups) {
+        const newTarget = articlesToCreate.find(a => a.topic === topic)?.title || 'Existing article';
+        articles.forEach(articleTitle => {
+          linksToUpdate.push({
+            sourceTitle: articleTitle,
+            newTarget
+          });
+        });
+      }
+    }
+
+    const summary = `Will create ${articlesToCreate.length} new articles and rebalance ${linksToUpdate.length} links across ${bottlenecks.length} bottlenecks`;
+
+    return { articlesToCreate, linksToUpdate, summary };
+  }
+
+  /**
    * Generate relevant tags for topic
    */
   private static generateTopicTags(topic: string): string[] {
