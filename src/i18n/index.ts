@@ -16,6 +16,7 @@ export const languageConfig = {
   da: { name: 'Dansk', flag: '🇩🇰' },
 };
 
+// Initialize i18n synchronously to avoid React hook errors
 i18n
   .use(Backend)
   .use(LanguageDetector)
@@ -43,7 +44,15 @@ i18n
       addPath: '/locales/add/{{lng}}/{{ns}}',
     },
 
-    resources: {},
+    resources: {
+      en: { common: {} },
+      nl: { common: {} },
+      fr: { common: {} },
+      de: { common: {} },
+      pl: { common: {} },
+      sv: { common: {} },
+      da: { common: {} },
+    },
     ns: ['common'],
     defaultNS: 'common',
     
