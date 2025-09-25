@@ -6,8 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Upload, CheckCircle, AlertCircle, Loader2, BarChart3, AlertTriangle, Link2 } from 'lucide-react';
 import { ContentProcessor, type ContentBatch } from '@/utils/content-processor';
+import { FunnelAnalyzer, type FunnelBottleneck, type TopicAnalysis, type DuplicateCandidate } from '@/utils/funnel-analyzer';
+import { SmartLinkingEngine, type SmartLinkingSuggestion } from '@/utils/smart-linking';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImportManagerProps {
@@ -23,10 +26,44 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     success: number;
     failed: number;
     errors: string[];
+    duplicates: DuplicateCandidate[];
+    linkingSuggestions: SmartLinkingSuggestion[];
   } | null>(null);
+  
+  // Analysis states
+  const [bottlenecks, setBottlenecks] = useState<FunnelBottleneck[]>([]);
+  const [topicAnalysis, setTopicAnalysis] = useState<TopicAnalysis[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
   const { toast } = useToast();
 
-  const handleImport = async () => {
+  const handleAnalyzeFunnel = async () => {
+    setIsAnalyzing(true);
+    try {
+      const [bottleneckData, topicData] = await Promise.all([
+        FunnelAnalyzer.analyzeFunnelBottlenecks('en'),
+        FunnelAnalyzer.analyzeTopicDistribution('en')
+      ]);
+      
+      setBottlenecks(bottleneckData);
+      setTopicAnalysis(topicData);
+      
+      toast({
+        title: "Analysis Complete",
+        description: `Found ${bottleneckData.length} bottlenecks across ${topicData.length} topics`,
+      });
+    } catch (error) {
+      toast({
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleSmartImport = async () => {
     if (!batchName.trim() || !content.trim()) {
       toast({
         title: "Missing Information",
@@ -41,18 +78,16 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     setResults(null);
 
     try {
-      // Detect format and split content into individual question blocks
+      // Step 1: Parse content
       const isNewFormat = content.includes('## **') && content.includes('SEO-fields');
       
       let questionBlocks: string[];
       
       if (isNewFormat) {
-        // Split by numbered stage headers like "## **1. TOFU**"
         questionBlocks = content
           .split(/(?=##\s*\*\*\d+\.\s*(?:TOFU|MOFU|BOFU))/)
           .filter(block => block.trim().length > 0);
       } else {
-        // Legacy format - split by frontmatter blocks
         questionBlocks = content
           .split(/(?=```\s*title:)/)
           .filter(block => block.trim().length > 0);
@@ -64,20 +99,36 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
 
       const questions = [];
       const errors = [];
+      const duplicates: DuplicateCandidate[] = [];
       let successCount = 0;
 
-      // Parse each question block
+      setProgress(10);
+
+      // Step 2: Parse and analyze for duplicates
       for (let i = 0; i < questionBlocks.length; i++) {
         try {
           let question;
           if (isNewFormat) {
-            question = ContentProcessor.parseNewFormatBlock(questionBlocks[i], 'en'); // Default to English for now
+            question = ContentProcessor.parseNewFormatBlock(questionBlocks[i], 'en');
           } else {
             question = ContentProcessor.parseContentBlock(questionBlocks[i]);
           }
+          
+          // Check for duplicates
+          const dupsForQuestion = await FunnelAnalyzer.findDuplicateCandidates(
+            question.title,
+            ContentProcessor.generateTopic(question),
+            question.funnelStage,
+            'en'
+          );
+          
+          if (dupsForQuestion.length > 0) {
+            duplicates.push(...dupsForQuestion);
+          }
+          
           questions.push(question);
           successCount++;
-          setProgress(((i + 1) / questionBlocks.length) * 50); // First 50% for parsing
+          setProgress(10 + ((i + 1) / questionBlocks.length) * 30);
         } catch (error) {
           errors.push(`Block ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
@@ -87,24 +138,59 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
         throw new Error('No valid questions could be parsed from the content');
       }
 
-      // Create batch and import
+      setProgress(50);
+
+      // Step 3: Analyze linking strategy
+      const linkingAnalysis = await SmartLinkingEngine.analyzeBatchLinkingStrategy(
+        questions.map(q => ({
+          title: q.title,
+          topic: ContentProcessor.generateTopic(q),
+          funnelStage: q.funnelStage
+        })),
+        'en'
+      );
+
+      if (linkingAnalysis.warnings.length > 0) {
+        toast({
+          title: "Bottleneck Warning",
+          description: `This import may create ${linkingAnalysis.warnings.length} funnel bottlenecks. Check analysis tab for details.`,
+          variant: "destructive"
+        });
+      }
+
+      setProgress(70);
+
+      // Step 4: Enhanced import with smart linking
       const batch: ContentBatch = {
         batchName,
         questions
       };
 
-      await ContentProcessor.processBatch(batch);
+      await ContentProcessor.processEnhancedBatch(batch);
+      setProgress(90);
+
+      // Step 5: Generate linking suggestions
+      const linkingSuggestions: SmartLinkingSuggestion[] = [];
+      for (const question of questions) {
+        if (question.funnelStage !== 'BOFU') {
+          // This would be implemented to get the article ID after import
+          // For now, we'll skip this step in the demo
+        }
+      }
+
       setProgress(100);
 
       setResults({
         success: successCount,
         failed: errors.length,
-        errors
+        errors,
+        duplicates,
+        linkingSuggestions
       });
 
       toast({
-        title: "Import Complete",
-        description: `Successfully imported ${successCount} questions. ${errors.length > 0 ? `${errors.length} failed.` : ''}`,
+        title: "Smart Import Complete",
+        description: `Imported ${successCount} articles with ${duplicates.length} potential duplicates detected`,
         variant: successCount > 0 ? "default" : "destructive"
       });
 
@@ -127,7 +213,9 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       setResults({
         success: 0,
         failed: 1,
-        errors: [error instanceof Error ? error.message : 'Unknown error']
+        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        duplicates: [],
+        linkingSuggestions: []
       });
     } finally {
       setIsProcessing(false);
@@ -161,68 +249,207 @@ Always ask the developer about the available internet infrastructure during your
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Content Import Manager
-          </CardTitle>
-          <CardDescription>
-            Import structured QA content blocks to populate the multilingual knowledge base
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Batch Name</label>
-            <Input
-              placeholder="e.g., TOFU Batch 1 - Property Basics"
-              value={batchName}
-              onChange={(e) => setBatchName(e.target.value)}
-              disabled={isProcessing}
-            />
-          </div>
+      <Tabs defaultValue="import" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="import">Smart Import</TabsTrigger>
+          <TabsTrigger value="analysis">Funnel Analysis</TabsTrigger>
+          <TabsTrigger value="linking">Link Management</TabsTrigger>
+        </TabsList>
 
-          <div>
-            <label className="text-sm font-medium mb-2 block">Content Blocks</label>
-            <Textarea
-              placeholder={`Paste your structured content blocks here...\n\nExample format:\n${exampleContent}`}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              disabled={isProcessing}
-              rows={15}
-              className="font-mono text-sm"
-            />
-          </div>
-
-          {isProcessing && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">Processing content...</span>
+        <TabsContent value="import" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                Enhanced Content Import Manager
+              </CardTitle>
+              <CardDescription>
+                Import content with smart duplicate detection, bottleneck prevention, and topic-aware linking
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Batch Name</label>
+                <Input
+                  placeholder="e.g., Education Topic - Schools & International Programs"
+                  value={batchName}
+                  onChange={(e) => setBatchName(e.target.value)}
+                  disabled={isProcessing}
+                />
               </div>
-              <Progress value={progress} className="w-full" />
-            </div>
-          )}
 
-          <Button 
-            onClick={handleImport}
-            disabled={isProcessing || !batchName.trim() || !content.trim()}
-            className="w-full"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4 mr-2" />
-                Import Content
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Content Blocks</label>
+                <Textarea
+                  placeholder={`Paste your structured content blocks here...\n\nExample format:\n${exampleContent}`}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  disabled={isProcessing}
+                  rows={15}
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              {isProcessing && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Smart processing with duplicate detection...</span>
+                  </div>
+                  <Progress value={progress} className="w-full" />
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleSmartImport}
+                  disabled={isProcessing || !batchName.trim() || !content.trim()}
+                  className="flex-1"
+                  variant="default"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Smart Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Smart Import
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analysis" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Funnel Bottleneck Analysis
+              </CardTitle>
+              <CardDescription>
+                Identify and resolve funnel bottlenecks to improve user journey
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button 
+                onClick={handleAnalyzeFunnel}
+                disabled={isAnalyzing}
+                className="w-full"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Analyze Current Funnel
+                  </>
+                )}
+              </Button>
+
+              {bottlenecks.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Detected Bottlenecks</h3>
+                  {bottlenecks.map((bottleneck, index) => (
+                    <Alert key={index} variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        <div className="space-y-2">
+                          <strong>{bottleneck.sourceCount} articles</strong> funnel to:
+                          <div className="font-medium">"{bottleneck.targetArticle.title}"</div>
+                          <div className="text-sm">
+                            Topic: {bottleneck.targetArticle.topic} | Stage: {bottleneck.targetArticle.funnel_stage}
+                          </div>
+                          <div className="text-xs">
+                            Consider creating topic-specific {bottleneck.type === 'TOFU_TO_MOFU' ? 'MOFU' : 'BOFU'} articles
+                          </div>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  ))}
+                </div>
+              )}
+
+              {topicAnalysis.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Topic Distribution</h3>
+                  <div className="grid gap-4">
+                    {topicAnalysis.map((topic, index) => (
+                      <Card key={index}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium">{topic.topic}</h4>
+                            <div className="flex gap-2">
+                              <Badge variant="default">{topic.stages.TOFU} TOFU</Badge>
+                              <Badge variant="secondary">{topic.stages.MOFU} MOFU</Badge>
+                              <Badge variant="destructive">{topic.stages.BOFU} BOFU</Badge>
+                            </div>
+                          </div>
+                          {topic.missingStages.length > 0 && (
+                            <div className="text-sm text-orange-600">
+                              Missing: {topic.missingStages.join(', ')} articles
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="linking" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Link2 className="h-5 w-5" />
+                Smart Linking Management
+              </CardTitle>
+              <CardDescription>
+                Review and optimize article linking for better funnel flow
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {results?.linkingSuggestions && results.linkingSuggestions.length > 0 ? (
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Linking Suggestions</h3>
+                  {results.linkingSuggestions.map((suggestion, index) => (
+                    <Card key={index}>
+                      <CardContent className="p-4">
+                        <div className="space-y-2">
+                          <div className="font-medium">{suggestion.sourceTitle}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Suggested: {FunnelAnalyzer.generateButtonPreview(
+                              suggestion.suggestedTarget.title,
+                              suggestion.suggestedTarget.topic
+                            )}
+                          </div>
+                          <div className="text-xs">
+                            Confidence: {Math.round(suggestion.confidence * 100)}% | {suggestion.suggestedTarget.reason}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  Import content to see smart linking suggestions
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {results && (
         <Card>
@@ -233,23 +460,56 @@ Always ask the developer about the available internet infrastructure during your
               ) : (
                 <AlertCircle className="h-5 w-5 text-orange-600" />
               )}
-              Import Results
+              Smart Import Results
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-4">
               <Badge variant="default" className="bg-green-100 text-green-800">
-                {results.success} Successful
+                {results.success} Imported
               </Badge>
               {results.failed > 0 && (
                 <Badge variant="destructive">
                   {results.failed} Failed
                 </Badge>
               )}
+              {results.duplicates.length > 0 && (
+                <Badge variant="outline" className="bg-orange-100 text-orange-800">
+                  {results.duplicates.length} Potential Duplicates
+                </Badge>
+              )}
             </div>
 
-            {results.errors.length > 0 && (
+            {results.duplicates.length > 0 && (
               <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  <div className="space-y-2">
+                    <strong>Potential duplicate articles detected:</strong>
+                    <div className="space-y-2 text-sm">
+                      {results.duplicates.slice(0, 3).map((duplicate, index) => (
+                        <div key={index} className="p-2 bg-orange-50 rounded">
+                          <div className="font-medium">"{duplicate.existing.title}"</div>
+                          <div className="text-xs text-muted-foreground">
+                            {Math.round(duplicate.similarity * 100)}% similar | 
+                            Suggested: {duplicate.suggested_action} | 
+                            Topic: {duplicate.existing.topic}
+                          </div>
+                        </div>
+                      ))}
+                      {results.duplicates.length > 3 && (
+                        <div className="text-xs text-muted-foreground">
+                          +{results.duplicates.length - 3} more potential duplicates
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {results.errors.length > 0 && (
+              <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                   <div className="space-y-1">
@@ -269,9 +529,20 @@ Always ask the developer about the available internet infrastructure during your
 
       <Card>
         <CardHeader>
-          <CardTitle>Content Format Guide</CardTitle>
+          <CardTitle>Enhanced Content Format Guide</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="bg-muted p-4 rounded-lg">
+            <h4 className="font-medium mb-2">Smart Import Features:</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside">
+              <li><strong>Duplicate Detection:</strong> Automatically identifies similar existing articles</li>
+              <li><strong>Topic-Aware Linking:</strong> Creates topic-specific funnel paths instead of generic ones</li>
+              <li><strong>Bottleneck Prevention:</strong> Warns when imports might create funnel bottlenecks</li>
+              <li><strong>Smart MOFU/BOFU Creation:</strong> Suggests missing articles for complete topic funnels</li>
+              <li><strong>Preview-Enhanced Buttons:</strong> Navigation shows actual article titles</li>
+            </ul>
+          </div>
+          
           <div className="bg-muted p-4 rounded-lg">
             <h4 className="font-medium mb-2">Required Format:</h4>
             <pre className="text-sm overflow-x-auto whitespace-pre-wrap">
@@ -280,17 +551,15 @@ Always ask the developer about the available internet infrastructure during your
           </div>
           
           <div className="space-y-2">
-            <h4 className="font-medium">New Format Structure:</h4>
+            <h4 className="font-medium">Best Practices for Smart Import:</h4>
             <ul className="text-sm space-y-1 list-disc list-inside">
-              <li><strong>## **N. STAGE**:</strong> Question number and funnel stage (TOFU/MOFU/BOFU)</li>
-              <li><strong>## **Question Title**:</strong> The actual question as a header</li>
-              <li><strong>## **Short Explanation**:</strong> Brief answer (2-3 sentences)</li>
-              <li><strong>## **Detailed Explanation**:</strong> Full detailed answer with formatting</li>
-              <li><strong>## **Tip**:</strong> Optional helpful tip (can be omitted)</li>
-              <li><strong>## SEO-fields:</strong> Metadata section with Tags, Location focus, Target audience, Intent</li>
+              <li><strong>Topic Consistency:</strong> Use consistent topic names across related articles</li>
+              <li><strong>Balanced Funnels:</strong> Aim for 3 TOFU, 2 MOFU, 1 BOFU per topic</li>
+              <li><strong>Unique Titles:</strong> Avoid duplicate question titles to prevent bottlenecks</li>
+              <li><strong>Progressive Complexity:</strong> TOFU = basic info, MOFU = detailed guides, BOFU = action checklists</li>
             </ul>
             <div className="mt-3 p-2 bg-blue-50 rounded text-sm">
-              <strong>Note:</strong> This format automatically generates slugs from titles and creates funnel navigation (TOFU → MOFU → BOFU → Chatbot).
+              <strong>Smart Linking:</strong> The system now creates topic-specific funnel paths. Education TOFUs link to Education MOFUs, Investment TOFUs link to Investment MOFUs, etc.
             </div>
           </div>
         </CardContent>

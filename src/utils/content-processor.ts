@@ -184,7 +184,61 @@ export class ContentProcessor {
   }
 
   /**
-   * Process and import a batch of QA content with funnel linking
+   * Process and import a batch of QA content with enhanced smart linking
+   */
+  static async processEnhancedBatch(batch: ContentBatch): Promise<void> {
+    const batchId = await this.createImportBatch(batch.batchName, batch.questions.length);
+    let processedCount = 0;
+
+    try {
+      // Group questions by topic for smart linking
+      const topicGroups = new Map<string, typeof batch.questions>();
+      
+      for (const question of batch.questions) {
+        const topic = this.generateTopic(question);
+        if (!topicGroups.has(topic)) {
+          topicGroups.set(topic, []);
+        }
+        topicGroups.get(topic)?.push(question);
+      }
+
+      // Process each topic group with smart linking
+      for (const [topic, questions] of topicGroups) {
+        await this.processTopicGroup(topic, questions);
+        processedCount += questions.length;
+        
+        // Update batch progress
+        await supabase
+          .from('content_import_batches')
+          .update({ processed_questions: processedCount })
+          .eq('id', batchId);
+      }
+
+      // Mark batch as completed
+      await supabase
+        .from('content_import_batches')
+        .update({ 
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', batchId);
+
+    } catch (error) {
+      // Mark batch as failed
+      await supabase
+        .from('content_import_batches')
+        .update({ 
+          status: 'failed',
+          processed_questions: processedCount
+        })
+        .eq('id', batchId);
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Process and import a batch of QA content with funnel linking (legacy)
    */
   static async processBatch(batch: ContentBatch): Promise<void> {
     const batchId = await this.createImportBatch(batch.batchName, batch.questions.length);
@@ -281,6 +335,133 @@ export class ContentProcessor {
       .insert(qaData);
 
     if (error) throw error;
+  }
+
+  /**
+   * Process a topic group with smart linking
+   */
+  private static async processTopicGroup(topic: string, questions: StructuredQAContent[]): Promise<void> {
+    // Separate by funnel stage
+    const tofu = questions.filter(q => q.funnelStage === 'TOFU');
+    const mofu = questions.filter(q => q.funnelStage === 'MOFU');
+    const bofu = questions.filter(q => q.funnelStage === 'BOFU');
+
+    // Import all articles first
+    const importedIds: Record<string, string> = {};
+    
+    for (const question of questions) {
+      const articleId = await this.importSingleQuestionEnhanced(question, topic);
+      importedIds[question.slug] = articleId;
+    }
+
+    // Create smart topic-specific links
+    await this.createSmartTopicLinks(topic, tofu, mofu, bofu, importedIds);
+  }
+
+  /**
+   * Import single question with enhanced topic-aware linking
+   */
+  private static async importSingleQuestionEnhanced(content: StructuredQAContent, topic: string): Promise<string> {
+    const excerpt = content.shortExplanation.substring(0, 200) + '...';
+    const fullContent = `${content.detailedExplanation}${content.tip ? `\n\n**Tip:** ${content.tip}` : ''}`;
+
+    // Enhanced next step generation based on topic
+    let nextStepUrl = '';
+    let nextStepText = '';
+    
+    if (content.funnelStage === 'TOFU') {
+      nextStepText = `Explore detailed ${topic.toLowerCase()} guides`;
+      nextStepUrl = `/qa?topic=${encodeURIComponent(topic)}&stage=MOFU`;
+    } else if (content.funnelStage === 'MOFU') {
+      nextStepText = `${topic} action checklist`;
+      nextStepUrl = `/qa?topic=${encodeURIComponent(topic)}&stage=BOFU`;
+    } else if (content.funnelStage === 'BOFU') {
+      nextStepText = 'Chat with our AI advisor';
+      nextStepUrl = '/book-viewing';
+    }
+
+    const qaData = {
+      title: content.title,
+      slug: content.slug,
+      content: fullContent,
+      excerpt,
+      funnel_stage: content.funnelStage,
+      topic,
+      language: content.language,
+      tags: content.tags,
+      image_url: content.imageUrl,
+      alt_text: content.altText,
+      target_audience: content.targetAudience,
+      intent: content.intent,
+      location_focus: content.locationFocus,
+      next_step_url: nextStepUrl,
+      next_step_text: nextStepText,
+      markdown_frontmatter: {
+        title: content.title,
+        slug: content.slug,
+        language: content.language,
+        funnelStage: content.funnelStage,
+        locationFocus: content.locationFocus,
+        tags: content.tags,
+        targetAudience: content.targetAudience,
+        intent: content.intent,
+        topic
+      }
+    };
+
+    const { data, error } = await supabase
+      .from('qa_articles')
+      .insert(qaData)
+      .select('id')
+      .single();
+
+    if (error) throw error;
+    return data.id;
+  }
+
+  /**
+   * Create smart topic-specific links between articles
+   */
+  private static async createSmartTopicLinks(
+    topic: string,
+    tofu: StructuredQAContent[],
+    mofu: StructuredQAContent[],
+    bofu: StructuredQAContent[],
+    importedIds: Record<string, string>
+  ): Promise<void> {
+    // Link TOFU to topic-specific MOFU articles
+    if (tofu.length > 0 && mofu.length > 0) {
+      // Distribute TOFU articles across available MOFU articles
+      for (let i = 0; i < tofu.length; i++) {
+        const mofuIndex = i % mofu.length;
+        const tofuId = importedIds[tofu[i].slug];
+        const mofuId = importedIds[mofu[mofuIndex].slug];
+        
+        if (tofuId && mofuId) {
+          await supabase
+            .from('qa_articles')
+            .update({ points_to_mofu_id: mofuId })
+            .eq('id', tofuId);
+        }
+      }
+    }
+
+    // Link MOFU to topic-specific BOFU articles
+    if (mofu.length > 0 && bofu.length > 0) {
+      // Distribute MOFU articles across available BOFU articles
+      for (let i = 0; i < mofu.length; i++) {
+        const bofuIndex = i % bofu.length;
+        const mofuId = importedIds[mofu[i].slug];
+        const bofuId = importedIds[bofu[bofuIndex].slug];
+        
+        if (mofuId && bofuId) {
+          await supabase
+            .from('qa_articles')
+            .update({ points_to_bofu_id: bofuId })
+            .eq('id', mofuId);
+        }
+      }
+    }
   }
 
   /**
