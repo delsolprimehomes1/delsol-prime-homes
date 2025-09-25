@@ -171,3 +171,49 @@ export const generateOpenGraphLocales = (availableLanguages: string[]): string[]
   
   return availableLanguages.map(lang => localeMap[lang] || localeMap['en']);
 };
+
+/**
+ * Detects language from slug prefix and returns language and clean slug
+ */
+export const detectLanguageFromSlug = (slug: string): {
+  language: SupportedLanguage | 'es';
+  cleanSlug: string;
+} => {
+  const supportedLanguages: (SupportedLanguage | 'es')[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'es'];
+  
+  // Check if slug starts with a language prefix (e.g., "es-", "de-", "fr-")
+  for (const lang of supportedLanguages) {
+    if (slug.startsWith(`${lang}-`)) {
+      return {
+        language: lang,
+        cleanSlug: slug.substring(lang.length + 1) // Remove "lang-" prefix
+      };
+    }
+  }
+  
+  // No language prefix found, assume English
+  return {
+    language: 'en',
+    cleanSlug: slug
+  };
+};
+
+/**
+ * Constructs the correct slug for database query based on language
+ */
+export const constructDatabaseSlug = (originalSlug: string, targetLanguage: SupportedLanguage | 'es'): string => {
+  const { language: detectedLang, cleanSlug } = detectLanguageFromSlug(originalSlug);
+  
+  // If the original slug already has the target language prefix, return as-is
+  if (detectedLang === targetLanguage) {
+    return originalSlug;
+  }
+  
+  // If target language is English, return clean slug (no prefix)
+  if (targetLanguage === 'en') {
+    return cleanSlug;
+  }
+  
+  // Otherwise, construct slug with target language prefix
+  return `${targetLanguage}-${cleanSlug}`;
+};

@@ -22,6 +22,7 @@ import { ArrowRight, Calendar, Tag, Clock, Star, Shield, Award, CheckCircle } fr
 import { processMarkdownContent } from '@/utils/markdown';
 import { trackEvent, trackFunnelProgression, trackCTAClick } from '@/utils/analytics';
 import { generateQAArticleSchema, generateAIServiceSchema, generateSpeakableSchema, generateOpenGraphData, generateTwitterCardData, generateCanonicalAndHreflang } from '@/utils/schemas';
+import { generateHreflangUrls, getCurrentLanguageFromUrl, detectLanguageFromSlug, constructDatabaseSlug } from '@/utils/multilingual-routing';
 import { generateEnhancedQAArticleSchema, generateAIEnhancedOrganizationSchema } from '@/utils/enhanced-schemas';
 import { AIOptimizedContent } from '@/components/AIOptimizedContent';
 import { SchemaValidator } from '@/components/SchemaValidator';
@@ -83,25 +84,54 @@ const QAPost = () => {
   const { data: article, isLoading, error, refetch } = useQuery({
     queryKey: ['qa-article', slug, i18n.language],
     queryFn: async () => {
-      // Try to get article in current language first
+      if (!slug) return null;
+      
+      // Detect language from slug prefix
+      const { language: slugLanguage, cleanSlug } = detectLanguageFromSlug(slug);
+      
+      // First, try to get the article using the detected language from slug
       let { data, error } = await supabase
         .from('qa_articles' as any)
         .select('*')
-        .eq('slug', slug)
-        .eq('language', i18n.language)
+        .eq('slug', slug)  // Use original slug for exact match
+        .eq('language', slugLanguage)
         .single();
       
-      // If not found in current language and not English, try English
-      if ((error?.code === 'PGRST116' || !data) && i18n.language !== 'en') {
-        const fallback = await supabase
+      // If found, update i18n to match the article's language
+      if (data && slugLanguage !== i18n.language) {
+        i18n.changeLanguage(slugLanguage);
+      }
+      
+      // If not found with detected language, try alternative slug constructions
+      if ((error?.code === 'PGRST116' || !data)) {
+        // Try with clean slug and detected language
+        const altQuery = await supabase
           .from('qa_articles' as any)
           .select('*')
-          .eq('slug', slug)
-          .eq('language', 'en')
+          .eq('slug', cleanSlug)
+          .eq('language', slugLanguage)
           .single();
-        
-        if (fallback.error && fallback.error.code !== 'PGRST116') throw fallback.error;
-        if (fallback.data) return fallback.data as any;
+          
+        if (altQuery.data) {
+          data = altQuery.data;
+          error = null;
+        } else {
+          // If still not found and slug language isn't English, try English fallback
+          if (slugLanguage !== 'en') {
+            const englishSlug = constructDatabaseSlug(slug, 'en');
+            const fallback = await supabase
+              .from('qa_articles' as any)
+              .select('*')
+              .eq('slug', englishSlug)
+              .eq('language', 'en')
+              .single();
+            
+            if (fallback.data) {
+              data = fallback.data;
+              error = null;
+            }
+          }
+        }
       }
       
       if (error && error.code !== 'PGRST116') throw error;
