@@ -4,9 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { I18nextProvider } from 'react-i18next';
 import { HelmetProvider } from 'react-helmet-async';
-import i18n from './i18n';
+import { I18nWrapper } from './components/I18nWrapper';
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -22,7 +21,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <HelmetProvider>
-    <I18nextProvider i18n={i18n}>
+    <I18nWrapper>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
@@ -63,7 +62,7 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-    </I18nextProvider>
+    </I18nWrapper>
   </HelmetProvider>
 );
 
