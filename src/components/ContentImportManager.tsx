@@ -205,15 +205,17 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       }
 
     } catch (error) {
+      console.error('Smart Import Error:', error);
+      const errorMessage = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
       toast({
-        title: "Import Failed",
-        description: error instanceof Error ? error.message : 'An unknown error occurred',
+        title: "Import Failed", 
+        description: errorMessage,
         variant: "destructive"
       });
       setResults({
         success: 0,
         failed: 1,
-        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        errors: [errorMessage],
         duplicates: [],
         linkingSuggestions: []
       });

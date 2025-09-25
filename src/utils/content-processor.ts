@@ -28,11 +28,17 @@ export class ContentProcessor {
    */
   static parseNewFormatBlock(markdownContent: string, language: SupportedLanguage = 'en'): StructuredQAContent {
     // Extract funnel stage from header like "## **1. TOFU**"
-    const stageMatch = markdownContent.match(/##\s*\*\*\d+\.\s*(TOFU|MOFU|BOFU)\s*\*\*/);
+    const stageMatch = markdownContent.match(/##\s*\*\*\d+\.\s*(TOFU|MOFU|BOFU)\s*\*\*/i);
+    let altStageMatch = null;
     if (!stageMatch) {
-      throw new Error('Could not find funnel stage (TOFU/MOFU/BOFU) in content');
+      // Try alternative format
+      altStageMatch = markdownContent.match(/##\s*\*\*(TOFU|MOFU|BOFU)\s*\*\*/i);
+      if (!altStageMatch) {
+        throw new Error(`Could not find funnel stage (TOFU/MOFU/BOFU) in content. Content preview: ${markdownContent.substring(0, 200)}...`);
+      }
     }
-    const funnelStage = stageMatch[1] as 'TOFU' | 'MOFU' | 'BOFU';
+    const stageResult = stageMatch || altStageMatch;
+    const funnelStage = stageResult![1].toUpperCase() as 'TOFU' | 'MOFU' | 'BOFU';
 
     // Extract question title from header like "## **Question text**"
     const titleMatch = markdownContent.match(/##\s*\*\*([^*]+?)\*\*(?!\s*$)/g);
@@ -192,7 +198,7 @@ export class ContentProcessor {
 
     try {
       // Group questions by topic for smart linking
-      const topicGroups = new Map<string, typeof batch.questions>();
+      const topicGroups = new Map<string, StructuredQAContent[]>();
       
       for (const question of batch.questions) {
         const topic = this.generateTopic(question);
