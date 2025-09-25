@@ -1,7 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-http-backend';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
 const supportedLanguages = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da'] as const;
 export type SupportedLanguage = typeof supportedLanguages[number];
@@ -16,10 +14,8 @@ export const languageConfig = {
   da: { name: 'Dansk', flag: '🇩🇰' },
 };
 
-// Initialize i18n synchronously to avoid React hook errors
+// Simple synchronous initialization to avoid React hook errors
 i18n
-  .use(Backend)
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     lng: 'en',
@@ -30,22 +26,13 @@ i18n
       escapeValue: false,
     },
 
-    detection: {
-      order: ['querystring', 'cookie', 'localStorage', 'navigator'],
-      lookupQuerystring: 'lang',
-      lookupCookie: 'i18next',
-      lookupLocalStorage: 'i18nextLng',
-      caches: ['cookie', 'localStorage'],
-      cookieMinutes: 10080, // 7 days
-    },
-
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
-      addPath: '/locales/add/{{lng}}/{{ns}}',
-    },
-
     resources: {
-      en: { common: {} },
+      en: { 
+        common: {
+          welcome: 'Welcome',
+          loading: 'Loading...'
+        } 
+      },
       nl: { common: {} },
       fr: { common: {} },
       de: { common: {} },
@@ -57,10 +44,14 @@ i18n
     defaultNS: 'common',
     
     supportedLngs: supportedLanguages,
-    load: 'languageOnly',
     
     react: {
       useSuspense: false,
+      bindI18n: 'languageChanged',
+      bindI18nStore: false,
+      transEmptyNodeValue: '',
+      transSupportBasicHtmlNodes: true,
+      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i'],
     },
   });
 
