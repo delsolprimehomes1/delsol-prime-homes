@@ -123,19 +123,21 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       const results = await SmartLinkingEngine.fixBottlenecks(bottlenecks, 'en');
       setFixResults(results);
       
+      // Show detailed results
+      toast({
+        title: "Bottleneck Fix Complete",
+        description: `Created ${results.articlesCreated} articles, rebalanced ${results.linksRebalanced} links${results.errors.length > 0 ? `, with ${results.errors.length} errors` : ''}`,
+        variant: results.errors.length > 0 ? "destructive" : "default",
+      });
+      
       // Re-run analysis to show updated state
       await handleAnalyzeFunnel();
-      
-      toast({
-        title: "Bottlenecks Fixed",
-        description: `Created ${results.articlesCreated} articles, rebalanced ${results.linksRebalanced} links`,
-        variant: results.errors.length > 0 ? "destructive" : "default"
-      });
 
       if (onImportComplete) {
         onImportComplete();
       }
     } catch (error) {
+      console.error('Failed to fix bottlenecks:', error);
       toast({
         title: "Fix Failed",
         description: error instanceof Error ? error.message : 'Unknown error',
@@ -531,29 +533,44 @@ Always ask the developer about the available internet infrastructure during your
 
               {/* Fix Results */}
               {fixResults && (
-                <Alert>
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    <div className="space-y-2">
-                      <strong>Bottleneck Fix Complete:</strong>
-                      <ul className="text-sm space-y-1">
-                        <li>✅ Created {fixResults.articlesCreated} new articles</li>
-                        <li>🔄 Rebalanced {fixResults.linksRebalanced} article links</li>
-                        {fixResults.errors.length > 0 && (
-                          <li className="text-red-600">⚠️ {fixResults.errors.length} errors occurred</li>
-                        )}
-                      </ul>
-                      {fixResults.newArticles.length > 0 && (
-                        <div className="text-xs mt-2">
-                          <strong>New Articles:</strong>
-                          {fixResults.newArticles.map((article, index) => (
-                            <div key={index}>{article.stage}: {article.title}</div>
-                          ))}
-                        </div>
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h4 className="font-medium mb-2">Fix Results Summary:</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="font-medium text-green-600">✅ Articles Created: {fixResults.articlesCreated}</p>
+                      <p className="font-medium text-blue-600">🔗 Links Rebalanced: {fixResults.linksRebalanced}</p>
+                    </div>
+                    <div>
+                      {fixResults.errors.length > 0 && (
+                        <p className="font-medium text-red-600">❌ Errors: {fixResults.errors.length}</p>
                       )}
                     </div>
-                  </AlertDescription>
-                </Alert>
+                  </div>
+                  
+                  {fixResults.newArticles.length > 0 && (
+                    <div className="mt-3">
+                      <p className="font-medium text-sm mb-2">New Articles Created:</p>
+                      <ul className="list-disc list-inside text-xs space-y-1">
+                        {fixResults.newArticles.map((article, i) => (
+                          <li key={i} className="text-green-700">
+                            {article.title} ({article.topic} - {article.stage})
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {fixResults.errors.length > 0 && (
+                    <div className="mt-3">
+                      <p className="font-medium text-sm mb-2 text-destructive">Errors Encountered:</p>
+                      <ul className="list-disc list-inside text-xs space-y-1">
+                        {fixResults.errors.map((error, i) => (
+                          <li key={i} className="text-destructive">{error}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               )}
 
               {topicAnalysis.length > 0 && (
