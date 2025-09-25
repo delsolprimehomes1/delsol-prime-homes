@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import { ContentImportManager } from '@/components/ContentImportManager';
 import { FunnelValidationDashboard } from '@/components/FunnelValidationDashboard';
 import { FunnelLinkManager } from '@/components/FunnelLinkManager';
+import { EnhancedFunnelLinkManager } from '@/components/EnhancedFunnelLinkManager';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,9 +71,10 @@ const ContentManager = () => {
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="import" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="import">Import Content</TabsTrigger>
-                <TabsTrigger value="funnel">Funnel Management</TabsTrigger>
+                <TabsTrigger value="funnel">Funnel Overview</TabsTrigger>
+                <TabsTrigger value="links">Manual Linking</TabsTrigger>
                 <TabsTrigger value="manage">Manage Articles</TabsTrigger>
                 <TabsTrigger value="analytics">Analytics</TabsTrigger>
               </TabsList>
@@ -83,7 +85,10 @@ const ContentManager = () => {
               
               <TabsContent value="funnel" className="space-y-6">
                 <FunnelValidationDashboard />
-                <FunnelLinkManager />
+              </TabsContent>
+              
+              <TabsContent value="links" className="space-y-6">
+                <EnhancedFunnelLinkManager />
               </TabsContent>
               
               <TabsContent value="manage" className="space-y-6">

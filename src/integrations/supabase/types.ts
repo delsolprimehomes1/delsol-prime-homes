@@ -436,6 +436,8 @@ export type Database = {
           content: string
           created_at: string
           excerpt: string
+          final_cta_type: Database["public"]["Enums"]["cta_type"] | null
+          final_cta_url: string | null
           funnel_stage: string
           h1_title: string | null
           h2_title: string | null
@@ -444,7 +446,10 @@ export type Database = {
           image_url: string | null
           intent: string | null
           language: string
+          last_linked_at: string | null
+          last_linked_by: string | null
           last_updated: string
+          linking_notes: string | null
           location_focus: string | null
           markdown_frontmatter: Json | null
           multilingual_parent_id: string | null
@@ -474,6 +479,8 @@ export type Database = {
           content: string
           created_at?: string
           excerpt: string
+          final_cta_type?: Database["public"]["Enums"]["cta_type"] | null
+          final_cta_url?: string | null
           funnel_stage: string
           h1_title?: string | null
           h2_title?: string | null
@@ -482,7 +489,10 @@ export type Database = {
           image_url?: string | null
           intent?: string | null
           language?: string
+          last_linked_at?: string | null
+          last_linked_by?: string | null
           last_updated?: string
+          linking_notes?: string | null
           location_focus?: string | null
           markdown_frontmatter?: Json | null
           multilingual_parent_id?: string | null
@@ -512,6 +522,8 @@ export type Database = {
           content?: string
           created_at?: string
           excerpt?: string
+          final_cta_type?: Database["public"]["Enums"]["cta_type"] | null
+          final_cta_url?: string | null
           funnel_stage?: string
           h1_title?: string | null
           h2_title?: string | null
@@ -520,7 +532,10 @@ export type Database = {
           image_url?: string | null
           intent?: string | null
           language?: string
+          last_linked_at?: string | null
+          last_linked_by?: string | null
           last_updated?: string
+          linking_notes?: string | null
           location_focus?: string | null
           markdown_frontmatter?: Json | null
           multilingual_parent_id?: string | null
@@ -854,6 +869,12 @@ export type Database = {
       }
     }
     Enums: {
+      cta_type:
+        | "booking"
+        | "consultation"
+        | "download"
+        | "newsletter"
+        | "custom"
       keyword_intent:
         | "informational"
         | "commercial"
@@ -988,6 +1009,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      cta_type: ["booking", "consultation", "download", "newsletter", "custom"],
       keyword_intent: [
         "informational",
         "commercial",
