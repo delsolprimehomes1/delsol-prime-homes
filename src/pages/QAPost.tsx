@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Navigate, Link, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +43,7 @@ const QAPost = () => {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const { i18n } = useTranslation();
+  const queryClient = useQueryClient();
   
   // Initialize language from URL parameter
   React.useEffect(() => {
@@ -79,7 +80,7 @@ const QAPost = () => {
     }
   };
 
-  const { data: article, isLoading, error } = useQuery({
+  const { data: article, isLoading, error, refetch } = useQuery({
     queryKey: ['qa-article', slug, i18n.language],
     queryFn: async () => {
       // Try to get article in current language first
@@ -279,6 +280,14 @@ const QAPost = () => {
     }
   };
 
+  // Function to refresh article data and clear cache
+  const refreshArticleData = React.useCallback(() => {
+    // Invalidate all related queries
+    queryClient.invalidateQueries({ queryKey: ['qa-article', slug] });
+    // Force refetch
+    refetch();
+  }, [queryClient, slug, refetch]);
+
   // Track page view and inject AI meta tags
   React.useEffect(() => {
     if (article) {
@@ -294,6 +303,15 @@ const QAPost = () => {
       }
     }
   }, [article]);
+
+  // Auto-refresh data every 30 seconds to catch database updates
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   // Generate breadcrumb items
   const breadcrumbItems = article ? [
