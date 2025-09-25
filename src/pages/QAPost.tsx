@@ -146,6 +146,21 @@ const QAPost = () => {
     enabled: !!article?.points_to_bofu_id,
   });
 
+  // Extract frontmatter nextStep data 
+  const frontmatterNextStep = React.useMemo(() => {
+    if (!article?.markdown_frontmatter?.nextStep) return null;
+    
+    const nextStep = article.markdown_frontmatter.nextStep;
+    if (typeof nextStep === 'object' && nextStep.slug && nextStep.title) {
+      return {
+        slug: nextStep.slug,
+        title: nextStep.title,
+        topic: nextStep.topic || undefined
+      };
+    }
+    return null;
+  }, [article?.markdown_frontmatter]);
+
   // Enhanced author credentials with E-E-A-T signals
   const authorCredentials = React.useMemo(() => ({
     name: "Maria Rodriguez",
@@ -620,8 +635,10 @@ const QAPost = () => {
                 currentStage={mapStageToUserFriendly(article.funnel_stage)}
                 nextStepUrl={article.next_step_url || undefined}
                 nextStepText={article.next_step_text || undefined}
-                nextMofuArticle={nextMofuArticle}
-                nextBofuArticle={nextBofuArticle}
+                nextMofuArticle={nextMofuArticle ? { ...nextMofuArticle, topic: nextMofuArticle.topic || undefined } : null}
+                nextBofuArticle={nextBofuArticle ? { ...nextBofuArticle, topic: nextBofuArticle.topic || undefined } : null}
+                currentTopic={article.topic}
+                frontmatterNextStep={frontmatterNextStep}
               />
             </div>
           </div>

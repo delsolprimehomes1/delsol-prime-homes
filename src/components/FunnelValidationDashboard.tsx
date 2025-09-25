@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowRight, AlertTriangle, CheckCircle, Zap, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { TopicFunnelValidator } from '@/components/TopicFunnelValidator';
 
 interface FunnelStats {
   tofu: { total: number; linked: number; missing: number };
@@ -158,6 +159,9 @@ export const FunnelValidationDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Topic Alignment Validation */}
+      <TopicFunnelValidator />
+
       {/* Overall Health */}
       <Card>
         <CardHeader>

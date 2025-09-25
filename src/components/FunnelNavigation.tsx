@@ -11,9 +11,11 @@ interface FunnelNavigationProps {
   nextStepUrl?: string;
   nextStepText?: string;
   className?: string;
-  // Add linked article data
-  nextMofuArticle?: { slug: string; title: string } | null;
-  nextBofuArticle?: { slug: string; title: string } | null;
+  // Add linked article data with topic-aware support
+  nextMofuArticle?: { slug: string; title: string; topic?: string } | null;
+  nextBofuArticle?: { slug: string; title: string; topic?: string } | null;
+  currentTopic?: string;
+  frontmatterNextStep?: { slug: string; title: string; topic?: string } | null;
 }
 
 export function FunnelNavigation({ 
@@ -22,6 +24,8 @@ export function FunnelNavigation({
   nextStepText,
   nextMofuArticle,
   nextBofuArticle,
+  currentTopic,
+  frontmatterNextStep,
   className = '' 
 }: FunnelNavigationProps) {
   const stageConfig = {
@@ -102,33 +106,43 @@ export function FunnelNavigation({
 
   const IconComponent = config.icon;
   
-  // Determine next step based on funnel stage and available links
+  // Determine next step with topic-aware priority: frontmatter > topic-matched DB links > generic DB links
   let finalNextStepUrl = nextStepUrl;
   let finalNextStepText = nextStepText;
   
   if (!finalNextStepUrl) {
-    if (currentStage === 'exploration' && nextMofuArticle) {
-      // TOFU article linking to specific MOFU article with compelling preview
+    // Priority 1: Use frontmatter nextStep if available and topic-matched
+    if (frontmatterNextStep && (!currentTopic || frontmatterNextStep.topic === currentTopic)) {
+      finalNextStepUrl = `/qa/${frontmatterNextStep.slug}`;
+      const previewTitle = frontmatterNextStep.title.length > 70 
+        ? frontmatterNextStep.title.substring(0, 67) + '...' 
+        : frontmatterNextStep.title;
+      finalNextStepText = `Continue: ${previewTitle} →`;
+    }
+    // Priority 2: Use database-linked articles (topic-aware when possible)
+    else if (currentStage === 'exploration' && nextMofuArticle) {
+      // Check if linked MOFU article matches current topic
+      const isTopicMatched = !currentTopic || !nextMofuArticle.topic || nextMofuArticle.topic === currentTopic;
+      
       finalNextStepUrl = `/qa/${nextMofuArticle.slug}`;
       
-      // Enhanced preview with topic-aware copy and extended character limit
+      // Enhanced preview with topic-aware copy
       let enhancedPreview = nextMofuArticle.title;
       
-      // Add topic-specific enhancements for better engagement
-      if (nextMofuArticle.title.toLowerCase().includes('golf') || 
-          nextMofuArticle.title.toLowerCase().includes('lifestyle')) {
-        enhancedPreview = nextMofuArticle.title.includes('UK') || nextMofuArticle.title.includes('Irish') 
-          ? nextMofuArticle.title 
-          : `${nextMofuArticle.title} (for UK & Irish expats)`;
+      // Add topic-specific context for better engagement
+      if (currentTopic === 'Education' && !enhancedPreview.toLowerCase().includes('education')) {
+        enhancedPreview = `${enhancedPreview} (education focus)`;
+      } else if (currentTopic === 'Investment' && !enhancedPreview.toLowerCase().includes('investment')) {
+        enhancedPreview = `${enhancedPreview} (investment guide)`;
       }
       
-      // Extended character limit for better previews (70 chars instead of 40)
       const previewTitle = enhancedPreview.length > 70 
         ? enhancedPreview.substring(0, 67) + '...' 
         : enhancedPreview;
       
-      // Always use specific article preview, never fallback when article exists
-      finalNextStepText = `Next: ${previewTitle} →`;
+      // Show topic alignment status
+      const matchPrefix = isTopicMatched ? 'Next' : 'Related';
+      finalNextStepText = `${matchPrefix}: ${previewTitle} →`;
     } else if (currentStage === 'research' && nextBofuArticle) {
       // MOFU article linking to specific BOFU article with action-focused copy
       finalNextStepUrl = `/qa/${nextBofuArticle.slug}`;
