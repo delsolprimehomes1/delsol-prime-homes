@@ -174,7 +174,14 @@ export class SmartLinkingEngine {
     stage: 'MOFU' | 'BOFU',
     language: string = 'en'
   ): Promise<string> {
-    const title = await this.generateNewArticleTitle(topic, stage);
+    // First, check if a suitable article already exists
+    const existingArticle = await this.findOrCreateSuitableArticle(topic, stage, language);
+    if (existingArticle) {
+      return existingArticle;
+    }
+
+    // Generate a unique title
+    const title = await this.generateUniqueArticleTitle(topic, stage, language);
     
     // Generate a unique slug to avoid conflicts
     const baseSlug = title.toLowerCase()
@@ -228,6 +235,42 @@ export class SmartLinkingEngine {
       console.error('Exception in autoCreateMissingArticles:', error);
       throw new Error(`Failed to create ${stage} article for ${topic}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  /**
+   * Find existing suitable article or return null to create new one
+   */
+  private static async findOrCreateSuitableArticle(
+    topic: string,
+    stage: 'MOFU' | 'BOFU',
+    language: string
+  ): Promise<string | null> {
+    // Look for existing articles with same topic and stage but not overloaded
+    const { data: existingArticles } = await supabase
+      .from('qa_articles')
+      .select('id, title')
+      .eq('topic', topic)
+      .eq('funnel_stage', stage)
+      .eq('language', language);
+
+    if (existingArticles && existingArticles.length > 0) {
+      // Count how many articles are pointing to each existing article
+      for (const article of existingArticles) {
+        const linkingField = stage === 'MOFU' ? 'points_to_mofu_id' : 'points_to_bofu_id';
+        const { data: linkingArticles } = await supabase
+          .from('qa_articles')
+          .select('id')
+          .eq(linkingField, article.id);
+
+        // If this article has fewer than 10 links, we can reuse it
+        if (!linkingArticles || linkingArticles.length < 10) {
+          console.log(`Reusing existing ${stage} article for ${topic}: ${article.title}`);
+          return article.id;
+        }
+      }
+    }
+
+    return null; // Need to create a new article
   }
 
   /**
@@ -306,47 +349,143 @@ export class SmartLinkingEngine {
   }
 
   /**
-   * Generate title for new article
+   * Generate title for new article (deprecated - use generateUniqueArticleTitle)
    */
   private static async generateNewArticleTitle(
     topic: string,
     stage: 'MOFU' | 'BOFU'
   ): Promise<string> {
-    const topicTitles: Record<string, Record<string, string>> = {
+    return this.generateUniqueArticleTitle(topic, stage, 'en');
+  }
+
+  /**
+   * Generate unique title for new article with duplicate checking
+   */
+  private static async generateUniqueArticleTitle(
+    topic: string,
+    stage: 'MOFU' | 'BOFU',
+    language: string
+  ): Promise<string> {
+    const titleVariations = this.generateTitleVariations(topic, stage);
+    
+    // Try each variation until we find one that doesn't exist
+    for (const title of titleVariations) {
+      const { data: existing } = await supabase
+        .from('qa_articles')
+        .select('id')
+        .eq('title', title)
+        .eq('language', language)
+        .maybeSingle();
+
+      if (!existing) {
+        return title;
+      }
+    }
+
+    // If all variations exist, add timestamp
+    const baseTitle = titleVariations[0];
+    const timestamp = new Date().toISOString().slice(0, 10);
+    return `${baseTitle} (${timestamp})`;
+  }
+
+  /**
+   * Generate multiple title variations for uniqueness
+   */
+  private static generateTitleVariations(topic: string, stage: 'MOFU' | 'BOFU'): string[] {
+    const topicVariations: Record<string, Record<string, string[]>> = {
       'Legal': {
-        'MOFU': 'Complete legal guide for Costa del Sol property buyers',
-        'BOFU': 'Legal checklist: what should buyers verify before purchasing on Costa del Sol?'
+        'MOFU': [
+          'Complete legal guide for Costa del Sol property buyers',
+          'Essential legal guide for Costa del Sol property purchase',
+          'Comprehensive legal handbook for Costa del Sol buyers',
+          'Advanced legal guide for Costa del Sol property investment'
+        ],
+        'BOFU': [
+          'Legal verification checklist for Costa del Sol property buyers',
+          'Essential legal checks before buying Costa del Sol property',
+          'Legal due diligence checklist for Costa del Sol purchase',
+          'Pre-purchase legal verification guide for Costa del Sol'
+        ]
       },
       'Finance': {
-        'MOFU': 'Complete finance & mortgage guide for Costa del Sol property buyers',
-        'BOFU': 'Finance checklist: what should buyers verify before purchasing on Costa del Sol?'
+        'MOFU': [
+          'Complete finance & mortgage guide for Costa del Sol property buyers',
+          'Essential finance guide for Costa del Sol property purchase',
+          'Comprehensive financial planning for Costa del Sol buyers',
+          'Advanced finance guide for Costa del Sol property investment'
+        ],
+        'BOFU': [
+          'Finance verification checklist for Costa del Sol property buyers',
+          'Essential financial checks before buying Costa del Sol property',
+          'Financial due diligence checklist for Costa del Sol purchase',
+          'Pre-purchase finance verification guide for Costa del Sol'
+        ]
       },
       'Lifestyle': {
-        'MOFU': 'Complete lifestyle guide for Costa del Sol property buyers',
-        'BOFU': 'Lifestyle checklist: what should buyers verify before purchasing on Costa del Sol?'
+        'MOFU': [
+          'Complete lifestyle guide for Costa del Sol property buyers',
+          'Essential lifestyle guide for Costa del Sol living',
+          'Comprehensive lifestyle handbook for Costa del Sol expats',
+          'Advanced lifestyle guide for Costa del Sol relocation'
+        ],
+        'BOFU': [
+          'Lifestyle verification checklist for Costa del Sol property buyers',
+          'Essential lifestyle checks before moving to Costa del Sol',
+          'Lifestyle due diligence checklist for Costa del Sol relocation',
+          'Pre-move lifestyle verification guide for Costa del Sol'
+        ]
       },
       'Investment': {
-        'MOFU': 'Complete investment guide for Costa del Sol property buyers',
-        'BOFU': 'Investment checklist: what should buyers verify before purchasing on Costa del Sol?'
+        'MOFU': [
+          'Complete investment guide for Costa del Sol property buyers',
+          'Essential investment guide for Costa del Sol property',
+          'Comprehensive investment handbook for Costa del Sol market',
+          'Advanced investment guide for Costa del Sol real estate'
+        ],
+        'BOFU': [
+          'Investment verification checklist for Costa del Sol property buyers',
+          'Essential investment checks for Costa del Sol property',
+          'Investment due diligence checklist for Costa del Sol market',
+          'Pre-purchase investment verification guide for Costa del Sol'
+        ]
       },
       'General': {
-        'MOFU': 'Complete buyer\'s guide for Costa del Sol property purchase',
-        'BOFU': 'General checklist: what should buyers verify before purchasing on Costa del Sol?'
-      },
-      'Education': {
-        'MOFU': 'Complete education & schools guide for Costa del Sol property buyers',
-        'BOFU': 'Education checklist: what should buyers verify before purchasing on Costa del Sol?'
-      },
-      'Healthcare': {
-        'MOFU': 'Complete healthcare guide for Costa del Sol property buyers',
-        'BOFU': 'Healthcare checklist: what should buyers verify before purchasing on Costa del Sol?'
+        'MOFU': [
+          'Complete buyer\'s guide for Costa del Sol property purchase',
+          'Essential buyer\'s guide for Costa del Sol property',
+          'Comprehensive buyer\'s handbook for Costa del Sol market',
+          'Advanced buyer\'s guide for Costa del Sol real estate'
+        ],
+        'BOFU': [
+          'General verification checklist for Costa del Sol property buyers',
+          'Essential checks before buying Costa del Sol property',
+          'Due diligence checklist for Costa del Sol property purchase',
+          'Pre-purchase verification guide for Costa del Sol buyers'
+        ]
       }
     };
 
-    return topicTitles[topic]?.[stage] || 
-           (stage === 'MOFU' 
-             ? `Complete ${topic.toLowerCase()} guide for Costa del Sol property buyers`
-             : `${topic} checklist: what should buyers verify before purchasing on Costa del Sol?`);
+    const variations = topicVariations[topic]?.[stage];
+    if (variations) {
+      return variations;
+    }
+
+    // Fallback variations for unknown topics
+    if (stage === 'MOFU') {
+      return [
+        `Complete ${topic.toLowerCase()} guide for Costa del Sol property buyers`,
+        `Essential ${topic.toLowerCase()} guide for Costa del Sol property`,
+        `Comprehensive ${topic.toLowerCase()} handbook for Costa del Sol buyers`,
+        `Advanced ${topic.toLowerCase()} guide for Costa del Sol investment`
+      ];
+    } else {
+      return [
+        `${topic} verification checklist for Costa del Sol property buyers`,
+        `Essential ${topic.toLowerCase()} checks for Costa del Sol property`,
+        `${topic} due diligence checklist for Costa del Sol purchase`,
+        `Pre-purchase ${topic.toLowerCase()} verification guide for Costa del Sol`
+      ];
+    }
   }
 
   /**
