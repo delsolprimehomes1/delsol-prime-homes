@@ -2,3 +2,9 @@ project_id = "qvrvcvmoudxchipvzksh"
 
 [functions.ai-advisor-chat]
 verify_jwt = false
+
+[functions.generate-blog-image]
+verify_jwt = false
+
+[functions.humanize-content]
+verify_jwt = false
