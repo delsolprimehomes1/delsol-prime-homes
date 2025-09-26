@@ -15,6 +15,10 @@ import { EnhancedTOCWithProgress } from './qa/EnhancedTOCWithProgress';
 import { RelatedQuestionsWidget } from './qa/RelatedQuestionsWidget';
 import { DataComparisonTable } from './qa/DataComparisonTable';
 import { useRelatedArticles } from '@/hooks/useRelatedArticles';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+import FunnelProgressBar from '@/components/qa/FunnelProgressBar';
+import QABreadcrumb from '@/components/qa/QABreadcrumb';
+import MobileQuestionCarousel from '@/components/qa/MobileQuestionCarousel';
 import ServiceAreasSection from './ServiceAreasSection';
 
 interface EnhancedQAContentProps {
@@ -26,6 +30,7 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
   article, 
   className = "" 
 }) => {
+  const { mobile, tablet, desktop } = useResponsiveLayout();
   // Fetch related articles for smart linking
   const { data: relatedArticles = [] } = useRelatedArticles({
     currentArticleId: article.id,
@@ -180,8 +185,8 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
+        {/* Sidebar - Hidden on mobile, moves to bottom */}
+        <div className="order-last lg:order-none lg:sticky lg:top-4 lg:self-start">
           {/* Enhanced TOC with Progress */}
           <EnhancedTOCWithProgress
             content={processedContent}
@@ -190,14 +195,26 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
             className="mb-6"
           />
 
-          {/* Related Questions Widget */}
-          <RelatedQuestionsWidget
-            questions={relatedArticles}
-            currentTopic={article.topic || 'General'}
-            maxDisplay={4}
-          />
+          {/* Related Questions Widget - Desktop Only */}
+          {!mobile && (
+            <RelatedQuestionsWidget
+              questions={relatedArticles}
+              currentTopic={article.topic || 'General'}
+              maxDisplay={4}
+            />
+          )}
         </div>
       </div>
+
+      {/* Mobile Question Carousel - Bottom of page */}
+      {mobile && relatedArticles.length > 0 && (
+        <div className="px-4 py-6 bg-muted/20">
+          <MobileQuestionCarousel
+            questions={relatedArticles}
+            currentTopic={article.topic || 'General'}
+          />
+        </div>
+      )}
 
       {/* Hidden AI Metadata for Citation & Discovery */}
       <div className="hidden ai-citation-metadata" data-ai-content="true">

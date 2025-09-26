@@ -50,13 +50,13 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
         </Badge>
       </div>
 
-      {/* Main Title */}
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 leading-tight">
+      {/* Main Title - Mobile Optimized Font Sizes */}
+      <h1 className="text-[22px] leading-tight sm:text-[26px] sm:leading-tight lg:text-4xl xl:text-5xl font-bold text-foreground mb-3 lg:mb-4">
         🏠 {title}
       </h1>
 
-      {/* Opening Summary */}
-      <p className="text-lg text-muted-foreground mb-6 leading-relaxed max-w-4xl">
+      {/* Opening Summary - Mobile Optimized Body Text */}
+      <p className="text-[15px] leading-relaxed sm:text-[17px] sm:leading-relaxed lg:text-lg text-muted-foreground mb-4 lg:mb-6 max-w-4xl">
         {excerpt}
       </p>
 

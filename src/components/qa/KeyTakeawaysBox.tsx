@@ -36,12 +36,12 @@ export const KeyTakeawaysBox: React.FC<KeyTakeawaysBoxProps> = ({
         </Badge>
       </div>
       
-      <div className="grid md:grid-cols-3 gap-6">
-        {/* Main Takeaways */}
-        <div className="md:col-span-2">
-          <ul className="space-y-3">
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Main Takeaways - Responsive 2x2 Grid on Desktop, Stack on Mobile */}
+        <div className="lg:col-span-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             {takeaways.map((takeaway, index) => (
-              <li 
+              <div 
                 key={index}
                 className="flex items-start gap-3 p-3 rounded-lg bg-background/60 border border-primary/10"
               >
@@ -51,14 +51,14 @@ export const KeyTakeawaysBox: React.FC<KeyTakeawaysBoxProps> = ({
                 <span className="text-sm text-foreground leading-relaxed font-medium">
                   {takeaway}
                 </span>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
         {/* Related Questions Sidebar */}
         {relatedQuestions.length > 0 && (
-          <div className="md:col-span-1">
+          <div className="lg:col-span-1">
             <div className="space-y-3">
               <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
                 <LinkIcon className="w-4 h-4 text-primary" />

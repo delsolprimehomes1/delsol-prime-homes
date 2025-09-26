@@ -117,11 +117,11 @@ export const SmartMidPageCTA: React.FC<SmartMidPageCTAProps> = ({
           </div>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+        {/* CTA Buttons - Mobile Touch-Optimized */}
+        <div className="flex flex-col gap-3 justify-center mb-6">
           <Button 
             size="lg"
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 w-full sm:w-auto min-h-[44px] text-base"
             asChild
           >
             <Link to={content.primaryCTA.href}>
@@ -133,7 +133,7 @@ export const SmartMidPageCTA: React.FC<SmartMidPageCTAProps> = ({
           <Button 
             variant="outline" 
             size="lg"
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 w-full sm:w-auto min-h-[44px] text-base"
             asChild
           >
             <Link to={content.secondaryCTA.href}>
