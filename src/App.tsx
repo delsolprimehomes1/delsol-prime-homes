@@ -15,6 +15,7 @@ import QA from "./pages/QA";
 import QAPost from "./pages/QAPost";
 import ContentManager from "./pages/ContentManager";
 import AIOptimizationDashboard from "./pages/AIOptimizationDashboard";
+import BlogBuilderPage from "./pages/BlogBuilder";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/qa/:slug" element={<QAPost />} />
               <Route path="/content-manager" element={<ContentManager />} />
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />
+              <Route path="/blog-builder" element={<BlogBuilderPage />} />
               <Route path="/book-viewing" element={<BookViewing />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
