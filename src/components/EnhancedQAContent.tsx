@@ -1,14 +1,21 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Clock, Mic, Quote, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { checkContentQuality, generateNoIndexMeta, extractShortAnswer, generateQuickAnswer, checkVoiceFriendly } from '@/utils/content-quality-guard';
-import { formatForVoice, formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
+import { formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
 import { detectArticleCity, generateGeoMetadata, generatePlaceSchema } from '@/utils/geo-data';
 import { processMarkdownContent } from '@/utils/markdown';
-import ServiceAreasSection from './ServiceAreasSection';
-import FreshnessIndicator from './FreshnessIndicator';
 import { Helmet } from 'react-helmet-async';
+
+// Import new enhanced components
+import { QAHeroSection } from './qa/QAHeroSection';
+import { KeyTakeawaysBox } from './qa/KeyTakeawaysBox';
+import { SmartMidPageCTA } from './qa/SmartMidPageCTA';
+import { EnhancedTOCWithProgress } from './qa/EnhancedTOCWithProgress';
+import { RelatedQuestionsWidget } from './qa/RelatedQuestionsWidget';
+import { DataComparisonTable } from './qa/DataComparisonTable';
+import { useRelatedArticles } from '@/hooks/useRelatedArticles';
+import ServiceAreasSection from './ServiceAreasSection';
 
 interface EnhancedQAContentProps {
   article: any;
@@ -19,6 +26,14 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
   article, 
   className = "" 
 }) => {
+  // Fetch related articles for smart linking
+  const { data: relatedArticles = [] } = useRelatedArticles({
+    currentArticleId: article.id,
+    currentTopic: article.topic || 'General',
+    currentStage: article.funnel_stage || 'TOFU',
+    language: 'en',
+    maxResults: 6
+  });
   // Perform content quality checks
   const qualityCheck = checkContentQuality(article);
   const voiceCheck = checkVoiceFriendly(article.content || '', article.title || '');
@@ -89,108 +104,100 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         />
       </Helmet>
 
-      <div className={`enhanced-qa-content ${className}`} data-article-id={article.id}>
-        {/* Content Quality Warning */}
-        {qualityCheck.shouldNoIndex && (
-          <Alert className="mb-6 border-orange-200 bg-orange-50">
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800">
-              <strong>Content Under Development:</strong> This article is being enhanced for AI citation readiness.
-              Current length: {qualityCheck.charCount} chars (target: 1200+)
-            </AlertDescription>
-          </Alert>
-        )}
+      <div className={`grid lg:grid-cols-4 gap-8 ${className}`} data-article-id={article.id}>
+        {/* Main Content Area */}
+        <div className="lg:col-span-3">
+          {/* Content Quality Warning */}
+          {qualityCheck.shouldNoIndex && (
+            <Alert className="mb-6 border-orange-200 bg-orange-50">
+              <AlertTriangle className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-800">
+                <strong>Content Under Development:</strong> This article is being enhanced for AI citation readiness.
+                Current length: {qualityCheck.charCount} chars (target: 1200+)
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {/* Article Header with Quality Indicators */}
-        <header className="mb-8">
-          <h1 className="question-title text-3xl sm:text-4xl font-bold text-foreground mb-4 leading-tight">
-            {article.title}
-          </h1>
-          
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Badge variant={qualityCheck.isValid ? "default" : "secondary"} className="flex items-center gap-1">
-              <Quote className="w-3 h-3" />
-              {qualityCheck.isValid ? 'Citation Ready' : 'Needs Enhancement'}
-            </Badge>
-            
-            <Badge variant={voiceCheck.score >= 75 ? "default" : "secondary"} className="flex items-center gap-1">
-              <Mic className="w-3 h-3" />
-              {voiceCheck.score >= 75 ? 'Voice Optimized' : 'Voice Pending'}
-            </Badge>
-            
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span>{readingTime} min read</span>
-            </div>
-            
-            <div className="text-sm text-muted-foreground">
-              {qualityCheck.charCount} characters
-            </div>
-          </div>
-          
-          {/* Freshness and geo indicators */}
-          <div className="mb-6">
-            <FreshnessIndicator 
-              lastUpdated={article.updated_at || article.created_at}
-              dateModified={article.updated_at}
-            />
-          </div>
-        </header>
+          {/* Enhanced Hero Section */}
+          <QAHeroSection
+            title={article.title}
+            excerpt={article.excerpt || shortAnswer}
+            readingTime={readingTime}
+            lastUpdated={article.updated_at || article.created_at}
+            funnelStage={article.funnel_stage || 'TOFU'}
+            topic={article.topic || 'General'}
+            qualityScore={qualityCheck.isValid ? 9.8 : 5.0}
+            voiceReady={voiceCheck.score >= 75}
+            citationReady={qualityCheck.isValid}
+          />
 
-        {/* Short Answer - Voice Search Optimized */}
-        <section className="mb-8">
-          <div 
-            className="short-answer bg-primary/5 border border-primary/20 rounded-lg p-6 prose prose-lg max-w-none"
-            data-speakable="true"
-            data-voice-priority="high"
-          >
-            <h2 className="text-lg font-semibold text-primary mb-3 flex items-center gap-2">
-              <Mic className="w-5 h-5" />
-              Quick Answer
-            </h2>
+          {/* Key Takeaways Box with Related Questions */}
+          <KeyTakeawaysBox
+            takeaways={formattedBullets}
+            topic={article.topic || 'General'}
+            relatedQuestions={relatedArticles.slice(0, 3).map(article => ({
+              slug: article.slug,
+              title: article.title,
+              topic: article.topic
+            }))}
+            className="mb-8"
+          />
+
+          {/* Service Areas Section */}
+          <div className="mb-8">
+            <ServiceAreasSection geoData={geoData} />
+          </div>
+
+          {/* Main Article Content */}
+          <article className="mb-8 prose prose-lg max-w-none">
             <div 
-              className="text-foreground leading-relaxed"
-              dangerouslySetInnerHTML={{ 
-                __html: processedShortAnswer || 'Short answer being generated...' 
-              }}
+              className="content-body"
+              dangerouslySetInnerHTML={{ __html: processedContent }}
             />
-          </div>
-        </section>
+          </article>
 
-        {/* Quick Answer Bullets - AI Citation Ready */}
-        <section className="mb-8">
-          <div 
-            className="quick-answer bg-muted/30 border rounded-lg p-6"
-            data-speakable="true"
-            data-citation-ready="true"
-          >
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Quote className="w-5 h-5" />
-              Key Points
-            </h2>
-            <ul className="space-y-2">
-              {formattedBullets.map((bullet, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <span className="text-primary font-bold text-lg">•</span>
-                  <span className="text-foreground leading-relaxed">{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+          {/* Mid-Page CTA */}
+          <SmartMidPageCTA
+            funnelStage={article.funnel_stage || 'TOFU'}
+            topic={article.topic || 'General'}
+            relatedArticles={relatedArticles.slice(3, 6)}
+            className="mb-8"
+          />
 
-        {/* Service Areas Section */}
-        <div className="mb-8">
-          <ServiceAreasSection geoData={geoData} />
+          {/* Comparison Table (if applicable) */}
+          {(article.topic === 'Legal' || article.topic === 'Finance' || article.topic === 'Investment') && (
+            <DataComparisonTable
+              title={`${article.topic} Comparison: New-Build vs Resale Properties`}
+              subtitle={`Key ${article.topic.toLowerCase()} considerations when choosing between property types`}
+              rows={[
+                { feature: 'Modern Features', newBuild: true, resale: 'Depends on renovation', icon: 'check' },
+                { feature: 'Legal Documentation', newBuild: 'Complete and current', resale: 'May require updates', icon: 'warning' },
+                { feature: 'Financing Options', newBuild: 'Stage payments possible', resale: 'Full payment required', icon: 'info' },
+                { feature: 'Investment Potential', newBuild: 'Future appreciation', resale: 'Established market value', icon: 'check' }
+              ]}
+              className="mb-8"
+            />
+          )}
         </div>
 
-        {/* Main Article Content */}
-        <article className="body prose prose-lg max-w-none">
-          <div 
-            className="content-body"
-            dangerouslySetInnerHTML={{ __html: processedContent }}
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          {/* Enhanced TOC with Progress */}
+          <EnhancedTOCWithProgress
+            content={processedContent}
+            currentStage={article.funnel_stage || 'TOFU'}
+            relatedArticles={relatedArticles}
+            className="mb-6"
           />
-        </article>
+
+          {/* Related Questions Widget */}
+          <RelatedQuestionsWidget
+            questions={relatedArticles}
+            currentTopic={article.topic || 'General'}
+            maxDisplay={4}
+          />
+        </div>
+      </div>
 
         {/* Hidden AI Metadata for Citation & Discovery */}
         <div className="hidden ai-citation-metadata" data-ai-content="true">
