@@ -2,6 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Clock, User, Calendar, CheckCircle } from 'lucide-react';
 import { FreshnessIndicator } from '@/components/FreshnessIndicator';
+import { processMarkdownContent } from '@/utils/markdown';
 
 interface QAHeroSectionProps {
   title: string;
@@ -56,9 +57,10 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
       </h1>
 
       {/* Opening Summary - Mobile Optimized Body Text */}
-      <p className="text-[15px] leading-relaxed sm:text-[17px] sm:leading-relaxed lg:text-lg text-muted-foreground mb-4 lg:mb-6 max-w-4xl">
-        {excerpt}
-      </p>
+      <div 
+        className="text-[15px] leading-relaxed sm:text-[17px] sm:leading-relaxed lg:text-lg text-muted-foreground mb-4 lg:mb-6 max-w-4xl"
+        dangerouslySetInnerHTML={{ __html: processMarkdownContent(excerpt) }}
+      />
 
       {/* Meta Information */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 text-sm">
