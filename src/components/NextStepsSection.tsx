@@ -31,10 +31,13 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
           const previewText = nextMofuArticle.title.length > 60 
             ? nextMofuArticle.title.substring(0, 57) + '...' 
             : nextMofuArticle.title;
+          const shortTopic = topic && topic.length > 15 
+            ? topic.substring(0, 12) + '...' 
+            : topic;
           return {
             title: 'Deep Dive Research',
             description: `Next: ${previewText}`,
-            ctaText: `Explore ${topic} research guide →`,
+            ctaText: `Explore ${shortTopic} guide`,
             ctaLink: `/qa/${nextMofuArticle.slug}`,
             icon: <Search className="w-5 h-5" />
           };
@@ -42,7 +45,7 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
         return {
           title: 'Ready to Research?',
           description: 'Explore detailed guides and expert insights for your property journey',
-          ctaText: 'Explore detailed guides →',
+          ctaText: 'Explore guides',
           ctaLink: '/qa?stage=research',
           icon: <BookOpen className="w-5 h-5" />
         };
@@ -55,7 +58,7 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
           return {
             title: 'Final Decision Steps',
             description: `Ready to act: ${previewText}`,
-            ctaText: 'What to confirm before buying →',
+            ctaText: 'Confirm before buying',
             ctaLink: `/qa/${nextBofuArticle.slug}`,
             icon: <ArrowRight className="w-5 h-5" />
           };
@@ -63,7 +66,7 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
         return {
           title: 'Ready for Action?',
           description: 'Get decision-ready with expert action guides and final confirmations',
-          ctaText: 'View action guides →',
+          ctaText: 'View action guides',
           ctaLink: '/qa?stage=decision',
           icon: <ArrowRight className="w-5 h-5" />
         };
@@ -72,7 +75,7 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
         return {
           title: 'Your Dream Home is Waiting',
           description: 'Schedule your consultation now — our experts are ready to help you secure your perfect property',
-          ctaText: 'Book consultation now →',
+          ctaText: 'Book consultation',
           ctaLink: '#booking-chatbot',
           icon: <PhoneCall className="w-5 h-5" />
         };
@@ -120,7 +123,7 @@ export const NextStepsSection: React.FC<NextStepsSectionProps> = ({
               asChild={nextStep.ctaLink !== '#booking-chatbot'}
               variant="default"
               size="sm"
-              className="transition-all duration-200 hover:scale-105"
+              className="transition-all duration-200 hover:scale-105 w-full sm:w-auto max-w-full"
               onClick={() => {
                 if (nextStep.ctaLink === '#booking-chatbot') {
                   handleClick();
