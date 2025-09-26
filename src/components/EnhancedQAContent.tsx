@@ -109,112 +109,129 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         />
       </Helmet>
 
-      <div className={`grid lg:grid-cols-4 gap-8 ${className}`} data-article-id={article.id}>
-        {/* Main Content Area */}
-        <div className="lg:col-span-3">
-          {/* Content Quality Warning */}
-          {qualityCheck.shouldNoIndex && (
-            <Alert className="mb-6 border-orange-200 bg-orange-50">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
-              <AlertDescription className="text-orange-800">
-                <strong>Content Under Development:</strong> This article is being enhanced for AI citation readiness.
-                Current length: {qualityCheck.charCount} chars (target: 1200+)
-              </AlertDescription>
-            </Alert>
-          )}
+      {/* Funnel Progress Bar - Mobile: sticky bottom, Desktop: top */}
+      <FunnelProgressBar
+        currentStage={article.funnel_stage || 'TOFU'}
+        topic={article.topic || 'General'}
+        className={mobile ? "sticky bottom-0 z-50" : "sticky top-0 z-40"}
+      />
 
-          {/* Enhanced Hero Section */}
-          <QAHeroSection
-            title={article.title}
-            excerpt={article.excerpt || shortAnswer}
-            readingTime={readingTime}
-            lastUpdated={article.updated_at || article.created_at}
-            funnelStage={article.funnel_stage || 'TOFU'}
-            topic={article.topic || 'General'}
-            qualityScore={qualityCheck.isValid ? 9.8 : 5.0}
-            voiceReady={voiceCheck.score >= 75}
-            citationReady={qualityCheck.isValid}
-          />
+      {/* Breadcrumb Navigation */}
+      <div className="px-4 lg:px-0 mb-4">
+        <QABreadcrumb
+          title={article.title}
+          topic={article.topic || 'General'}
+          funnelStage={article.funnel_stage || 'TOFU'}
+        />
+      </div>
 
-          {/* Key Takeaways Box with Related Questions */}
-          <KeyTakeawaysBox
-            takeaways={formattedBullets}
-            topic={article.topic || 'General'}
-            relatedQuestions={relatedArticles.slice(0, 3).map(article => ({
-              slug: article.slug,
-              title: article.title,
-              topic: article.topic
-            }))}
-            className="mb-8"
-          />
+      <div className={`px-4 pb-6 lg:px-0 lg:pb-0 ${className}`} data-article-id={article.id}>
+        {/* Responsive Grid: Mobile single column, Desktop 70%/30% */}
+        <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16">
+          {/* Main Content Area - 70% on desktop, full width on mobile */}
+          <main className="flex-1 lg:w-[70%] min-w-0">
+            {/* Content Quality Warning */}
+            {qualityCheck.shouldNoIndex && (
+              <Alert className="mb-6 border-orange-200 bg-orange-50">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <AlertDescription className="text-orange-800">
+                  <strong>Content Under Development:</strong> This article is being enhanced for AI citation readiness.
+                  Current length: {qualityCheck.charCount} chars (target: 1200+)
+                </AlertDescription>
+              </Alert>
+            )}
 
-          {/* Service Areas Section */}
-          <div className="mb-8">
-            <ServiceAreasSection geoData={geoData} />
-          </div>
-
-          {/* Main Article Content */}
-          <article className="mb-8 prose prose-lg max-w-none">
-            <div 
-              className="content-body"
-              dangerouslySetInnerHTML={{ __html: processedContent }}
+            {/* Enhanced Hero Section */}
+            <QAHeroSection
+              title={article.title}
+              excerpt={article.excerpt || shortAnswer}
+              readingTime={readingTime}
+              lastUpdated={article.updated_at || article.created_at}
+              funnelStage={article.funnel_stage || 'TOFU'}
+              topic={article.topic || 'General'}
+              qualityScore={qualityCheck.isValid ? 9.8 : 5.0}
+              voiceReady={voiceCheck.score >= 75}
+              citationReady={qualityCheck.isValid}
             />
-          </article>
 
-          {/* Mid-Page CTA */}
-          <SmartMidPageCTA
-            funnelStage={article.funnel_stage || 'TOFU'}
-            topic={article.topic || 'General'}
-            relatedArticles={relatedArticles.slice(3, 6)}
-            className="mb-8"
-          />
-
-          {/* Comparison Table (if applicable) */}
-          {(article.topic === 'Legal' || article.topic === 'Finance' || article.topic === 'Investment') && (
-            <DataComparisonTable
-              title={`${article.topic} Comparison: New-Build vs Resale Properties`}
-              subtitle={`Key ${article.topic.toLowerCase()} considerations when choosing between property types`}
-              rows={[
-                { feature: 'Modern Features', newBuild: true, resale: 'Depends on renovation', icon: 'check' },
-                { feature: 'Legal Documentation', newBuild: 'Complete and current', resale: 'May require updates', icon: 'warning' },
-                { feature: 'Financing Options', newBuild: 'Stage payments possible', resale: 'Full payment required', icon: 'info' },
-                { feature: 'Investment Potential', newBuild: 'Future appreciation', resale: 'Established market value', icon: 'check' }
-              ]}
+            {/* Key Takeaways Box with Related Questions */}
+            <KeyTakeawaysBox
+              takeaways={formattedBullets}
+              topic={article.topic || 'General'}
+              relatedQuestions={relatedArticles.slice(0, 3).map(article => ({
+                slug: article.slug,
+                title: article.title,
+                topic: article.topic
+              }))}
               className="mb-8"
             />
-          )}
-        </div>
 
-        {/* Sidebar - Hidden on mobile, moves to bottom */}
-        <div className="order-last lg:order-none lg:sticky lg:top-4 lg:self-start">
-          {/* Enhanced TOC with Progress */}
-          <EnhancedTOCWithProgress
-            content={processedContent}
-            currentStage={article.funnel_stage || 'TOFU'}
-            relatedArticles={relatedArticles}
-            className="mb-6"
-          />
+            {/* Service Areas Section */}
+            <div className="mb-8">
+              <ServiceAreasSection geoData={geoData} />
+            </div>
 
-          {/* Related Questions Widget - Desktop Only */}
-          {!mobile && (
+            {/* Main Article Content */}
+            <article className="mb-8 prose prose-sm sm:prose-base lg:prose-lg max-w-none [&>*]:text-[15px] sm:[&>*]:text-base lg:[&>*]:text-lg [&>*]:leading-relaxed">
+              <div 
+                className="content-body"
+                dangerouslySetInnerHTML={{ __html: processedContent }}
+              />
+            </article>
+
+            {/* Mid-Page CTA */}
+            <SmartMidPageCTA
+              funnelStage={article.funnel_stage || 'TOFU'}
+              topic={article.topic || 'General'}
+              relatedArticles={relatedArticles.slice(3, 6)}
+              className="mb-8"
+            />
+
+            {/* Comparison Table (if applicable) */}
+            {(article.topic === 'Legal' || article.topic === 'Finance' || article.topic === 'Investment') && (
+              <DataComparisonTable
+                title={`${article.topic} Comparison: New-Build vs Resale Properties`}
+                subtitle={`Key ${article.topic.toLowerCase()} considerations when choosing between property types`}
+                rows={[
+                  { feature: 'Modern Features', newBuild: true, resale: 'Depends on renovation', icon: 'check' },
+                  { feature: 'Legal Documentation', newBuild: 'Complete and current', resale: 'May require updates', icon: 'warning' },
+                  { feature: 'Financing Options', newBuild: 'Stage payments possible', resale: 'Full payment required', icon: 'info' },
+                  { feature: 'Investment Potential', newBuild: 'Future appreciation', resale: 'Established market value', icon: 'check' }
+                ]}
+                className="mb-8"
+              />
+            )}
+          </main>
+
+          {/* Sidebar - 30% on desktop, hidden on mobile */}
+          <aside className="hidden lg:block lg:w-[30%] lg:pl-8 lg:sticky lg:top-24 lg:self-start lg:max-h-screen lg:overflow-y-auto">
+            {/* Enhanced TOC with Progress */}
+            <EnhancedTOCWithProgress
+              content={processedContent}
+              currentStage={article.funnel_stage || 'TOFU'}
+              relatedArticles={relatedArticles}
+              className="mb-6"
+            />
+
+            {/* Related Questions Widget - Desktop Only */}
             <RelatedQuestionsWidget
               questions={relatedArticles}
               currentTopic={article.topic || 'General'}
               maxDisplay={4}
             />
-          )}
+          </aside>
         </div>
-      </div>
 
-      {/* Mobile Question Carousel - Bottom of page */}
-      {mobile && relatedArticles.length > 0 && (
-        <div className="px-4 py-6 bg-muted/20">
-          <MobileQuestionCarousel
-            questions={relatedArticles}
-            currentTopic={article.topic || 'General'}
-          />
-        </div>
-      )}
+        {/* Mobile Question Carousel - Bottom of page */}
+        {mobile && relatedArticles.length > 0 && (
+          <div className="mt-8 px-4 py-6 bg-muted/20 -mx-4">
+            <MobileQuestionCarousel
+              questions={relatedArticles}
+              currentTopic={article.topic || 'General'}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Hidden AI Metadata for Citation & Discovery */}
       <div className="hidden ai-citation-metadata" data-ai-content="true">

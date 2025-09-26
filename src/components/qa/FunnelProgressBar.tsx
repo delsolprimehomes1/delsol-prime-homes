@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 
 interface FunnelProgressBarProps {
   currentStage: string;
@@ -14,7 +14,7 @@ export const FunnelProgressBar: React.FC<FunnelProgressBarProps> = ({
   topic,
   className = ''
 }) => {
-  const isMobile = useIsMobile();
+  const { mobile } = useResponsiveLayout();
   
   const stages = [
     { key: 'TOFU', label: 'Getting Started', shortLabel: 'Start' },
@@ -24,7 +24,7 @@ export const FunnelProgressBar: React.FC<FunnelProgressBarProps> = ({
 
   const currentIndex = stages.findIndex(stage => stage.key === currentStage);
 
-  if (isMobile) {
+  if (mobile) {
     // Mobile: Sticky bottom progress bar
     return (
       <div className={`fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border/40 p-4 ${className}`}>
