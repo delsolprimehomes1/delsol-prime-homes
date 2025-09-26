@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
 import { checkContentQuality, generateNoIndexMeta, extractShortAnswer, generateQuickAnswer, checkVoiceFriendly } from '@/utils/content-quality-guard';
-import { formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
+import { formatForVoice, formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
 import { detectArticleCity, generateGeoMetadata, generatePlaceSchema } from '@/utils/geo-data';
 import { processMarkdownContent } from '@/utils/markdown';
 import { Helmet } from 'react-helmet-async';
@@ -199,51 +199,50 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         </div>
       </div>
 
-        {/* Hidden AI Metadata for Citation & Discovery */}
-        <div className="hidden ai-citation-metadata" data-ai-content="true">
-          <div className="ai-summary" data-speakable="true">
-            {article.excerpt || shortAnswer}
-          </div>
-          
-          <div className="essential-info">
-            <span className="topic">{article.topic}</span>
-            <span className="funnel-stage">{article.funnel_stage}</span>
-            <span className="location">{article.city || 'Costa del Sol'}</span>
-            <span className="content-length">{qualityCheck.charCount}</span>
-            <span className="reading-time">{readingTime}</span>
-          </div>
-          
-          <div className="voice-keywords">
-            {voiceKeywords.map((keyword, index) => (
-              <span key={index} className="keyword" data-speakable="true">
-                {keyword}
-              </span>
-            ))}
-          </div>
-          
-          <div className="quality-metrics">
-            <span className="ai-score">{qualityCheck.isValid ? 9.8 : 5.0}</span>
-            <span className="voice-score">{voiceCheck.score}</span>
-            <span className="citation-ready">{qualityCheck.isValid}</span>
-            <span className="voice-ready">{voiceCheck.score >= 75}</span>
-          </div>
+      {/* Hidden AI Metadata for Citation & Discovery */}
+      <div className="hidden ai-citation-metadata" data-ai-content="true">
+        <div className="ai-summary" data-speakable="true">
+          {article.excerpt || shortAnswer}
         </div>
-
-        {/* Development Notes (only shown when content needs work) */}
-        {!qualityCheck.isValid && (
-          <div className="mt-8 p-4 bg-muted/20 border rounded-lg">
-            <h3 className="font-semibold text-foreground mb-2">Content Enhancement Needed</h3>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              {qualityCheck.recommendations.map((rec, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-orange-500">•</span>
-                  {rec}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        
+        <div className="essential-info">
+          <span className="topic">{article.topic}</span>
+          <span className="funnel-stage">{article.funnel_stage}</span>
+          <span className="location">{article.city || 'Costa del Sol'}</span>
+          <span className="content-length">{qualityCheck.charCount}</span>
+          <span className="reading-time">{readingTime}</span>
+        </div>
+        
+        <div className="voice-keywords">
+          {voiceKeywords.map((keyword, index) => (
+            <span key={index} className="keyword" data-speakable="true">
+              {keyword}
+            </span>
+          ))}
+        </div>
+        
+        <div className="quality-metrics">
+          <span className="ai-score">{qualityCheck.isValid ? 9.8 : 5.0}</span>
+          <span className="voice-score">{voiceCheck.score}</span>
+          <span className="citation-ready">{qualityCheck.isValid}</span>
+          <span className="voice-ready">{voiceCheck.score >= 75}</span>
+        </div>
       </div>
+
+      {/* Development Notes (only shown when content needs work) */}
+      {!qualityCheck.isValid && (
+        <div className="mt-8 p-4 bg-muted/20 border rounded-lg">
+          <h3 className="font-semibold text-foreground mb-2">Content Enhancement Needed</h3>
+          <ul className="text-sm text-muted-foreground space-y-1">
+            {qualityCheck.recommendations.map((rec, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span className="text-orange-500">•</span>
+                {rec}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 };
