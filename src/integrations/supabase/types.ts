@@ -169,14 +169,18 @@ export type Database = {
       }
       blog_posts: {
         Row: {
+          ai_generated_image: boolean | null
           author: string | null
           canonical_url: string | null
           category_key: string
           city_tags: string[] | null
           content: string
           created_at: string
+          custom_cta_text: string | null
+          custom_cta_url: string | null
           excerpt: string
           featured_image: string
+          funnel_stage: string | null
           id: string
           image_alt: string
           keywords: string[] | null
@@ -184,21 +188,27 @@ export type Database = {
           meta_description: string | null
           meta_title: string | null
           published_at: string | null
+          reading_time_minutes: number | null
           slug: string
           status: string | null
           tags: string[] | null
           title: string
+          toc_data: Json | null
           updated_at: string
         }
         Insert: {
+          ai_generated_image?: boolean | null
           author?: string | null
           canonical_url?: string | null
           category_key: string
           city_tags?: string[] | null
           content: string
           created_at?: string
+          custom_cta_text?: string | null
+          custom_cta_url?: string | null
           excerpt: string
           featured_image: string
+          funnel_stage?: string | null
           id?: string
           image_alt: string
           keywords?: string[] | null
@@ -206,21 +216,27 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
+          reading_time_minutes?: number | null
           slug: string
           status?: string | null
           tags?: string[] | null
           title: string
+          toc_data?: Json | null
           updated_at?: string
         }
         Update: {
+          ai_generated_image?: boolean | null
           author?: string | null
           canonical_url?: string | null
           category_key?: string
           city_tags?: string[] | null
           content?: string
           created_at?: string
+          custom_cta_text?: string | null
+          custom_cta_url?: string | null
           excerpt?: string
           featured_image?: string
+          funnel_stage?: string | null
           id?: string
           image_alt?: string
           keywords?: string[] | null
@@ -228,10 +244,12 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
+          reading_time_minutes?: number | null
           slug?: string
           status?: string | null
           tags?: string[] | null
           title?: string
+          toc_data?: Json | null
           updated_at?: string
         }
         Relationships: []
