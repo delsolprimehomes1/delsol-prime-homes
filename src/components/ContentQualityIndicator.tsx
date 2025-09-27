@@ -180,7 +180,17 @@ export const ContentQualityIndicator: React.FC<ContentQualityIndicatorProps> = (
           <Alert className="border-green-200 bg-green-50">
             <CheckCircle2 className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800">
-              <strong>Fully Optimized!</strong> This content is ready for AI citation and voice search discovery.
+              <strong>Expert-Level Content!</strong> This comprehensive guide is fully optimized for AI citation, voice search discovery, and search engine visibility.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Enhanced Content State */}
+        {qualityCheck.charCount >= 1200 && !qualityCheck.isValid && (
+          <Alert className="border-blue-200 bg-blue-50">
+            <CheckCircle2 className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              <strong>Content Enhanced!</strong> This article provides comprehensive guidance for your Costa del Sol property journey.
             </AlertDescription>
           </Alert>
         )}

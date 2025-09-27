@@ -89,14 +89,19 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
       <div className="flex flex-wrap items-center gap-3">
         {/* Show positive indicators for enhanced content */}
         {citationReady && qualityScore >= 8 ? (
-          <Badge variant="default" className="flex items-center gap-1 bg-green-600 text-white">
+          <Badge variant="default" className="flex items-center gap-1 bg-primary text-primary-foreground">
             <Shield className="w-3 h-3" />
-            Content Enhanced ✓
+            Expert Content ✓
+          </Badge>
+        ) : qualityScore >= 6 ? (
+          <Badge variant="secondary" className="flex items-center gap-1 bg-amber-100 text-amber-800 border-amber-200">
+            <Shield className="w-3 h-3" />
+            Content Enhanced
           </Badge>
         ) : (
           <Badge variant="secondary" className="flex items-center gap-1">
             <Shield className="w-3 h-3" />
-            Needs Enhancement
+            Under Review
           </Badge>
         )}
         
@@ -118,8 +123,9 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
         </div>
 
         {qualityScore >= 8 && (
-          <div className="text-sm font-medium text-green-700">
-            Expert Quality ★
+          <div className="text-sm font-medium text-primary flex items-center gap-1">
+            <CheckCircle className="w-4 h-4" />
+            Expert Quality Score: {qualityScore}/10
           </div>
         )}
       </div>

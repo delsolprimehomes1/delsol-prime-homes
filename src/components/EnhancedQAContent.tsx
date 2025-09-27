@@ -131,28 +131,31 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
           {/* Main Content Area - 70% on desktop, full width on mobile */}
           <main className="flex-1 lg:w-[70%] min-w-0">
             {/* Content Quality Enhancement Indicator */}
-            {qualityCheck.shouldNoIndex ? (
-              <Alert className="mb-6 border-orange-200 bg-orange-50">
-                <AlertTriangle className="h-4 w-4 text-orange-600" />
-                <AlertDescription className="text-orange-800">
-                  <strong>Content Under Development:</strong> This article is being enhanced for AI citation readiness.
-                  Current length: {qualityCheck.charCount} chars (target: 1200+)
-                </AlertDescription>
-              </Alert>
-            ) : qualityCheck.isValid && voiceCheck.score >= 75 ? (
+            {qualityCheck.isValid && voiceCheck.score >= 75 ? (
               <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-green-800 mb-1">✨ Content Enhanced</div>
-                    <div className="text-xs text-green-600">This article is optimized for AI discovery and voice search</div>
+                    <p className="text-green-800 font-medium">Expert-Level Content</p>
+                    <p className="text-green-700 text-sm">Fully optimized for AI citation and voice search discovery</p>
+                  </div>
+                </div>
+              </div>
+            ) : qualityCheck.charCount >= 1200 ? (
+              <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-blue-800 font-medium">Content Enhanced</p>
+                    <p className="text-blue-700 text-sm">Comprehensive guide ready for your Costa del Sol property journey</p>
                   </div>
                 </div>
               </div>
             ) : null}
-
             {/* Enhanced Hero Section */}
             <QAHeroSection
               title={article.title}
