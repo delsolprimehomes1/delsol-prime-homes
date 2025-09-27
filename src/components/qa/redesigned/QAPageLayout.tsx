@@ -4,9 +4,10 @@ import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import QAHeroSection from './QAHeroSection';
 import QAJourneyProgress from './QAJourneyProgress';
 import QAQuickAnswer from './QAQuickAnswer';
-import QARelatedCarousel from './QARelatedCarousel';
+import RelatedQuestionsGrid from './RelatedQuestionsGrid';
 import QACTASection from './QACTASection';
 import QAMobileLayout from './QAMobileLayout';
+import QASpacedLayout from './QASpacedLayout';
 
 interface QAArticle {
   id: string;
@@ -80,76 +81,83 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
     );
   }
 
-  // Desktop Layout - 12-column grid
+  // Desktop Layout - Spacious and clean
   return (
-    <div className="qa-container max-w-7xl mx-auto grid grid-cols-12 gap-8 px-6 py-8">
-      {/* Main Content Area (8 columns) */}
-      <main className="col-span-8 space-y-8">
-        {/* Hero Question Block */}
-        <QAHeroSection
-          title={article.title}
-          excerpt={article.excerpt}
-          readingTime={readingTime}
-          lastUpdated={article.last_updated}
-          funnelStage={article.funnel_stage}
-          topic={article.topic}
-          qualityScore={article.ai_optimization_score || 0}
-          voiceReady={article.voice_search_ready || false}
-          citationReady={article.citation_ready || false}
-        />
+    <QASpacedLayout>
+      <div className="max-w-6xl mx-auto space-y-20">
+        {/* Hero Section */}
+        <section>
+          <QAHeroSection
+            title={article.title}
+            excerpt={article.excerpt}
+            readingTime={readingTime}
+            lastUpdated={article.last_updated}
+            funnelStage={article.funnel_stage}
+            topic={article.topic}
+            qualityScore={article.ai_optimization_score || 0}
+            voiceReady={article.voice_search_ready || false}
+            citationReady={article.citation_ready || false}
+          />
+        </section>
 
-        {/* Quick Answer Card */}
-        <QAQuickAnswer
-          directAnswer={quickAnswer}
-        />
+        {/* Quick Answer Section */}
+        <section>
+          <QAQuickAnswer directAnswer={quickAnswer} />
+        </section>
 
-        {/* Detailed Content */}
-        <article className="prose prose-lg max-w-none">
-          <Card className="bg-white rounded-2xl shadow-md p-8 space-y-6">
-            {children}
-          </Card>
-        </article>
+        {/* Main Content Section */}
+        <section>
+          <article className="prose prose-xl max-w-none">
+            <Card className="bg-white rounded-3xl shadow-xl p-12 lg:p-16 space-y-8 border-0">
+              <div className="space-y-8 text-lg leading-relaxed">
+                {children}
+              </div>
+            </Card>
+          </article>
+        </section>
 
-        {/* Related Q&A Carousel */}
+        {/* Related Questions Grid - Full Width */}
         {relatedQuestions.length > 0 && (
-          <QARelatedCarousel
+          <RelatedQuestionsGrid
             questions={relatedQuestions}
             currentTopic={article.topic}
-            maxDisplay={6}
+            maxInitialDisplay={8}
           />
         )}
-      </main>
 
-      {/* Sidebar (4 columns) */}
-      <aside className="col-span-4 space-y-6">
-        {/* Journey Progress */}
-        <QAJourneyProgress
-          currentStage={article.funnel_stage}
-          topic={article.topic}
-        />
+        {/* Journey Progress & CTA Section */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <QAJourneyProgress
+            currentStage={article.funnel_stage}
+            topic={article.topic}
+          />
+          {ctaComponent}
+        </section>
 
-        {/* CTA Widget */}
-        {ctaComponent}
-
-        {/* Topic Tags */}
+        {/* Topic Tags Section - Full Width */}
         {article.tags && article.tags.length > 0 && (
-          <Card className="bg-white rounded-2xl shadow-md p-6">
-            <h3 className="font-semibold text-lg mb-4">Browse Topics</h3>
-            <div className="flex flex-wrap gap-2">
-              {article.tags.slice(0, 8).map((tag, index) => (
-                <a
-                  key={index}
-                  href={`/qa?topic=${encodeURIComponent(tag)}`}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium transition-colors"
-                >
-                  {tag}
-                </a>
-              ))}
-            </div>
-          </Card>
+          <section>
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg p-12 border-0">
+              <div className="text-center space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900">Explore Related Topics</h3>
+                <p className="text-gray-600 text-lg">Discover more insights about Costa del Sol properties</p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  {article.tags.slice(0, 10).map((tag, index) => (
+                    <a
+                      key={index}
+                      href={`/qa?topic=${encodeURIComponent(tag)}`}
+                      className="px-6 py-3 bg-white hover:bg-blue-50 rounded-2xl text-base font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-1 border border-blue-100 hover:border-blue-200"
+                    >
+                      {tag}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </section>
         )}
-      </aside>
-    </div>
+      </div>
+    </QASpacedLayout>
   );
 };
 
