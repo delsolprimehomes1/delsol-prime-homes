@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { checkContentQuality, generateNoIndexMeta, extractShortAnswer, generateQuickAnswer, checkVoiceFriendly } from '@/utils/content-quality-guard';
 import { formatForVoice, formatQuickAnswerBullets, generateVoiceKeywords } from '@/utils/voice-friendly-formatter';
 import { detectArticleCity, generateGeoMetadata, generatePlaceSchema } from '@/utils/geo-data';
@@ -130,8 +130,8 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16">
           {/* Main Content Area - 70% on desktop, full width on mobile */}
           <main className="flex-1 lg:w-[70%] min-w-0">
-            {/* Content Quality Warning */}
-            {qualityCheck.shouldNoIndex && (
+            {/* Content Quality Enhancement Indicator */}
+            {qualityCheck.shouldNoIndex ? (
               <Alert className="mb-6 border-orange-200 bg-orange-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
@@ -139,7 +139,19 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
                   Current length: {qualityCheck.charCount} chars (target: 1200+)
                 </AlertDescription>
               </Alert>
-            )}
+            ) : qualityCheck.isValid && voiceCheck.score >= 75 ? (
+              <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-green-800 mb-1">✨ Content Enhanced</div>
+                    <div className="text-xs text-green-600">This article is optimized for AI discovery and voice search</div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
 
             {/* Enhanced Hero Section */}
             <QAHeroSection

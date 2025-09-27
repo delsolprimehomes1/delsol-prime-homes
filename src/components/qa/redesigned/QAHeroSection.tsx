@@ -58,17 +58,27 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
           
           {/* Status Badges */}
           <div className="flex flex-wrap gap-4 mb-6">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-              <CheckCircle className="w-4 h-4 mr-1" />
-              Citation Ready
-            </span>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-              <Shield className="w-4 h-4 mr-1" />
-              Voice Optimized
-            </span>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-              AI Score: {qualityScore}/10
-            </span>
+            {/* Only show positive badges for quality content */}
+            {citationReady && qualityScore >= 8 && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Content Enhanced ✓
+              </span>
+            )}
+            
+            {voiceReady && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                <Shield className="w-4 h-4 mr-1" />
+                Voice Optimized
+              </span>
+            )}
+            
+            {qualityScore >= 8 && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
+                Expert Reviewed
+              </span>
+            )}
+            
             <Badge 
               variant="outline" 
               className={`${stageColors[funnelStage as keyof typeof stageColors]} font-medium`}

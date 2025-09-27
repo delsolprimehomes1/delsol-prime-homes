@@ -87,24 +87,41 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
 
       {/* Quality Indicators */}
       <div className="flex flex-wrap items-center gap-3">
-        <Badge variant={citationReady ? "default" : "secondary"} className="flex items-center gap-1">
-          <Shield className="w-3 h-3" />
-          {citationReady ? 'Citation Ready' : 'Needs Enhancement'}
-        </Badge>
+        {/* Show positive indicators for enhanced content */}
+        {citationReady && qualityScore >= 8 ? (
+          <Badge variant="default" className="flex items-center gap-1 bg-green-600 text-white">
+            <Shield className="w-3 h-3" />
+            Content Enhanced ✓
+          </Badge>
+        ) : (
+          <Badge variant="secondary" className="flex items-center gap-1">
+            <Shield className="w-3 h-3" />
+            Needs Enhancement
+          </Badge>
+        )}
         
-        <Badge variant={voiceReady ? "default" : "secondary"} className="flex items-center gap-1">
-          <CheckCircle className="w-3 h-3" />
-          {voiceReady ? 'Voice Optimized' : 'Voice Pending'}
-        </Badge>
+        {voiceReady ? (
+          <Badge variant="default" className="flex items-center gap-1 bg-blue-600 text-white">
+            <CheckCircle className="w-3 h-3" />
+            Voice Optimized
+          </Badge>
+        ) : (
+          <Badge variant="secondary" className="flex items-center gap-1">
+            <CheckCircle className="w-3 h-3" />
+            Voice Pending
+          </Badge>
+        )}
         
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <Clock className="w-4 h-4" />
           <span>{readingTime} min read</span>
         </div>
 
-        <div className="text-sm text-muted-foreground">
-          Quality Score: {qualityScore}/10
-        </div>
+        {qualityScore >= 8 && (
+          <div className="text-sm font-medium text-green-700">
+            Expert Quality ★
+          </div>
+        )}
       </div>
     </section>
   );
