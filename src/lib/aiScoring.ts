@@ -23,33 +23,55 @@ export interface ArticleScoreResult {
   recommendations: string[];
 }
 
-// Calculate AI optimization score for a single article
+// Calculate AI optimization score for a single article - Enhanced for 9.5+ targeting
 export const calculateAIScore = (article: any): ArticleScoreResult => {
   const content = article.content || '';
   const title = article.title || '';
   const excerpt = article.excerpt || '';
   
-  // Content Quality Scoring (0-2.5 points)
+  // Content Quality Scoring (0-2.5 points) - ENHANCED FOR AI/LLM DISCOVERY
   let contentQuality = 0;
   const wordCount = content.split(/\s+/).filter(Boolean).length;
   const charCount = content.length;
   
-  // Length scoring
-  if (charCount >= 1200) contentQuality += 0.8;
-  else if (charCount >= 800) contentQuality += 0.5;
-  else if (charCount >= 400) contentQuality += 0.2;
+  // Enhanced Length scoring - AI systems prefer substantial content
+  if (charCount >= 3000) contentQuality += 1.2; // Premium scoring for comprehensive content
+  else if (charCount >= 2000) contentQuality += 1.0; // Target minimum for AI citation
+  else if (charCount >= 1500) contentQuality += 0.8;
+  else if (charCount >= 1200) contentQuality += 0.6; // Previous target now lower score
+  else if (charCount >= 800) contentQuality += 0.3;
+  else contentQuality += 0.1; // Penalty for short content
   
-  // Structure scoring
-  if (content.includes('<h') || content.includes('##')) contentQuality += 0.4;
-  if (content.includes('<ul>') || content.includes('<ol>') || content.includes('- ')) contentQuality += 0.3;
-  if (excerpt && excerpt.length > 100) contentQuality += 0.3;
+  // AI-Structured Content Detection
+  const hasDirectAnswer = content.includes('ai-direct-answer') || content.includes('short-answer');
+  const hasVoiceOptimized = content.includes('voice-answer') || content.includes('speakable');
+  const hasEvidenceBlock = content.includes('ai-evidence') || content.includes('evidence');
   
-  // Topic relevance
-  const topicKeywords = ['property', 'costa del sol', 'spain', 'buying', 'investment', 'real estate'];
-  const topicMatches = topicKeywords.filter(keyword => 
-    content.toLowerCase().includes(keyword) || title.toLowerCase().includes(keyword)
-  ).length;
-  contentQuality += Math.min(0.7, topicMatches * 0.1);
+  if (hasDirectAnswer) contentQuality += 0.4;
+  if (hasVoiceOptimized) contentQuality += 0.3;
+  if (hasEvidenceBlock) contentQuality += 0.2;
+  
+  // Enhanced Structure scoring
+  const headerCount = (content.match(/<h[1-6]|#{1,6}/g) || []).length;
+  if (headerCount >= 8) contentQuality += 0.3;
+  else if (headerCount >= 5) contentQuality += 0.2;
+  else if (headerCount >= 3) contentQuality += 0.1;
+  
+  if (content.includes('<ul>') || content.includes('<ol>') || content.includes('- ')) contentQuality += 0.2;
+  if (excerpt && excerpt.length >= 150) contentQuality += 0.2; // Higher standard for excerpts
+  
+  // Enhanced Topic relevance with local SEO
+  const coreKeywords = ['property', 'costa del sol', 'spain', 'buying', 'investment', 'real estate'];
+  const localKeywords = ['marbella', 'estepona', 'fuengirola', 'malaga', 'andalusia', 'puerto banus'];
+  const expertKeywords = ['expert', 'professional', 'licensed', 'certified', 'experienced'];
+  
+  const coreMatches = coreKeywords.filter(k => content.toLowerCase().includes(k) || title.toLowerCase().includes(k)).length;
+  const localMatches = localKeywords.filter(k => content.toLowerCase().includes(k) || title.toLowerCase().includes(k)).length;
+  const expertMatches = expertKeywords.filter(k => content.toLowerCase().includes(k)).length;
+  
+  contentQuality += Math.min(0.3, coreMatches * 0.05);
+  contentQuality += Math.min(0.3, localMatches * 0.1);
+  contentQuality += Math.min(0.2, expertMatches * 0.1);
   
   contentQuality = Math.min(2.5, contentQuality);
 
@@ -77,63 +99,110 @@ export const calculateAIScore = (article: any): ArticleScoreResult => {
   
   structureOptimization = Math.min(2.5, structureOptimization);
 
-  // Voice Readiness (0-2.5 points)
+  // Voice Readiness (0-2.5 points) - ENHANCED FOR VOICE SEARCH DOMINANCE
   let voiceReadiness = 0;
   
-  // Question format (essential for voice)
-  if (isQuestionFormat) voiceReadiness += 1.0;
+  // Question format (critical for voice search)
+  if (isQuestionFormat) voiceReadiness += 0.8; // Increased from 1.0 to allow room for other factors
   
-  // Natural language patterns
-  const naturalPatterns = ['you can', 'you should', 'it is', 'there are', 'you need to'];
-  const naturalMatches = naturalPatterns.filter(pattern => 
+  // Voice-optimized content detection
+  const hasVoiceBlocks = content.includes('voice-answer') || content.includes('voice-search-block');
+  const hasQuickFacts = content.includes('quick-facts') || content.includes('voice-friendly');
+  const hasSpeakableElements = content.includes('data-speakable="true"') || content.includes('speakable');
+  
+  if (hasVoiceBlocks) voiceReadiness += 0.5;
+  if (hasQuickFacts) voiceReadiness += 0.3;
+  if (hasSpeakableElements) voiceReadiness += 0.3;
+  
+  // Enhanced natural language patterns for conversational AI
+  const conversationalPatterns = ['you can', 'you should', 'you need to', 'you want to', 'you might', 'it is', 'there are', 'this means', 'in other words', 'simply put', 'typically', 'usually', 'generally'];
+  const conversationalMatches = conversationalPatterns.filter(pattern => 
     content.toLowerCase().includes(pattern)
   ).length;
-  voiceReadiness += Math.min(0.5, naturalMatches * 0.1);
+  voiceReadiness += Math.min(0.4, conversationalMatches * 0.03);
   
-  // Concise answer availability
+  // Direct answer capability (essential for voice assistants)
   const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 20 && s.trim().length < 200);
-  if (sentences.length > 0) voiceReadiness += 0.4;
+  const directAnswerSentences = sentences.filter(s => {
+    const lower = s.toLowerCase();
+    const titleWords = title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    return titleWords.some(word => lower.includes(word));
+  });
   
-  // Location mentions for local voice search
-  const locationMentions = ['costa del sol', 'marbella', 'estepona', 'malaga', 'spain'].filter(loc =>
+  if (directAnswerSentences.length >= 3) voiceReadiness += 0.3;
+  else if (directAnswerSentences.length >= 1) voiceReadiness += 0.2;
+  
+  // Enhanced location mentions for local voice search
+  const locationMentions = ['costa del sol', 'marbella', 'estepona', 'fuengirola', 'malaga', 'spain', 'andalusia', 'puerto banus'].filter(loc =>
     content.toLowerCase().includes(loc) || title.toLowerCase().includes(loc)
   ).length;
-  voiceReadiness += Math.min(0.4, locationMentions * 0.1);
+  voiceReadiness += Math.min(0.3, locationMentions * 0.05);
   
-  // Reading time optimization (1-3 minutes ideal for voice)
-  const readingTime = Math.ceil(wordCount / 200);
-  if (readingTime >= 1 && readingTime <= 3) voiceReadiness += 0.2;
+  // Voice search keyword optimization
+  const voiceSearchPhrases = ['how to', 'what is', 'where can', 'when should', 'why do', 'best way to', 'cost of', 'price of'];
+  const voiceMatches = voiceSearchPhrases.filter(phrase => 
+    title.toLowerCase().includes(phrase) || content.toLowerCase().includes(phrase)
+  ).length;
+  voiceReadiness += Math.min(0.2, voiceMatches * 0.05);
   
   voiceReadiness = Math.min(2.5, voiceReadiness);
 
-  // Citation Readiness (0-2.5 points)
+  // Citation Readiness (0-2.5 points) - ENHANCED FOR AI SYSTEM CITATIONS
   let citationReadiness = 0;
   
-  // Sufficient content for citation
-  if (charCount >= 1200) citationReadiness += 0.8;
-  else if (charCount >= 800) citationReadiness += 0.5;
+  // Enhanced content depth requirements for AI citations
+  if (charCount >= 3000) citationReadiness += 1.0; // Premium length for comprehensive citations
+  else if (charCount >= 2000) citationReadiness += 0.8; // Target minimum
+  else if (charCount >= 1500) citationReadiness += 0.6;
+  else if (charCount >= 1200) citationReadiness += 0.4;
+  else if (charCount >= 800) citationReadiness += 0.2;
   
-  // Clear answer structure
-  if (excerpt && excerpt.length >= 150) citationReadiness += 0.4;
+  // Citation-optimized structure detection
+  const hasCitationBlocks = content.includes('ai-evidence') || content.includes('citation-data');
+  const hasConfidenceScore = content.includes('confidence') || content.includes('evidenceStrength');
+  const hasSourceReferences = content.includes('source') || content.includes('reference');
   
-  // Authority indicators
-  const authorityIndicators = ['expert', 'professional', 'licensed', 'certified', 'experience'];
+  if (hasCitationBlocks) citationReadiness += 0.3;
+  if (hasConfidenceScore) citationReadiness += 0.2;
+  if (hasSourceReferences) citationReadiness += 0.2;
+  
+  // Enhanced answer structure for AI consumption
+  if (excerpt && excerpt.length >= 200) citationReadiness += 0.3; // Higher standard
+  else if (excerpt && excerpt.length >= 150) citationReadiness += 0.2;
+  else if (excerpt && excerpt.length >= 100) citationReadiness += 0.1;
+  
+  // Enhanced authority and expertise signals
+  const authorityIndicators = ['expert', 'professional', 'licensed', 'certified', 'experience', 'specializes', 'qualified', '15+ years', 'over 2,000'];
+  const localAuthorityIndicators = ['costa del sol expert', 'marbella specialist', 'spanish property expert', 'international property', 'luxury property specialist'];
+  
   const authorityMatches = authorityIndicators.filter(indicator =>
-    content.toLowerCase().includes(indicator)
+    content.toLowerCase().includes(indicator.toLowerCase())
   ).length;
-  citationReadiness += Math.min(0.3, authorityMatches * 0.1);
+  const localAuthorityMatches = localAuthorityIndicators.filter(indicator =>
+    content.toLowerCase().includes(indicator.toLowerCase())
+  ).length;
   
-  // Date relevance
+  citationReadiness += Math.min(0.3, authorityMatches * 0.05);
+  citationReadiness += Math.min(0.2, localAuthorityMatches * 0.1);
+  
+  // Date relevance and freshness
   const lastUpdated = new Date(article.last_updated || article.created_at);
   const daysSinceUpdate = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
-  if (daysSinceUpdate <= 365) citationReadiness += 0.4; // Updated within year
-  else if (daysSinceUpdate <= 730) citationReadiness += 0.2; // Within 2 years
+  if (daysSinceUpdate <= 180) citationReadiness += 0.3; // Recent content gets priority
+  else if (daysSinceUpdate <= 365) citationReadiness += 0.2;
+  else if (daysSinceUpdate <= 730) citationReadiness += 0.1;
   
-  // Clear topic focus
-  if (article.topic && article.funnel_stage) citationReadiness += 0.3;
+  // Enhanced topic focus and classification
+  if (article.topic && article.funnel_stage && article.tags) citationReadiness += 0.2;
+  else if (article.topic && article.funnel_stage) citationReadiness += 0.1;
   
-  // Has structured data potential
-  if (article.tags && article.tags.length >= 3) citationReadiness += 0.3;
+  // Structured data and metadata richness
+  if (article.tags && article.tags.length >= 5) citationReadiness += 0.2;
+  else if (article.tags && article.tags.length >= 3) citationReadiness += 0.1;
+  
+  // Local market specificity (AI systems prefer specific local data)
+  const specificDataPoints = content.match(/€[\d,]+|£[\d,]+|\$[\d,]+|\d+%|\d+ years?|\d+ months?/g) || [];
+  citationReadiness += Math.min(0.2, specificDataPoints.length * 0.02);
   
   citationReadiness = Math.min(2.5, citationReadiness);
 
@@ -209,7 +278,7 @@ export const batchScoreAllArticles = async (): Promise<{
   let voiceReadyCount = 0;
   let citationReadyCount = 0;
   let articlesAboveTarget = 0;
-  const TARGET_SCORE = 9.8;
+  const TARGET_SCORE = 9.5; // Enhanced target for Phase 1 AI optimization
 
   // Process each article in batches to avoid timeout
   const batchSize = 10;

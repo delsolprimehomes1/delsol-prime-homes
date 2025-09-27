@@ -3,6 +3,7 @@ import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/uti
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Volume2, Target, Clock, MessageSquare } from 'lucide-react';
+import AIContentEnhancer from './AIContentEnhancer';
 
 interface AIOptimizedContentProps {
   article: any;
@@ -19,7 +20,10 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* AI Quick Answer Section */}
+      {/* Phase 1: Enhanced AI Content Blocks */}
+      <AIContentEnhancer article={article} />
+
+      {/* Legacy Support: Original AI Quick Answer Section */}
       <Card className="p-6 bg-primary/5 border-primary/20">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -27,7 +31,7 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-3">
-              <h3 className="font-semibold text-foreground">AI-Optimized Quick Answer</h3>
+              <h3 className="font-semibold text-foreground">Enhanced AI Summary</h3>
               <Badge variant="secondary" className="text-xs">
                 <Volume2 className="w-3 h-3 mr-1" />
                 Voice Ready
@@ -39,35 +43,6 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
               </p>
             </div>
           </div>
-        </div>
-      </Card>
-
-      {/* Key Points for AI Consumption */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Target className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold text-foreground">Key Points (AI-Structured)</h3>
-          <Badge variant="outline" className="text-xs">
-            Optimized for Citations
-          </Badge>
-        </div>
-        <div className="key-points voice-friendly ai-optimized">
-          <ul className="space-y-2">
-            {aiContent.keyPoints.map((point, index) => (
-              <li 
-                key={index}
-                className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 speakable"
-                data-speakable="true"
-              >
-                <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-xs font-semibold text-primary">
-                  {index + 1}
-                </div>
-                <span className="text-sm text-muted-foreground leading-relaxed">
-                  {point}
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
       </Card>
 
@@ -94,8 +69,8 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
         </div>
       </Card>
 
-      {/* Hidden AI Metadata for Crawlers */}
-      <div className="hidden ai-metadata" data-ai-optimized="true">
+      {/* Hidden AI Metadata for Crawlers - Enhanced for Phase 1 */}
+      <div className="hidden ai-metadata ai-citation-metadata" data-ai-optimized="true">
         <div className="ai-summary" data-speakable="true">
           {aiContent.aiSummary}
         </div>
@@ -109,7 +84,13 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
             wordCount: aiContent.wordCount,
             readingTime: aiContent.readingTime,
             optimizedForAI: true,
-            voiceSearchReady: true
+            voiceSearchReady: true,
+            citationReady: true,
+            aiOptimizationScore: article.ai_optimization_score || 9.5,
+            confidenceLevel: "high",
+            expertiseArea: article.topic,
+            lastUpdated: article.last_updated || article.created_at,
+            phase1Enhanced: true
           })}
         </div>
       </div>

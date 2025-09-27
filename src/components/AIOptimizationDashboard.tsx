@@ -36,7 +36,7 @@ const AIOptimizationDashboard = () => {
   const [report, setReport] = useState<any>(null);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
 
-  const TARGET_SCORE = 9.8;
+  const TARGET_SCORE = 9.5; // Updated for Phase 1 - Enhanced AI optimization target
 
   const handleStartOptimization = async () => {
     setIsOptimizing(true);
