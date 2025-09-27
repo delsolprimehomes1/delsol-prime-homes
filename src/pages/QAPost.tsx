@@ -38,6 +38,7 @@ import { AIContentOptimizer } from '@/components/AIContentOptimizer';
 import EnhancedQAContent from '@/components/EnhancedQAContent';
 import QAPageLayout from '@/components/qa/redesigned/QAPageLayout';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
+import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
 import '@/styles/qa-redesign.css';
 import { injectAIMetaTags } from '@/lib/aiScoring';
 
