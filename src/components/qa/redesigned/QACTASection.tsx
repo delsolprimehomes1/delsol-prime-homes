@@ -21,12 +21,12 @@ export const QACTASection: React.FC<QACTASectionProps> = ({
       title: "Ready to Learn More?",
       subtitle: "Explore Costa del Sol property opportunities",
       primaryCTA: {
-        text: "Browse Properties",
+        text: "View Properties",
         href: "/#properties",
         icon: ArrowRight,
       },
       secondaryCTA: {
-        text: "Read Market Guides",
+        text: "Market Guides",
         href: "/blog",
         icon: MessageCircle,
       },
@@ -36,12 +36,12 @@ export const QACTASection: React.FC<QACTASectionProps> = ({
       title: "Ready to See Options?",
       subtitle: "Compare properties and get personalized recommendations",
       primaryCTA: {
-        text: "Schedule Consultation",
+        text: "Book Consultation",
         href: "/book-viewing",
         icon: Calendar,
       },
       secondaryCTA: {
-        text: "Get Market Analysis",
+        text: "Market Analysis",
         href: "/contact",
         icon: MessageCircle,
       },
@@ -51,12 +51,12 @@ export const QACTASection: React.FC<QACTASectionProps> = ({
       title: "Ready to Make Your Move?",
       subtitle: "Get expert guidance for your Costa del Sol purchase", 
       primaryCTA: {
-        text: "Book Free Consultation",
+        text: "Talk to Expert",
         href: "/book-viewing",
         icon: Calendar,
       },
       secondaryCTA: {
-        text: "Call Expert Now",
+        text: "Call Now",
         href: "tel:+34952123456",
         icon: Phone,
       },
