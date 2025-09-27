@@ -83,10 +83,10 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
     );
   }
 
-  // Desktop Layout - Single Column, Clean Focus
+  // Desktop Layout - Full Width, Clean Focus
   return (
     <QASpacedLayout>
-      <div className="max-w-4xl mx-auto space-y-16">
+      <div className="max-w-7xl mx-auto space-y-16">
         {/* Hero Section */}
         <section>
           <QAHeroSection
@@ -109,14 +109,14 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
 
         {/* Main Content with Contextual Links */}
         <section>
-          <Card className="bg-white rounded-3xl shadow-xl p-12 lg:p-16 border-0">
+          <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-12 lg:p-20 border-0">
             <ContextualContentProcessor
               content={article.content}
               relatedArticles={relatedQuestions}
               currentTopic={article.topic}
               currentStage={article.funnel_stage}
             />
-          </Card>
+          </div>
         </section>
 
         {/* Journey Progress & CTA Section */}

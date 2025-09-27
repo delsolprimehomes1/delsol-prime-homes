@@ -74,7 +74,12 @@ export const ContextualContentProcessor: React.FC<ContextualContentProcessorProp
 
   return (
     <div 
-      className="contextual-content prose prose-lg max-w-none"
+      className="contextual-content prose prose-xl max-w-none leading-relaxed"
+      style={{ 
+        fontSize: '18px',
+        lineHeight: '1.8',
+        maxWidth: '100%'
+      }}
       dangerouslySetInnerHTML={{ __html: processedContent }}
     />
   );

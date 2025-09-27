@@ -14,8 +14,8 @@ export const QASpacedLayout: React.FC<QASpacedLayoutProps> = ({
 
   return (
     <div className={`qa-spaced-container ${className}`}>
-      {/* Extra spacious container with proper max-widths */}
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Full-width container utilizing complete viewport */}
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
         {/* Generous vertical spacing */}
         <div className="space-y-16 py-12 lg:py-20">
           {children}
