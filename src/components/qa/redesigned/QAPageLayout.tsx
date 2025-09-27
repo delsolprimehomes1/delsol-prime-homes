@@ -133,11 +133,7 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg p-8 border-0">
             <div className="text-center space-y-4">
               <h3 className="text-xl font-bold text-gray-900">Continue Your Property Journey</h3>
-              <p className="text-gray-600">Discover related topics through the contextual links above</p>
-              <div className="flex items-center justify-center gap-4">
-                <span className="text-sm text-gray-500">Found this helpful?</span>
-                {ctaComponent}
-              </div>
+              <p className="text-gray-600">Discover related topics through the contextual links above to deepen your Costa del Sol property knowledge</p>
             </div>
           </Card>
         </section>
