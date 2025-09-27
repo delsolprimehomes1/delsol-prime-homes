@@ -119,7 +119,7 @@ export const generateLearningPathSchema = (articles: any[], baseUrl: string = 'h
     return groups;
   }, {});
 
-  const learningPaths = Object.entries(topicGroups).map(([topic, stages]) => ({
+  const learningPaths = Object.entries(topicGroups).map(([topic, stages]: [string, {TOFU: any[], MOFU: any[], BOFU: any[]}]) => ({
     "@type": "LearningResource",
     "@id": `${baseUrl}/learning-path/${topic.toLowerCase().replace(/\s+/g, '-')}`,
     "name": `${topic} - Complete Learning Path`,
