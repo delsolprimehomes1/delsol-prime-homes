@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Volume2, Target, Clock, MessageSquare } from 'lucide-react';
 import AIContentEnhancer from './AIContentEnhancer';
+import Phase2EnhancedSchemas from './Phase2EnhancedSchemas';
+import ProgressiveEnhancementLayers from './ProgressiveEnhancementLayers';
 
 interface AIOptimizedContentProps {
   article: any;
@@ -23,6 +25,12 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
       {/* Phase 1: Enhanced AI Content Blocks */}
       <AIContentEnhancer article={article} />
 
+      {/* Phase 2: Advanced Schema & Speakable Optimization */}
+      <Phase2EnhancedSchemas article={article} />
+
+      {/* Progressive Enhancement Layers Display */}
+      <ProgressiveEnhancementLayers article={article} />
+
       {/* Legacy Support: Original AI Quick Answer Section */}
       <Card className="p-6 bg-primary/5 border-primary/20">
         <div className="flex items-start gap-4">
@@ -31,10 +39,13 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-3">
-              <h3 className="font-semibold text-foreground">Enhanced AI Summary</h3>
+              <h3 className="font-semibold text-foreground">Phase 1+2 Enhanced Summary</h3>
               <Badge variant="secondary" className="text-xs">
                 <Volume2 className="w-3 h-3 mr-1" />
                 Voice Ready
+              </Badge>
+              <Badge variant="outline" className="text-xs bg-purple-50">
+                Phase 2 Enhanced
               </Badge>
             </div>
             <div className="short-answer ai-optimized voice-friendly speakable" data-speakable="true">
@@ -69,8 +80,8 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
         </div>
       </Card>
 
-      {/* Hidden AI Metadata for Crawlers - Enhanced for Phase 1 */}
-      <div className="hidden ai-metadata ai-citation-metadata" data-ai-optimized="true">
+      {/* Hidden AI Metadata for Crawlers - Enhanced for Phase 2 */}
+      <div className="hidden ai-metadata ai-citation-metadata phase2-enhanced" data-ai-optimized="true" data-phase="2">
         <div className="ai-summary" data-speakable="true">
           {aiContent.aiSummary}
         </div>
@@ -90,7 +101,13 @@ export const AIOptimizedContent: React.FC<AIOptimizedContentProps> = ({
             confidenceLevel: "high",
             expertiseArea: article.topic,
             lastUpdated: article.last_updated || article.created_at,
-            phase1Enhanced: true
+            phase1Enhanced: true,
+            phase2Enhanced: true,
+            crossLanguageOptimized: true,
+            wikidataEntityLinked: true,
+            learningResourceSchema: true,
+            claimReviewSchema: true,
+            enhancedSpeakableSpecification: true
           })}
         </div>
       </div>
