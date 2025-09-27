@@ -219,17 +219,9 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
 
             {/* Journey Progress Footer */}
             <div className="mt-12 pt-8 border-t border-border/40">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase">Continue Your Journey</h3>
-                  <p className="text-sm text-muted-foreground/80 mt-1">Follow the links above for related topics</p>
-                </div>
-                <SmartMidPageCTA
-                  funnelStage={article.funnel_stage || 'TOFU'}
-                  topic={article.topic || 'General'}
-                  relatedArticles={relatedArticles.slice(0, 2)}
-                  className="shrink-0"
-                />
+              <div className="text-center space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase">Continue Your Journey</h3>
+                <p className="text-sm text-muted-foreground/80">Explore related topics through the contextual links above to deepen your Costa del Sol property knowledge</p>
               </div>
             </div>
           </main>
