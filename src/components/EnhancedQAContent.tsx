@@ -11,14 +11,12 @@ import { Helmet } from 'react-helmet-async';
 import { QAHeroSection } from './qa/QAHeroSection';
 import { KeyTakeawaysBox } from './qa/KeyTakeawaysBox';
 import { SmartMidPageCTA } from './qa/SmartMidPageCTA';
-import { EnhancedTOCWithProgress } from './qa/EnhancedTOCWithProgress';
-import { RelatedQuestionsWidget } from './qa/RelatedQuestionsWidget';
 import { DataComparisonTable } from './qa/DataComparisonTable';
+import { ContextualContentProcessor } from './qa/ContextualContentProcessor';
 import { useRelatedArticles } from '@/hooks/useRelatedArticles';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import FunnelProgressBar from '@/components/qa/FunnelProgressBar';
 import QABreadcrumb from '@/components/qa/QABreadcrumb';
-import MobileQuestionCarousel from '@/components/qa/MobileQuestionCarousel';
 import ServiceAreasSection from './ServiceAreasSection';
 
 interface EnhancedQAContentProps {
@@ -126,10 +124,10 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
       </div>
 
       <div className={`px-4 pb-6 lg:px-0 lg:pb-0 ${className}`} data-article-id={article.id}>
-        {/* Responsive Grid: Mobile single column, Desktop 70%/30% */}
-        <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16">
-          {/* Main Content Area - 70% on desktop, full width on mobile */}
-          <main className="flex-1 lg:w-[70%] min-w-0">
+        {/* Single Column Layout - Clean and Focused */}
+        <div className="max-w-4xl mx-auto">
+          {/* Main Content Area - Full width, optimized for reading */}
+          <main className="w-full">
             {/* Content Quality Enhancement Indicator */}
             {qualityCheck.isValid && voiceCheck.score >= 75 ? (
               <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
@@ -186,11 +184,13 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
               <ServiceAreasSection geoData={geoData} />
             </div>
 
-            {/* Main Article Content */}
-            <article className="mb-8 prose prose-sm sm:prose-base lg:prose-lg max-w-none [&>*]:text-[15px] sm:[&>*]:text-base lg:[&>*]:text-lg [&>*]:leading-relaxed">
-              <div 
-                className="content-body"
-                dangerouslySetInnerHTML={{ __html: processedContent }}
+            {/* Main Article Content with Contextual Links */}
+            <article className="mb-8">
+              <ContextualContentProcessor
+                content={article.content || ''}
+                relatedArticles={relatedArticles}
+                currentTopic={article.topic || 'General'}
+                currentStage={article.funnel_stage || 'TOFU'}
               />
             </article>
 
@@ -216,36 +216,24 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
                 className="mb-8"
               />
             )}
+
+            {/* Journey Progress Footer */}
+            <div className="mt-12 pt-8 border-t border-border/40">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase">Continue Your Journey</h3>
+                  <p className="text-sm text-muted-foreground/80 mt-1">Follow the links above for related topics</p>
+                </div>
+                <SmartMidPageCTA
+                  funnelStage={article.funnel_stage || 'TOFU'}
+                  topic={article.topic || 'General'}
+                  relatedArticles={relatedArticles.slice(0, 2)}
+                  className="shrink-0"
+                />
+              </div>
+            </div>
           </main>
-
-          {/* Sidebar - 30% on desktop, hidden on mobile */}
-          <aside className="hidden lg:block lg:w-[30%] lg:pl-8 lg:sticky lg:top-24 lg:self-start lg:max-h-screen lg:overflow-y-auto">
-            {/* Enhanced TOC with Progress */}
-            <EnhancedTOCWithProgress
-              content={processedContent}
-              currentStage={article.funnel_stage || 'TOFU'}
-              relatedArticles={relatedArticles}
-              className="mb-6"
-            />
-
-            {/* Related Questions Widget - Desktop Only */}
-            <RelatedQuestionsWidget
-              questions={relatedArticles}
-              currentTopic={article.topic || 'General'}
-              maxDisplay={4}
-            />
-          </aside>
         </div>
-
-        {/* Mobile Question Carousel - Bottom of page */}
-        {mobile && relatedArticles.length > 0 && (
-          <div className="mt-8 px-4 py-6 bg-muted/20 -mx-4">
-            <MobileQuestionCarousel
-              questions={relatedArticles}
-              currentTopic={article.topic || 'General'}
-            />
-          </div>
-        )}
       </div>
 
       {/* Hidden AI Metadata for Citation & Discovery */}

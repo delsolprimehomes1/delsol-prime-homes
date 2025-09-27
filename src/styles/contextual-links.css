@@ -1,0 +1,139 @@
+/* Contextual Link Styles - Integrated into main content */
+
+.contextual-link {
+  @apply text-primary font-medium;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  padding: 0 2px;
+}
+
+.contextual-link:hover {
+  color: hsl(var(--primary));
+  text-decoration-style: solid;
+  text-decoration-thickness: 2px;
+  background-color: hsl(var(--primary) / 0.05);
+  border-radius: 2px;
+}
+
+/* Tooltip preview on hover */
+.contextual-link:hover::before {
+  content: attr(data-preview);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: normal;
+  white-space: nowrap;
+  max-width: 300px;
+  z-index: 50;
+  margin-bottom: 4px;
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.15);
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Topic-specific link styling */
+.contextual-link[data-topic="Legal"] {
+  color: hsl(220 91% 50%);
+  text-decoration-color: hsl(220 91% 60%);
+}
+
+.contextual-link[data-topic="Legal"]:hover {
+  color: hsl(220 91% 45%);
+  background-color: hsl(220 91% 95%);
+}
+
+.contextual-link[data-topic="Finance"] {
+  color: hsl(142 76% 40%);
+  text-decoration-color: hsl(142 76% 50%);
+}
+
+.contextual-link[data-topic="Finance"]:hover {
+  color: hsl(142 76% 35%);
+  background-color: hsl(142 76% 95%);
+}
+
+.contextual-link[data-topic="Investment"] {
+  color: hsl(262 83% 50%);
+  text-decoration-color: hsl(262 83% 60%);
+}
+
+.contextual-link[data-topic="Investment"]:hover {
+  color: hsl(262 83% 45%);
+  background-color: hsl(262 83% 95%);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .contextual-link {
+    text-decoration-thickness: 2px;
+    padding: 4px 6px;
+    margin: 0 1px;
+    border-radius: 4px;
+    background-color: hsl(var(--primary) / 0.08);
+  }
+
+  .contextual-link:hover::before {
+    /* Disable tooltips on mobile - too small */
+    display: none;
+  }
+
+  /* Add visual indicator for mobile */
+  .contextual-link::after {
+    content: " →";
+    font-size: 12px;
+    opacity: 0.6;
+    margin-left: 2px;
+  }
+}
+
+/* Clean content layout optimizations */
+.contextual-content {
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.contextual-content h2,
+.contextual-content h3 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.contextual-content p {
+  margin-bottom: 1.25rem;
+}
+
+/* Responsive text sizing */
+@media (min-width: 768px) {
+  .contextual-content {
+    font-size: 17px;
+    line-height: 1.75;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contextual-content {
+    font-size: 18px;
+    line-height: 1.8;
+  }
+}

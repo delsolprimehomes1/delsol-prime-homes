@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, Zap, CheckCircle, Calendar, Clock } from 'lucide-react';
 import { FreshnessIndicator } from '@/components/FreshnessIndicator';
+import { ContextualContentProcessor } from '../ContextualContentProcessor';
 
 interface QAMobileLayoutProps {
   title: string;
   excerpt: string;
+  content: string;
+  topic: string;
   funnelStage: string;
   readingTime: number;
   lastUpdated: string;
@@ -15,13 +18,15 @@ interface QAMobileLayoutProps {
   voiceReady: boolean;
   citationReady: boolean;
   quickAnswer: string;
-  children: React.ReactNode;
+  relatedArticles: any[];
   ctaComponent: React.ReactNode;
 }
 
 export const QAMobileLayout: React.FC<QAMobileLayoutProps> = ({
   title,
   excerpt,
+  content,
+  topic,
   funnelStage,
   readingTime,
   lastUpdated,
@@ -29,7 +34,7 @@ export const QAMobileLayout: React.FC<QAMobileLayoutProps> = ({
   voiceReady,
   citationReady,
   quickAnswer,
-  children,
+  relatedArticles,
   ctaComponent,
 }) => {
   const [quickAnswerExpanded, setQuickAnswerExpanded] = useState(false);
@@ -129,10 +134,15 @@ export const QAMobileLayout: React.FC<QAMobileLayoutProps> = ({
         )}
       </Card>
 
-      {/* Mobile Content */}
+      {/* Mobile Content with Contextual Links */}
       <article className="prose prose-sm max-w-none">
-        <div className="bg-white rounded-2xl shadow-md p-6 space-y-4">
-          {children}
+        <div className="bg-white rounded-2xl shadow-md p-6">
+          <ContextualContentProcessor
+            content={content}
+            relatedArticles={relatedArticles}
+            currentTopic={topic}
+            currentStage={funnelStage}
+          />
         </div>
       </article>
 

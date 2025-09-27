@@ -4,10 +4,10 @@ import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import QAHeroSection from './QAHeroSection';
 import QAJourneyProgress from './QAJourneyProgress';
 import QAQuickAnswer from './QAQuickAnswer';
-import RelatedQuestionsGrid from './RelatedQuestionsGrid';
 import QACTASection from './QACTASection';
 import QAMobileLayout from './QAMobileLayout';
 import QASpacedLayout from './QASpacedLayout';
+import { ContextualContentProcessor } from '../ContextualContentProcessor';
 
 interface QAArticle {
   id: string;
@@ -29,9 +29,10 @@ interface RelatedQuestion {
   slug: string;
   title: string;
   excerpt: string;
-  funnelStage: string;
+  funnel_stage: string;
   topic: string;
   readingTime?: number;
+  relevanceScore?: number;
 }
 
 interface QAPageLayoutProps {
@@ -67,6 +68,8 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
       <QAMobileLayout
         title={article.title}
         excerpt={article.excerpt}
+        content={article.content}
+        topic={article.topic}
         funnelStage={article.funnel_stage}
         readingTime={readingTime}
         lastUpdated={article.last_updated}
@@ -74,17 +77,16 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
         voiceReady={article.voice_search_ready || false}
         citationReady={article.citation_ready || false}
         quickAnswer={quickAnswer}
+        relatedArticles={relatedQuestions}
         ctaComponent={ctaComponent}
-      >
-        {children}
-      </QAMobileLayout>
+      />
     );
   }
 
-  // Desktop Layout - Spacious and clean
+  // Desktop Layout - Single Column, Clean Focus
   return (
     <QASpacedLayout>
-      <div className="max-w-6xl mx-auto space-y-20">
+      <div className="max-w-4xl mx-auto space-y-16">
         {/* Hero Section */}
         <section>
           <QAHeroSection
@@ -105,25 +107,17 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
           <QAQuickAnswer directAnswer={quickAnswer} />
         </section>
 
-        {/* Main Content Section */}
+        {/* Main Content with Contextual Links */}
         <section>
-          <article className="prose prose-xl max-w-none">
-            <Card className="bg-white rounded-3xl shadow-xl p-12 lg:p-16 space-y-8 border-0">
-              <div className="space-y-8 text-lg leading-relaxed">
-                {children}
-              </div>
-            </Card>
-          </article>
+          <Card className="bg-white rounded-3xl shadow-xl p-12 lg:p-16 border-0">
+            <ContextualContentProcessor
+              content={article.content}
+              relatedArticles={relatedQuestions}
+              currentTopic={article.topic}
+              currentStage={article.funnel_stage}
+            />
+          </Card>
         </section>
-
-        {/* Related Questions Grid - Full Width */}
-        {relatedQuestions.length > 0 && (
-          <RelatedQuestionsGrid
-            questions={relatedQuestions}
-            currentTopic={article.topic}
-            maxInitialDisplay={8}
-          />
-        )}
 
         {/* Journey Progress & CTA Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -134,28 +128,19 @@ export const QAPageLayout: React.FC<QAPageLayoutProps> = ({
           {ctaComponent}
         </section>
 
-        {/* Topic Tags Section - Full Width */}
-        {article.tags && article.tags.length > 0 && (
-          <section>
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg p-12 border-0">
-              <div className="text-center space-y-6">
-                <h3 className="text-2xl font-bold text-gray-900">Explore Related Topics</h3>
-                <p className="text-gray-600 text-lg">Discover more insights about Costa del Sol properties</p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  {article.tags.slice(0, 10).map((tag, index) => (
-                    <a
-                      key={index}
-                      href={`/qa?topic=${encodeURIComponent(tag)}`}
-                      className="px-6 py-3 bg-white hover:bg-blue-50 rounded-2xl text-base font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-1 border border-blue-100 hover:border-blue-200"
-                    >
-                      {tag}
-                    </a>
-                  ))}
-                </div>
+        {/* Continue Journey Footer */}
+        <section>
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg p-8 border-0">
+            <div className="text-center space-y-4">
+              <h3 className="text-xl font-bold text-gray-900">Continue Your Property Journey</h3>
+              <p className="text-gray-600">Discover related topics through the contextual links above</p>
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-sm text-gray-500">Found this helpful?</span>
+                {ctaComponent}
               </div>
-            </Card>
-          </section>
-        )}
+            </div>
+          </Card>
+        </section>
       </div>
     </QASpacedLayout>
   );

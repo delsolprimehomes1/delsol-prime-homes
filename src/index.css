@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import contextual links styling */
+@import './styles/contextual-links.css';
+
 /* Luxury Real Estate Design System */
 @layer base {
   :root {
