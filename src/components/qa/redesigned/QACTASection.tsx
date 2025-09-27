@@ -82,15 +82,15 @@ export const QACTASection: React.FC<QACTASectionProps> = ({
         <p className="text-white/90 mb-6">{config.subtitle}</p>
 
         {/* CTA Buttons */}
-        <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             asChild
             size="lg"
-            className="w-full bg-white text-gray-900 hover:bg-gray-50 font-semibold"
+            className="flex-1 min-w-0 bg-white text-gray-900 hover:bg-gray-50 font-semibold px-4 sm:px-6"
           >
             <Link to={config.primaryCTA.href}>
-              <PrimaryIcon className="w-4 h-4 mr-2" />
-              {config.primaryCTA.text}
+              <PrimaryIcon className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">{config.primaryCTA.text}</span>
             </Link>
           </Button>
 
@@ -98,11 +98,11 @@ export const QACTASection: React.FC<QACTASectionProps> = ({
             asChild
             variant="outline"
             size="lg"
-            className="w-full border-white/30 text-white hover:bg-white/10 hover:text-white"
+            className="flex-1 min-w-0 border-white/30 text-white hover:bg-white/10 hover:text-white px-4 sm:px-6"
           >
             <Link to={config.secondaryCTA.href}>
-              <SecondaryIcon className="w-4 h-4 mr-2" />
-              {config.secondaryCTA.text}
+              <SecondaryIcon className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">{config.secondaryCTA.text}</span>
             </Link>
           </Button>
         </div>
