@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { QACard } from '@/components/QACard';
+import QAEnhancedCard from '@/components/qa/redesigned/QAEnhancedCard';
 import { QASearch } from '@/components/QASearch';
 import { QAProgress } from '@/components/QAProgress';
 import { QAClusterStats } from '@/components/QAClusterStats';
@@ -395,7 +396,7 @@ const QA = () => {
                       
                       <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
                         {groupArticles.map((article, articleIndex) => (
-                          <QACard 
+                          <QAEnhancedCard 
                             key={article.id} 
                             article={article} 
                             animationDelay={articleIndex * 50}

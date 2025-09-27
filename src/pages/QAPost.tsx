@@ -36,8 +36,9 @@ import { EnhancedBOFUConversion } from '@/components/EnhancedBOFUConversion';
 import { AIEnhancedContent } from '@/components/AIEnhancedContent';
 import { AIContentOptimizer } from '@/components/AIContentOptimizer';
 import EnhancedQAContent from '@/components/EnhancedQAContent';
+import QAPageLayout from '@/components/qa/redesigned/QAPageLayout';
 import { generateAIOptimizedContent, getEnhancedSpeakableSelectors } from '@/utils/ai-optimization';
-import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
+import '@/styles/qa-redesign.css';
 import { injectAIMetaTags } from '@/lib/aiScoring';
 
 const QAPost = () => {
@@ -415,6 +416,17 @@ const QAPost = () => {
         return '/';
     }
   };
+
+  // Transform recommendations for the new layout
+  const relatedQuestions = recommendations.map((rec: any) => ({
+    id: rec.id,
+    slug: rec.slug,
+    title: rec.title,
+    excerpt: rec.excerpt,
+    funnelStage: rec.funnel_stage,
+    topic: rec.topic,
+    readingTime: Math.ceil((rec.content?.length || 500) / 200),
+  }));
 
   return (
     <>
