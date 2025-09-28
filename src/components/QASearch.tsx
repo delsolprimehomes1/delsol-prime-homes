@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, X, FolderOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface QASearchProps {
   searchTerm: string;
@@ -20,6 +21,7 @@ export const QASearch = ({
   topicCounts,
   totalCount
 }: QASearchProps) => {
+  const { t } = useTranslation();
   const getTopicColor = (topic: string) => {
     const colors: Record<string, string> = {
       'Lifestyle': 'bg-pink-500/10 text-pink-700 border-pink-200',
@@ -41,7 +43,7 @@ export const QASearch = ({
 
   // Create topic clusters from actual data, sorted by count (descending)
   const topicClusters = [
-    { value: '', label: `All Topics (${totalCount || 0})`, color: 'bg-muted text-foreground' },
+    { value: '', label: `${t('qa.search.allTopics')} (${totalCount || 0})`, color: 'bg-muted text-foreground' },
     ...Object.entries(topicCounts || {})
       .sort(([,a], [,b]) => b - a) // Sort by count descending
       .map(([topic, count]) => ({
@@ -58,7 +60,7 @@ export const QASearch = ({
         <Search className="absolute left-6 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
         <Input
           type="text"
-          placeholder="Search questions, topics, or keywords..."
+          placeholder={t('qa.search.placeholder')}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-12 sm:pl-10 pr-12 sm:pr-10 h-12 sm:h-10 bg-white/90 backdrop-blur-sm border-white/30 focus:border-primary/50 text-foreground placeholder:text-muted-foreground text-base sm:text-sm"
@@ -79,7 +81,7 @@ export const QASearch = ({
       <div className="space-y-3">
         <div className="flex items-center justify-center gap-2 text-white/70">
           <FolderOpen className="w-4 h-4" />
-          <span className="text-sm font-medium">Filter by Topic</span>
+          <span className="text-sm font-medium">{t('qa.search.filterByTopic')}</span>
         </div>
         <div className="flex flex-wrap justify-center gap-2 px-4 sm:px-0 max-w-5xl mx-auto">
           {topicClusters.map((topic) => (

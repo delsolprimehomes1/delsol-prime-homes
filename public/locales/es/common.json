@@ -36,6 +36,34 @@
     "description": "Este contenido está disponible actualmente en otros idiomas.",
     "switchLanguage": "Cambiar al idioma disponible"
   },
+  "qa": {
+    "title": "Preguntas Frecuentes",
+    "description": "Respuestas expertas para ayudarte a navegar tu viaje inmobiliario en Costa del Sol",
+    "search": {
+      "placeholder": "Buscar preguntas, temas o palabras clave...",
+      "filterByTopic": "Filtrar por Tema",
+      "allTopics": "Todos los Temas"
+    },
+    "viewModes": {
+      "label": "Ver por",
+      "clusters": "Grupos Temáticos",
+      "stages": "Proceso de Compra"
+    },
+    "stages": {
+      "tofu": {
+        "label": "Primeros Pasos",
+        "description": "Información esencial para compradores primerizos"
+      },
+      "mofu": {
+        "label": "Investigando Opciones",
+        "description": "Guías detalladas para tomar decisiones informadas"
+      },
+      "bofu": {
+        "label": "Listo para Comprar",
+        "description": "Consideraciones finales y listas de verificación"
+      }
+    }
+  },
   "loading": "Cargando...",
   "welcome": "Bienvenido"
 }

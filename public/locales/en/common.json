@@ -36,6 +36,34 @@
     "description": "This content is currently available in other languages.",
     "switchLanguage": "Switch to available language"
   },
+  "qa": {
+    "title": "Frequently Asked Questions",
+    "description": "Expert answers to help you navigate your Costa del Sol property journey",
+    "search": {
+      "placeholder": "Search questions, topics, or keywords...",
+      "filterByTopic": "Filter by Topic",
+      "allTopics": "All Topics"
+    },
+    "viewModes": {
+      "label": "View by",
+      "clusters": "Topic Clusters",
+      "stages": "Buyer Journey"
+    },
+    "stages": {
+      "tofu": {
+        "label": "Getting Started",
+        "description": "Essential information for first-time buyers"
+      },
+      "mofu": {
+        "label": "Researching Options",
+        "description": "Detailed guides for informed decision-making"
+      },
+      "bofu": {
+        "label": "Ready to Buy",
+        "description": "Final considerations and checklists"
+      }
+    }
+  },
   "loading": "Loading...",
   "welcome": "Welcome"
 }

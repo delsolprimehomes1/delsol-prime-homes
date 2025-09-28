@@ -32,7 +32,7 @@ const QA = () => {
   const [selectedStage, setSelectedStage] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [viewMode, setViewMode] = useState<'clusters' | 'stages'>('clusters');
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [searchParams] = useSearchParams();
   
   // Initialize language from URL parameter
@@ -135,18 +135,18 @@ const QA = () => {
 
   const stageInfo = {
     TOFU: { 
-      label: 'Getting Started', 
-      description: 'Essential information for first-time buyers',
+      label: t('qa.stages.tofu.label'), 
+      description: t('qa.stages.tofu.description'),
       color: 'bg-blue-500/10 text-blue-700 border-blue-200'
     },
     MOFU: { 
-      label: 'Researching Options', 
-      description: 'Detailed guides for informed decision-making',
+      label: t('qa.stages.mofu.label'), 
+      description: t('qa.stages.mofu.description'),
       color: 'bg-amber-500/10 text-amber-700 border-amber-200'
     },
     BOFU: { 
-      label: 'Ready to Buy', 
-      description: 'Final considerations and checklists',
+      label: t('qa.stages.bofu.label'), 
+      description: t('qa.stages.bofu.description'),
       color: 'bg-green-500/10 text-green-700 border-green-200'
     }
   };
@@ -286,7 +286,7 @@ const QA = () => {
             <div className="text-center max-w-4xl mx-auto">
               <div className="flex items-center justify-center mb-6">
                 <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white mr-4 animate-fade-in">
-                  Frequently Asked Questions
+                  {t('qa.title')}
                 </h1>
                 <LanguageSwitcher 
                   currentPath="/qa"
@@ -294,7 +294,7 @@ const QA = () => {
                 />
               </div>
               <p className="text-lg sm:text-xl text-white/90 mb-8 animate-fade-in animation-delay-200">
-                Expert answers to help you navigate your Costa del Sol property journey
+                {t('qa.description')}
               </p>
               <QASearch 
                 searchTerm={searchTerm}
@@ -334,21 +334,21 @@ const QA = () => {
         <section className="py-6 bg-muted/20 border-b">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center gap-4">
-              <span className="text-sm text-muted-foreground">View by:</span>
+              <span className="text-sm text-muted-foreground">{t('qa.viewModes.label')}:</span>
               <div className="flex gap-2">
                 <Badge
                   variant={viewMode === 'clusters' ? 'default' : 'secondary'}
                   className="cursor-pointer"
                   onClick={() => setViewMode('clusters')}
                 >
-                  Topic Clusters
+                  {t('qa.viewModes.clusters')}
                 </Badge>
                 <Badge
                   variant={viewMode === 'stages' ? 'default' : 'secondary'}
                   className="cursor-pointer"
                   onClick={() => setViewMode('stages')}
                 >
-                  Buyer Journey
+                  {t('qa.viewModes.stages')}
                 </Badge>
               </div>
             </div>
