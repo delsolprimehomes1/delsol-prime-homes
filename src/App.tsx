@@ -38,6 +38,9 @@ const App = () => (
               <Route path="/faq" element={<QAHub />} />
               <Route path="/qa" element={<QAHub />} />
               <Route path="/qa/:slug" element={<QAPost />} />
+              <Route path="/:lang/qa/:slug" element={<QAPost />} />
+              <Route path="/:lang/qa" element={<QAHub />} />
+              <Route path="/:lang/faq" element={<QAHub />} />
               <Route path="/content-manager" element={<ContentManager />} />
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />
               <Route path="/blog-builder" element={<BlogBuilderPage />} />

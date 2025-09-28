@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Globe, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { languageConfig, type SupportedLanguage } from '@/i18n';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LanguageSwitchProps {
   currentPath?: string;
@@ -19,8 +20,7 @@ export const LanguageSwitch: React.FC<LanguageSwitchProps> = ({
   showFlags = true,
   className
 }) => {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language as SupportedLanguage;
+  const { currentLanguage, setLanguage: changeLanguage } = useLanguage();
 
   const languages = Object.entries(languageConfig).map(([code, config]) => ({
     code: code as SupportedLanguage,
@@ -28,14 +28,7 @@ export const LanguageSwitch: React.FC<LanguageSwitchProps> = ({
   }));
 
   const handleLanguageChange = (languageCode: SupportedLanguage) => {
-    i18n.changeLanguage(languageCode);
-    
-    const path = currentPath || window.location.pathname;
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('lang', languageCode);
-    
-    const newUrl = `${path}?${searchParams.toString()}`;
-    window.history.pushState({}, '', newUrl);
+    changeLanguage(languageCode);
   };
 
   if (variant === 'badges') {
