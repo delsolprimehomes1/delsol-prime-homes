@@ -20,19 +20,24 @@ export const languageConfig = {
 // Initialize i18n with dynamic loading from public/locales
 i18n
   .use(Backend)
-  .use(LanguageDetector)
+  .use(LanguageDetector)  
   .use(initReactI18next)
   .init({
     lng: 'en',
     fallbackLng: 'en',
-    debug: false,
+    debug: true, // Enable debug to see loading issues
     
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
+      allowMultiLoading: false,
+      requestOptions: {
+        cache: 'no-cache'
+      }
     },
     
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['path', 'localStorage', 'navigator'],
+      lookupFromPathIndex: 0,
       caches: ['localStorage'],
     },
     
@@ -42,17 +47,21 @@ i18n
 
     ns: ['common'],
     defaultNS: 'common',
+    preload: supportedLanguages, // Preload all supported languages
     
     supportedLngs: supportedLanguages,
     
     react: {
       useSuspense: false,
-      bindI18n: 'languageChanged',
-      bindI18nStore: false,
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
       transEmptyNodeValue: '',
       transSupportBasicHtmlNodes: true,
       transKeepBasicHtmlNodesFor: ['br', 'strong', 'i'],
     },
+    
+    // Wait for resources to load before initializing
+    initImmediate: false,
   });
 
 export default i18n;

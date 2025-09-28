@@ -55,7 +55,13 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   useEffect(() => {
     const detected = detectLanguage();
     setCurrentLanguage(detected);
-    i18n.changeLanguage(detected);
+    
+    // Change language and wait for resources to load
+    i18n.changeLanguage(detected).then(() => {
+      console.log(`Language changed to ${detected} and resources loaded`);
+    }).catch((error) => {
+      console.error('Error loading language resources:', error);
+    });
   }, [i18n]);
 
   // Handle browser back/forward navigation
@@ -88,8 +94,14 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const setLanguage = (language: SupportedLanguage) => {
     setCurrentLanguage(language);
-    i18n.changeLanguage(language);
     localStorage.setItem('preferred-language', language);
+    
+    // Change language and wait for resources to load
+    i18n.changeLanguage(language).then(() => {
+      console.log(`Language switched to ${language} and resources loaded`);
+    }).catch((error) => {
+      console.error('Error switching language:', error);
+    });
 
     // Update URL structure: English stays at root, others get language prefix
     const currentPath = window.location.pathname;

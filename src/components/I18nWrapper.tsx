@@ -11,12 +11,33 @@ export const I18nWrapper: React.FC<I18nWrapperProps> = ({ children }) => {
 
   useEffect(() => {
     const checkI18nReady = () => {
-      if (i18n.isInitialized) {
+      if (i18n.isInitialized && i18n.hasResourceBundle(i18n.language, 'common')) {
         setIsReady(true);
       } else {
-        // Wait for initialization
-        i18n.on('initialized', () => {
-          setIsReady(true);
+        // Wait for initialization and resource loading
+        const handleReady = () => {
+          if (i18n.hasResourceBundle(i18n.language, 'common')) {
+            setIsReady(true);
+          }
+        };
+
+        i18n.on('initialized', handleReady);
+        i18n.on('loaded', handleReady);
+        i18n.on('languageChanged', (lng) => {
+          // Check if resources are available for the new language
+          if (i18n.hasResourceBundle(lng, 'common')) {
+            setIsReady(true);
+          } else {
+            setIsReady(false);
+            // Wait for resources to load
+            const loadHandler = () => {
+              if (i18n.hasResourceBundle(lng, 'common')) {
+                setIsReady(true);
+                i18n.off('loaded', loadHandler);
+              }
+            };
+            i18n.on('loaded', loadHandler);
+          }
         });
       }
     };
@@ -25,6 +46,8 @@ export const I18nWrapper: React.FC<I18nWrapperProps> = ({ children }) => {
 
     return () => {
       i18n.off('initialized');
+      i18n.off('loaded');
+      i18n.off('languageChanged');
     };
   }, []);
 
