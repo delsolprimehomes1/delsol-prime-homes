@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { runPhase3MultilingualImplementation, type MultilingualResult } from '@/utils/multilingual-translator';
 import { generateAllLanguageSitemaps, writeSitemapFiles, getSitemapStatistics } from '@/utils/multilingual-sitemap';
+import { SpanishContentFixer } from '@/components/SpanishContentFixer';
 
 interface SitemapStats {
   [language: string]: {
@@ -119,6 +120,9 @@ const Phase3MultilingualDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Spanish Content Fix Card */}
+      <SpanishContentFixer />
+      
       {/* Header Card */}
       <Card>
         <CardHeader>
