@@ -1,5 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 const supportedLanguages = ['en', 'es', 'nl', 'fr', 'de', 'pl', 'sv', 'da'] as const;
 export type SupportedLanguage = typeof supportedLanguages[number];
@@ -15,33 +17,29 @@ export const languageConfig = {
   da: { name: 'Dansk', flag: '🇩🇰' },
 };
 
-// Simple synchronous initialization to avoid React hook errors
+// Initialize i18n with dynamic loading from public/locales
 i18n
+  .use(Backend)
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     lng: 'en',
     fallbackLng: 'en',
     debug: false,
     
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    },
+    
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+    
     interpolation: {
       escapeValue: false,
     },
 
-    resources: {
-      en: { 
-        common: {
-          welcome: 'Welcome',
-          loading: 'Loading...'
-        } 
-      },
-      es: { common: {} },
-      nl: { common: {} },
-      fr: { common: {} },
-      de: { common: {} },
-      pl: { common: {} },
-      sv: { common: {} },
-      da: { common: {} },
-    },
     ns: ['common'],
     defaultNS: 'common',
     
