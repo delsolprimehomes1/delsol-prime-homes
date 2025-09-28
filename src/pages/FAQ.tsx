@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -10,37 +12,64 @@ import { QAProgress } from '@/components/QAProgress';
 import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { MultilingualAlert } from '@/components/MultilingualAlert';
 import { trackEvent } from '@/utils/analytics';
 import { faqJsonLd, orgJsonLd } from '@/utils/schema';
 import { generateSpeakableSchema, generateQAArticleSchema } from '@/utils/schemas';
 const QAHub = () => {
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
 
+  // Extract language from URL path
+  const currentLanguage = window.location.pathname.startsWith('/es') ? 'es' : 
+                         window.location.pathname.startsWith('/de') ? 'de' :
+                         window.location.pathname.startsWith('/nl') ? 'nl' :
+                         window.location.pathname.startsWith('/fr') ? 'fr' :
+                         window.location.pathname.startsWith('/pl') ? 'pl' :
+                         window.location.pathname.startsWith('/sv') ? 'sv' :
+                         window.location.pathname.startsWith('/da') ? 'da' : 'en';
+
   // Breadcrumb items
   const breadcrumbItems = [{
-    label: 'Questions & Answers',
+    label: t('qa.title'),
     current: true
   }];
 
   // Analytics tracking
   useEffect(() => {
     trackEvent('qa_hub_visit', {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      language: currentLanguage
     });
-  }, []);
+  }, [currentLanguage]);
   const {
     data: articles = [],
     isLoading
   } = useQuery({
-    queryKey: ['qa-articles-hub'],
+    queryKey: ['qa-articles-hub', currentLanguage],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('qa_articles' as any).select('*');
+      // First try to get articles in the current language
+      let { data, error } = await supabase
+        .from('qa_articles' as any)
+        .select('*')
+        .eq('language', currentLanguage);
+      
       if (error) throw error;
+
+      // If no articles found in current language and it's not English, fallback to English
+      if ((!data || data.length === 0) && currentLanguage !== 'en') {
+        const { data: englishData, error: englishError } = await supabase
+          .from('qa_articles' as any)
+          .select('*')
+          .eq('language', 'en');
+        
+        if (englishError) throw englishError;
+        data = englishData;
+      }
 
       // Custom ordering: TOFU → MOFU → BOFU
       const orderedData = (data || []).sort((a: any, b: any) => {
@@ -70,7 +99,7 @@ const QAHub = () => {
   }, [articles, searchTerm, selectedStage, selectedTopic]);
 
   // Enhanced JSON-LD schemas for optimal AI/LLM compatibility
-  const enhancedFAQSchema = faqJsonLd('en', articles.map(article => ({
+  const enhancedFAQSchema = faqJsonLd(currentLanguage, articles.map(article => ({
     id: article.id,
     question: article.title,
     shortAnswer: article.excerpt,
@@ -88,13 +117,16 @@ const QAHub = () => {
       "xpath": ["//*[contains(@class, 'question-title')]", "//*[contains(@class, 'short-answer')]"]
     }
   };
-  const organizationSchema = orgJsonLd('en');
+  const organizationSchema = orgJsonLd(currentLanguage);
+
+  // Check if current language has content
+  const hasContentInCurrentLanguage = articles.length > 0 && articles[0]?.language === currentLanguage;
   return <>
       <Helmet>
-        <title>Questions & Answers - Costa del Sol Property Guide | DelSolPrimeHomes</title>
-        <meta name="description" content="Comprehensive Q&A hub for Costa del Sol property buyers. Get instant short answers plus detailed insights for serious buyers. Expert guidance for UK and Irish expats." />
+        <title>{t('qa.title')} - Costa del Sol Property Guide | DelSolPrimeHomes</title>
+        <meta name="description" content={t('qa.description')} />
         <meta name="keywords" content="Costa del Sol Q&A, property buying questions, expat guide Spain, UK buyers, detailed property advice" />
-        <link rel="canonical" href="https://delsolprimehomes.com/qa" />
+        <link rel="canonical" href={`https://delsolprimehomes.com${currentLanguage === 'en' ? '/faq' : `/${currentLanguage}/faq`}`} />
         
         {/* Enhanced FAQPage JSON-LD with Speakable Support */}
         <script type="application/ld+json">
@@ -120,10 +152,19 @@ const QAHub = () => {
       <Navbar />
       
       <main className="min-h-screen pt-20">
+        {/* Language Alert */}
+        {!hasContentInCurrentLanguage && currentLanguage !== 'en' && (
+          <MultilingualAlert 
+            availableLanguages={['en']} 
+            currentPath="/faq"
+          />
+        )}
+
         {/* Breadcrumb Navigation */}
         <section className="py-4 bg-background border-b">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <Breadcrumb items={breadcrumbItems} />
+            <LanguageSwitcher currentPath="/faq" variant="compact" />
           </div>
         </section>
         
@@ -131,12 +172,12 @@ const QAHub = () => {
         <section className="luxury-gradient py-16 sm:py-20 lg:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="faq-hero-title mb-6 animate-fade-in">Q&A Hub</h1>
+              <h1 className="faq-hero-title mb-6 animate-fade-in">{t('qa.title')}</h1>
               <p className="faq-hero-subtitle mb-4 animate-fade-in animation-delay-200">
                 <strong>Two layers of expertise:</strong> Quick answers for skimmers, detailed insights for serious buyers.
               </p>
               <p className="text-white/90 text-lg mb-8 animate-fade-in animation-delay-300">
-                Expand any question below for comprehensive guidance on your Costa del Sol property journey.
+                {t('qa.description')}
               </p>
               <div className="animate-fade-in animation-delay-400">
               <QASearch 
@@ -172,10 +213,10 @@ const QAHub = () => {
 
             {!isLoading && filteredArticles.length === 0 && <div className="text-center py-16">
                 <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-                  No questions found
+                  {currentLanguage === 'es' ? 'No se encontraron preguntas' : 'No questions found'}
                 </h3>
                 <p className="text-muted-foreground">
-                  Try adjusting your search terms or stage filters.
+                  {currentLanguage === 'es' ? 'Intenta ajustar tus términos de búsqueda o filtros.' : 'Try adjusting your search terms or stage filters.'}
                 </p>
               </div>}
 
