@@ -25,7 +25,7 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOverHero, setIsOverHero] = useState(true);
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const { currentLanguage, setLanguage } = useLanguage();
   const currentLang = currentLanguage as SupportedLanguage;
 
@@ -47,10 +47,10 @@ const Navbar = () => {
   }, []);
 
   const navigationItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Properties', href: '#properties' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Q&A', href: '/faq' },
+    { name: t('nav.home'), href: '/' },
+    { name: t('nav.properties'), href: '#properties' },
+    { name: t('nav.blog'), href: '/blog' },
+    { name: t('nav.qa'), href: '/faq' },
   ];
 
   const languages = [
@@ -143,10 +143,10 @@ const Navbar = () => {
 
             {/* Enhanced CTA Button */}
             <a href="/book-viewing">
-              <Button className="gold-gradient text-secondary font-semibold px-4 sm:px-6 py-2 hover-gold transition-all duration-300 hover:scale-105 will-change-transform">
-                <span className="hidden sm:inline">Book Viewing</span>
-                <span className="sm:hidden text-xs">Book</span>
-              </Button>
+                <Button className="gold-gradient text-secondary font-semibold px-4 sm:px-6 py-2 hover-gold transition-all duration-300 hover:scale-105 will-change-transform">
+                  <span className="hidden sm:inline">{t('cta.bookViewing')}</span>
+                  <span className="sm:hidden text-xs">{t('cta.bookViewing')}</span>
+                </Button>
             </a>
           </div>
 
@@ -188,7 +188,7 @@ const Navbar = () => {
                 
                 {/* Mobile Language Selection */}
                 <div className="pt-4 border-t border-white/20">
-                  <p className="text-sm text-white/70 mb-3">Language</p>
+                  <p className="text-sm text-white/70 mb-3">{t('nav.language')}</p>
                   <div className="grid grid-cols-2 gap-2">
                     {languages.map((language) => (
                       <button
@@ -214,7 +214,7 @@ const Navbar = () => {
                 {/* Enhanced Mobile CTA */}
                 <a href="/book-viewing">
                   <Button className="gold-gradient text-secondary font-semibold w-full mt-4 hover-gold mobile-touch-target py-3 transition-all duration-300">
-                    Book Your Viewing
+                    {t('cta.bookViewing')}
                   </Button>
                 </a>
               </div>

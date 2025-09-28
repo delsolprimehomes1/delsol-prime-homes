@@ -8,15 +8,28 @@
     "language": "Idioma"
   },
   "search": {
-    "title": "Encuentra Tu Hogar Soñado en Costa Del Sol en 60 Segundos",
+    "title": "¿Buscas una Casa de Lujo en Costa Del Sol?",
     "placeholder": "Buscar propiedades...",
-    "button": "Buscar Propiedades"
+    "button": "Buscar Propiedades",
+    "selectLocation": "Seleccionar Ubicación",
+    "propertyType": "Tipo de Propiedad",
+    "priceRange": "Rango de Precio",
+    "bedrooms": "Dormitorios"
   },
   "cta": {
     "bookViewing": "Reserva Tu Visita Privada",
     "readMore": "Leer Más",
     "contactUs": "Contáctanos",
-    "viewAll": "Ver Todo"
+    "viewAll": "Ver Todo",
+    "virtualTours": "Tours Virtuales"
+  },
+  "hero": {
+    "title": "¿Buscas Casas de Lujo",
+    "subtitle": "en Costa Del Sol?",
+    "description": "Te ayudamos a comprar villas exclusivas en",
+    "locations": "Marbella, Estepona y Fuengirola",
+    "expertise": "15+ Años de Experiencia en Bienes Raíces de Lujo",
+    "features": "Villas premium • Vistas al mar • Comunidades cerradas • Piscinas privadas"
   },
   "fallback": {
     "title": "Contenido no disponible en español",

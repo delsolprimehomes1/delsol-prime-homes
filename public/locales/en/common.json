@@ -8,15 +8,28 @@
     "language": "Language"
   },
   "search": {
-    "title": "Find Your Dream Costa Del Sol Home in 60 Seconds",
+    "title": "Looking for a Luxury Home in Costa Del Sol?",
     "placeholder": "Search properties...",
-    "button": "Search Properties"
+    "button": "Search Properties",
+    "selectLocation": "Select Location",
+    "propertyType": "Property Type",
+    "priceRange": "Price Range",
+    "bedrooms": "Bedrooms"
   },
   "cta": {
     "bookViewing": "Book Your Private Viewing",
     "readMore": "Read More",
     "contactUs": "Contact Us",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "virtualTours": "Virtual Tours"
+  },
+  "hero": {
+    "title": "Looking for Luxury Homes",
+    "subtitle": "in Costa Del Sol?",
+    "description": "We help you buy exclusive villas in",
+    "locations": "Marbella, Estepona & Fuengirola",
+    "expertise": "15+ Years of Luxury Real Estate Expertise",
+    "features": "Premium villas • Ocean views • Gated communities • Private pools"
   },
   "fallback": {
     "title": "Content not available in English",

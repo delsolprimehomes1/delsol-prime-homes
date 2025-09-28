@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MapPin, Home, Euro, Bed, Bath } from 'lucide-react';
 
 const SearchSection = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useState({
     location: '',
     propertyType: '',
@@ -56,7 +58,7 @@ const SearchSection = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-4 text-secondary">Looking for a Luxury Home in Costa Del Sol?</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-4 text-secondary">{t('search.title')}</h2>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Search villas, apartments, and beachfront homes in Marbella, Estepona, Fuengirola, and beyond.
           </p>
@@ -84,7 +86,7 @@ const SearchSection = () => {
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, location: value})}>
                     <SelectTrigger className="h-12 sm:h-14 pl-10 border-0 bg-muted/30 hover:bg-muted/50 focus:bg-muted/60 minimal-hover rounded-lg text-sm font-medium mobile-touch-target transition-all duration-200" itemProp="location">
-                      <SelectValue placeholder="Select Location" />
+                      <SelectValue placeholder={t('search.selectLocation')} />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown z-50 bg-white/95 backdrop-blur-md">
                       <SelectItem value="marbella-golden-mile">Marbella Golden Mile</SelectItem>
@@ -106,7 +108,7 @@ const SearchSection = () => {
                   <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, propertyType: value})}>
                     <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium" itemProp="propertyType">
-                      <SelectValue placeholder="Property Type" />
+                      <SelectValue placeholder={t('search.propertyType')} />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
                       <SelectItem value="luxury-villa">Luxury Villa</SelectItem>
@@ -126,7 +128,7 @@ const SearchSection = () => {
                   <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, priceRange: value})}>
                     <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium" itemProp="priceRange">
-                      <SelectValue placeholder="Price Range" />
+                      <SelectValue placeholder={t('search.priceRange')} />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
                       <SelectItem value="500k-1m">€500K - €1M</SelectItem>
@@ -145,7 +147,7 @@ const SearchSection = () => {
                   <Bed className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                   <Select onValueChange={(value) => setSearchParams({...searchParams, bedrooms: value})}>
                     <SelectTrigger className="h-12 pl-10 border-0 bg-muted/30 hover:bg-muted/50 minimal-hover rounded-lg text-sm font-medium">
-                      <SelectValue placeholder="Bedrooms" />
+                      <SelectValue placeholder={t('search.bedrooms')} />
                     </SelectTrigger>
                     <SelectContent className="sleek-dropdown">
                       <SelectItem value="1">1+ Bedroom</SelectItem>
@@ -166,8 +168,8 @@ const SearchSection = () => {
                   aria-label="Search luxury properties in Costa Del Sol"
                 >
                   <Search className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Search Properties</span>
-                  <span className="sm:hidden">Search</span>
+                  <span className="hidden sm:inline">{t('search.button')}</span>
+                  <span className="sm:hidden">{t('search.button')}</span>
                 </Button>
               </div>
             </div>

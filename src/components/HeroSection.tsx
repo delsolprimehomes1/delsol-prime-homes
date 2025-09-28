@@ -1,9 +1,11 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Calendar, Eye } from 'lucide-react';
 
 const HeroSection = () => {
+  const { t } = useTranslation();
 
   return (
     <section className="relative min-h-dvh flex items-center justify-center overflow-hidden">
@@ -44,19 +46,19 @@ const HeroSection = () => {
           <div className="space-y-6 sm:space-y-8 animate-fade-in">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-heading font-bold leading-[1.1] tracking-tight">
               <span className="block bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,215,0,0.8)]">
-                Looking for Luxury Homes
+                {t('hero.title')}
               </span>
               <span className="block text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] mt-2">
-                in Costa Del Sol?
+                {t('hero.subtitle')}
               </span>
             </h1>
             
             <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-heading font-medium leading-relaxed max-w-4xl mx-auto">
               <span className="block bg-gradient-to-r from-yellow-200 to-yellow-400 bg-clip-text text-transparent font-semibold mb-2">
-                We help you buy exclusive villas in
+                {t('hero.description')}
               </span>
               <span className="block text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-                Marbella, Estepona & Fuengirola
+                {t('hero.locations')}
               </span>
             </h2>
           </div>
@@ -66,11 +68,11 @@ const HeroSection = () => {
             <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/20">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
                 <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 bg-clip-text text-transparent">
-                  15+ Years of Luxury Real Estate Expertise
+                  {t('hero.expertise')}
                 </span>
               </h3>
               <p className="text-lg sm:text-xl text-white/90 leading-relaxed font-medium">
-                Premium villas • Ocean views • Gated communities • Private pools
+                {t('hero.features')}
               </p>
             </div>
           </div>
@@ -82,7 +84,7 @@ const HeroSection = () => {
               className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 text-black font-bold px-8 sm:px-10 py-4 sm:py-5 text-lg sm:text-xl shadow-2xl hover:shadow-yellow-500/40 hover:scale-105 transition-all duration-300 border-0 min-h-[56px] sm:min-h-[64px] mobile-touch-target will-change-transform rounded-xl"
             >
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
-              Book Private Viewing
+              {t('cta.bookViewing')}
             </Button>
             <Button 
               variant="outline" 
@@ -90,7 +92,7 @@ const HeroSection = () => {
               className="w-full sm:w-auto bg-white/10 text-white border-2 border-white/50 hover:bg-white/20 hover:border-white hover:shadow-xl px-8 sm:px-10 py-4 sm:py-5 text-lg sm:text-xl transition-all duration-300 font-semibold min-h-[56px] sm:min-h-[64px] mobile-touch-target will-change-transform backdrop-blur-sm rounded-xl"
             >
               <Eye className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
-              Virtual Tours
+              {t('cta.virtualTours')}
             </Button>
           </div>
         </div>
