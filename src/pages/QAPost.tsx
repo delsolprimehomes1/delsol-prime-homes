@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { type SupportedLanguage } from '@/i18n';
 import Navbar from '@/components/Navbar';
 import { ReadingProgressBar } from '@/components/ReadingProgressBar';
 import { FunnelCTA } from '@/components/FunnelCTA';
@@ -14,6 +16,7 @@ import { Breadcrumb, generateBreadcrumbJsonLd } from '@/components/Breadcrumb';
 import { FunnelNavigation } from '@/components/FunnelNavigation';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MultilingualAlert } from '@/components/MultilingualAlert';
+import { MultilingualSEOHead } from '@/components/MultilingualSEOHead';
 import { useSmartRecommendations } from '@/hooks/useSmartRecommendations';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,18 +46,14 @@ import '@/styles/qa-redesign.css';
 import { injectAIMetaTags } from '@/lib/aiScoring';
 
 const QAPost = () => {
-  const { slug } = useParams();
+  const { slug, lang } = useParams();
   const [searchParams] = useSearchParams();
   const { i18n } = useTranslation();
+  const { currentLanguage, getContentCount } = useLanguage();
   const queryClient = useQueryClient();
   
-  // Initialize language from URL parameter
-  React.useEffect(() => {
-    const langParam = searchParams.get('lang');
-    if (langParam && langParam !== i18n.language) {
-      i18n.changeLanguage(langParam);
-    }
-  }, [searchParams, i18n]);
+  // Detect language from URL parameter (/:lang/qa/:slug) or default to current language
+  const detectedLanguage: SupportedLanguage = (lang as SupportedLanguage) || currentLanguage;
 
   // Map legacy stage names to new user-friendly names
   const mapStageToUserFriendly = (stage: string | null | undefined): 'exploration' | 'research' | 'decision' => {
@@ -84,7 +83,7 @@ const QAPost = () => {
   };
 
   const { data: article, isLoading, error, refetch } = useQuery({
-    queryKey: ['qa-article', slug, i18n.language],
+    queryKey: ['qa-article', slug, detectedLanguage],
     queryFn: async () => {
       if (!slug) return null;
       
@@ -100,7 +99,7 @@ const QAPost = () => {
         .single();
       
       // If found, update i18n to match the article's language
-      if (data && slugLanguage !== i18n.language) {
+      if (data && slugLanguage !== detectedLanguage) {
         i18n.changeLanguage(slugLanguage);
       }
       
@@ -152,7 +151,7 @@ const QAPost = () => {
         .from('qa_articles' as any)
         .select('slug, title')
         .eq('id', article.points_to_mofu_id)
-        .eq('language', i18n.language)
+        .eq('language', detectedLanguage)
         .single();
         
       if (error && error.code !== 'PGRST116') throw error;
@@ -170,7 +169,7 @@ const QAPost = () => {
         .from('qa_articles' as any)
         .select('slug, title')
         .eq('id', article.points_to_bofu_id)
-        .eq('language', i18n.language)
+        .eq('language', detectedLanguage)
         .single();
         
       if (error && error.code !== 'PGRST116') throw error;
@@ -429,32 +428,31 @@ const QAPost = () => {
     readingTime: Math.ceil((rec.content?.length || 500) / 200),
   }));
 
+  // Generate available languages list and alternate URLs
+  const availableLanguages = ['en', 'es', 'nl', 'fr', 'de', 'pl', 'sv', 'da'];
+  const alternateUrls = availableLanguages.reduce((acc, lang) => {
+    const baseSlug = article.slug.replace(/^(es|de|nl|fr|pl|sv|da)-/, '');
+    acc[lang] = lang === 'en' 
+      ? `https://delsolprimehomes.com/qa/${baseSlug}`
+      : `https://delsolprimehomes.com/${lang}/qa/${baseSlug}`;
+    return acc;
+  }, {} as Record<string, string>);
+
+  // Content availability notification
+  const currentLangCount = getContentCount(detectedLanguage);
+  const isUsingFallback = detectedLanguage !== 'en' && currentLangCount === 0;
+
   return (
     <>
+      {/* Enhanced Multilingual SEO Head */}
+      <MultilingualSEOHead 
+        article={article}
+        currentLanguage={detectedLanguage}
+        availableLanguages={availableLanguages}
+        alternateUrls={alternateUrls}
+      />
+
       <Helmet>
-        <title>{article.title} - AI-Enhanced Costa del Sol Property Guide</title>
-        <meta name="description" content={`${article.excerpt} Get AI-powered multilingual support for your Costa del Sol property journey.`} />
-        {article.tags && <meta name="keywords" content={`${article.tags.join(', ')}, AI property assistant, multilingual support, Costa del Sol`} />}
-        <link rel="canonical" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
-        
-        {/* Open Graph Tags */}
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={article.title} />
-        <meta property="og:description" content={article.excerpt} />
-        <meta property="og:url" content={`https://delsolprimehomes.com/qa/${article.slug}`} />
-        <meta property="og:site_name" content="DelSolPrimeHomes" />
-        <meta property="og:image" content="https://delsolprimehomes.com/assets/qa-article-og.jpg" />
-        <meta property="article:author" content="DelSolPrimeHomes Expert" />
-        <meta property="article:section" content={article.topic} />
-        <meta property="article:published_time" content={article.created_at} />
-        <meta property="article:modified_time" content={article.last_updated} />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={article.title} />
-        <meta name="twitter:description" content={article.excerpt} />
-        <meta name="twitter:image" content="https://delsolprimehomes.com/assets/qa-article-twitter.jpg" />
-        
         {/* Enhanced JSON-LD Structured Data for Maximum AI/LLM Optimization */}
         {enhancedArticleSchema && (
           <script type="application/ld+json">
@@ -476,92 +474,6 @@ const QAPost = () => {
         <script type="application/ld+json">
           {JSON.stringify(generateBreadcrumbJsonLd(breadcrumbItems))}
         </script>
-        
-        {/* Multilingual hreflang tags */}
-        <link rel="alternate" hrefLang="en" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
-        <link rel="alternate" hrefLang="nl" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=nl`} />
-        <link rel="alternate" hrefLang="fr" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=fr`} />
-        <link rel="alternate" hrefLang="de" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=de`} />
-        <link rel="alternate" hrefLang="pl" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=pl`} />
-        <link rel="alternate" hrefLang="sv" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=sv`} />
-        <link rel="alternate" hrefLang="da" href={`https://delsolprimehomes.com/qa/${article.slug}?lang=da`} />
-        <link rel="alternate" hrefLang="x-default" href={`https://delsolprimehomes.com/qa/${article.slug}`} />
-        
-        {/* AI-Specific Structured Data for Voice Search and LLM Citation */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": ["FAQPage", "WebPage"],
-            "name": article.title,
-            "description": article.excerpt,
-            "url": `https://delsolprimehomes.com/qa/${article.slug}`,
-            "inLanguage": article.language || "en",
-            "isAccessibleForFree": true,
-            "audience": {
-              "@type": "Audience",
-              "audienceType": "International Property Buyers"
-            },
-            "mainEntity": {
-              "@type": "Question",
-              "name": article.title,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": article.content.replace(/<[^>]*>/g, '').substring(0, 1000) + '...',
-                "author": {
-                  "@type": "Organization",
-                  "name": "DelSolPrimeHomes",
-                  "knowsAbout": ["AI Property Assistance", "Multilingual Support", "Costa del Sol Real Estate"]
-                },
-                "dateCreated": article.created_at,
-                "upvoteCount": 0
-              }
-            },
-            "about": [
-              {
-                "@type": "Place",
-                "name": article.city,
-                "containedInPlace": {
-                  "@type": "AdministrativeArea",
-                  "name": "Andalusia, Spain"
-                }
-              },
-              {
-                "@type": "Thing",
-                "name": article.topic
-              }
-            ],
-            "mentions": [
-              {
-                "@type": "SoftwareApplication",
-                "name": "AI Property Assistant",
-                "applicationCategory": "PropertyTech"
-              },
-              ...((article.tags || []).map(tag => ({
-                "@type": "Thing",
-                "name": tag
-              })))
-            ],
-            "speakable": {
-              "@type": "SpeakableSpecification",
-              "cssSelector": speakableSelectors.cssSelector,
-              "xpath": speakableSelectors.xpath
-            },
-            "potentialAction": [
-              {
-                "@type": "ReadAction",
-                "target": `https://delsolprimehomes.com/qa/${article.slug}`
-              },
-              {
-                "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": "https://delsolprimehomes.com/qa?q={search_term_string}"
-                },
-                "query-input": "required name=search_term_string"
-              }
-            ]
-          })}
-        </script>
       </Helmet>
       
       {/* Reading Progress Bar */}
@@ -570,6 +482,25 @@ const QAPost = () => {
       <Navbar />
       
       <main className="min-h-screen pt-20">
+        {/* Content Availability Alert */}
+        {isUsingFallback && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700">
+                  This content is currently only available in English. We're working on translating it to {detectedLanguage.toUpperCase()}. 
+                  <span className="font-medium"> Content available: {getContentCount('en')} English articles, {currentLangCount} {detectedLanguage.toUpperCase()} articles.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Multilingual Alert */}
         <MultilingualAlert currentPath={`/qa/${article.slug}`} />
 

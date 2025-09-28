@@ -19,12 +19,15 @@ export const generateQAArticleSchema = (
   },
   baseUrl: string = 'https://delsolprimehomes.com'
 ) => {
-  const articleUrl = `${baseUrl}/${qaData.language}/qa/${qaData.slug}`;
+  const articleUrl = qaData.language === 'en' 
+    ? `${baseUrl}/qa/${qaData.slug}` 
+    : `${baseUrl}/${qaData.language}/qa/${qaData.slug}`;
   
-  // Enhanced schema for AI/LLM optimization
+  // Enhanced schema for AI/LLM optimization with multilingual support
   return {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@language": qaData.language,
     "headline": qaData.question,
     "description": qaData.answer_short,
     "url": articleUrl,
@@ -84,10 +87,14 @@ export const generateQAArticleSchema = (
     "keywords": qaData.tags ? qaData.tags.join(", ") : "Costa del Sol, Property, AI Assistant, Multilingual Support",
     "mainEntity": {
       "@type": "Question",
+      "@language": qaData.language,
       "name": qaData.question,
+      "inLanguage": qaData.language,
       "acceptedAnswer": {
         "@type": "Answer",
+        "@language": qaData.language,
         "text": qaData.answer_long || qaData.answer_short,
+        "inLanguage": qaData.language,
         "author": {
           "@type": "Organization",
           "name": qaData.author_name || "DelSolPrimeHomes Expert"
@@ -98,8 +105,10 @@ export const generateQAArticleSchema = (
       "suggestedAnswer": [
         {
           "@type": "Answer",
+          "@language": qaData.language,
           "text": qaData.answer_short,
-          "name": "Quick Answer"
+          "name": "Quick Answer",
+          "inLanguage": qaData.language
         }
       ],
       "mentions": [
@@ -116,6 +125,24 @@ export const generateQAArticleSchema = (
         }
       ]
     },
+    // Cross-language linking for AI/LLM citation
+    "translationOfWork": qaData.language !== 'en' ? {
+      "@type": "Article",
+      "inLanguage": "en",
+      "url": `${baseUrl}/qa/${qaData.slug}`
+    } : undefined,
+    "workTranslation": qaData.language === 'en' ? [
+      {
+        "@type": "Article", 
+        "inLanguage": "es",
+        "url": `${baseUrl}/es/qa/${qaData.slug}`
+      },
+      {
+        "@type": "Article",
+        "inLanguage": "de", 
+        "url": `${baseUrl}/de/qa/${qaData.slug}`
+      }
+    ] : undefined,
     "speakable": {
       "@type": "SpeakableSpecification",
       "cssSelector": [
@@ -134,7 +161,7 @@ export const generateQAArticleSchema = (
         "//strong[contains(text(), 'multilingual') or contains(text(), 'AI') or contains(text(), 'assistant')]",
         "//p[contains(text(), 'buyers') or contains(text(), 'international')]"
       ]
-    }
+    },
   };
 };
 
@@ -146,8 +173,10 @@ export const generateAIServiceSchema = (
   return {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@language": language,
     "name": "Multilingual AI Property Assistant",
     "description": "AI-powered multilingual support for international property buyers on Costa del Sol",
+    "inLanguage": language,
     "provider": {
       "@type": "Organization",
       "name": "DelSolPrimeHomes"
@@ -276,22 +305,28 @@ export const generateTwitterCardData = (
   };
 };
 
-// Generate canonical and hreflang tags
+// Generate canonical and hreflang tags with proper URL structure  
 export const generateCanonicalAndHreflang = (
   slug: string,
   currentLang: string,
   availableLanguages: string[] = ['en', 'es', 'de', 'fr', 'nl'],
   baseUrl: string = 'https://delsolprimehomes.com'
 ) => {
-  const canonical = `${baseUrl}/${currentLang}/qa/${slug}`;
+  // Canonical URL uses path-based structure
+  const canonical = currentLang === 'en' 
+    ? `${baseUrl}/qa/${slug}`
+    : `${baseUrl}/${currentLang}/qa/${slug}`;
   
+  // Generate hreflang with proper URL structure
   const hreflang = availableLanguages.reduce((acc, lang) => {
-    acc[lang] = `${baseUrl}/${lang}/qa/${slug}`;
+    acc[lang] = lang === 'en'
+      ? `${baseUrl}/qa/${slug}`
+      : `${baseUrl}/${lang}/qa/${slug}`;
     return acc;
   }, {} as Record<string, string>);
   
-  // Add x-default
-  hreflang['x-default'] = `${baseUrl}/en/qa/${slug}`;
+  // Add x-default pointing to English version
+  hreflang['x-default'] = `${baseUrl}/qa/${slug}`;
   
   return { canonical, hreflang };
 };

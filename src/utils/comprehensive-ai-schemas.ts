@@ -34,8 +34,11 @@ export function generateMaximalAISchema(
     {
       "@context": "https://schema.org",
       "@type": ["QAPage", "Article", "WebPage"],
-      "@id": `${baseUrl}/qa/${article.slug}`,
-      "url": `${baseUrl}/qa/${article.slug}`,
+      "@id": `${baseUrl}/${article.language || 'en'}/qa/${article.slug}`,
+      "@language": article.language || "en",
+      "url": (article.language === 'en' || !article.language) 
+        ? `${baseUrl}/qa/${article.slug}`
+        : `${baseUrl}/${article.language}/qa/${article.slug}`,
       "name": article.title,
       "headline": article.title,
       "description": article.excerpt,
@@ -82,7 +85,8 @@ export function generateMaximalAISchema(
 
       "mainEntity": {
         "@type": "Question",
-        "@id": `${baseUrl}/qa/${article.slug}#question`,
+        "@id": `${baseUrl}/${article.language || 'en'}/qa/${article.slug}#question`,
+        "@language": article.language || "en",
         "name": article.title,
         "inLanguage": article.language || "en",
         "keywords": article.tags?.join(', '),
@@ -101,7 +105,8 @@ export function generateMaximalAISchema(
         },
         "acceptedAnswer": {
           "@type": "Answer",
-          "@id": `${baseUrl}/qa/${article.slug}#answer`,
+          "@id": `${baseUrl}/${article.language || 'en'}/qa/${article.slug}#answer`,
+          "@language": article.language || "en",
           "text": article.content.replace(/<[^>]*>/g, '').substring(0, 2000),
           "inLanguage": article.language || "en",
           "author": {
@@ -110,7 +115,9 @@ export function generateMaximalAISchema(
           },
           "dateCreated": article.last_updated,
           "upvoteCount": 0,
-          "url": `${baseUrl}/qa/${article.slug}`
+          "url": (article.language === 'en' || !article.language) 
+            ? `${baseUrl}/qa/${article.slug}`
+            : `${baseUrl}/${article.language}/qa/${article.slug}`
         }
       },
 
@@ -226,8 +233,24 @@ export function generateMaximalAISchema(
         "url": `${baseUrl}/faq`
       },
 
-      // Cross-language linking
+      // Cross-language linking - enhanced for AI citation
       "sameAs": generateSameAsLinks(article, relatedArticles, baseUrl),
+      
+      // Multilingual work relationship
+      "translationOfWork": (article.language && article.language !== 'en') ? {
+        "@type": "Article",
+        "inLanguage": "en", 
+        "url": `${baseUrl}/qa/${article.slug}`,
+        "name": article.title
+      } : undefined,
+      
+      "workTranslation": (article.language === 'en' || !article.language) ? 
+        ['es', 'de', 'nl', 'fr'].map(lang => ({
+          "@type": "Article",
+          "inLanguage": lang,
+          "url": `${baseUrl}/${lang}/qa/${article.slug}`,
+          "name": article.title
+        })) : undefined,
       
       // AI Assistant Integration
       "assistantIntegration": {
@@ -469,7 +492,12 @@ function generateSameAsLinks(
     (a.language || 'en') !== (article.language || 'en')
   );
 
-  return relatedArticles.map(a => `${baseUrl}/${a.language || 'en'}/qa/${a.slug}`);
+  return relatedArticles.map(a => {
+    const lang = a.language || 'en';
+    return lang === 'en' 
+      ? `${baseUrl}/qa/${a.slug}`
+      : `${baseUrl}/${lang}/qa/${a.slug}`;
+  });
 }
 
 /**
