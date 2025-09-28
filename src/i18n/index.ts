@@ -1,11 +1,12 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-const supportedLanguages = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da'] as const;
+const supportedLanguages = ['en', 'es', 'nl', 'fr', 'de', 'pl', 'sv', 'da'] as const;
 export type SupportedLanguage = typeof supportedLanguages[number];
 
 export const languageConfig = {
   en: { name: 'English', flag: '🇬🇧' },
+  es: { name: 'Español', flag: '🇪🇸' },
   nl: { name: 'Nederlands', flag: '🇳🇱' },
   fr: { name: 'Français', flag: '🇫🇷' },
   de: { name: 'Deutsch', flag: '🇩🇪' },
@@ -33,6 +34,7 @@ i18n
           loading: 'Loading...'
         } 
       },
+      es: { common: {} },
       nl: { common: {} },
       fr: { common: {} },
       de: { common: {} },

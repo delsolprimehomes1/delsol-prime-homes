@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "properties": "Propiedades",
+    "blog": "Blog",
+    "qa": "Preguntas y Respuestas",
+    "contact": "Contacto",
+    "language": "Idioma"
+  },
+  "search": {
+    "title": "Encuentra Tu Hogar Soñado en Costa Del Sol en 60 Segundos",
+    "placeholder": "Buscar propiedades...",
+    "button": "Buscar Propiedades"
+  },
+  "cta": {
+    "bookViewing": "Reserva Tu Visita Privada",
+    "readMore": "Leer Más",
+    "contactUs": "Contáctanos",
+    "viewAll": "Ver Todo"
+  },
+  "fallback": {
+    "title": "Contenido no disponible en español",
+    "description": "Este contenido está disponible actualmente en otros idiomas.",
+    "switchLanguage": "Cambiar al idioma disponible"
+  },
+  "loading": "Cargando...",
+  "welcome": "Bienvenido"
+}

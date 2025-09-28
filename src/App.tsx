@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { I18nWrapper } from './components/I18nWrapper';
+import { LanguageProvider } from './contexts/LanguageContext';
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -23,11 +24,12 @@ const queryClient = new QueryClient();
 const App = () => (
   <HelmetProvider>
     <I18nWrapper>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      <LanguageProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/blog" element={<Blog />} />
@@ -64,8 +66,9 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-    </I18nWrapper>
-  </HelmetProvider>
+    </LanguageProvider>
+  </I18nWrapper>
+</HelmetProvider>
 );
 
 export default App;

@@ -1,108 +1,28 @@
 {
-  "hero": {
-    "h1": "Kaufen Sie Luxusimmobilien an der Costa Del Sol",
-    "h2": "Marbella, Estepona & Fuengirola Immobilienexperten",
-    "sub": "Mit über 15 Jahren Expertise verbinden wir Sie mit den schönsten Immobilien von Marbella, Estepona & Fuengirola.",
-    "question": "Welches Luxushaus suchen Sie?",
-    "answer": "Ob Sie eine Strandvilla an Marbellas Golden Mile, ein modernes Penthouse an Esteponas New Golden Mile oder ein Familiengut in den Hügeln von Fuengirola suchen, wir haben exklusiven Zugang zu den begehrtesten Immobilien der Costa del Sol."
-  },
-  "cta": {
-    "bookViewing": "Buchen Sie Ihre Private Besichtigung",
-    "exploreTours": "Entdecken Sie Virtuelle Touren",
-    "search": "Suchen Sie Luxusimmobilien",
-    "bookConsultation": "Expertenberatung Planen",
-    "viewAllFaqs": "Alle FAQs anzeigen (275)",
-    "backToTop": "Nach Oben"
-  },
   "nav": {
     "home": "Startseite",
     "properties": "Immobilien",
-    "about": "Über Uns",
+    "blog": "Blog",
+    "qa": "Fragen & Antworten",
     "contact": "Kontakt",
-    "faq": "FAQ",
     "language": "Sprache"
   },
   "search": {
     "title": "Finden Sie Ihr Traumhaus an der Costa Del Sol in 60 Sekunden",
-    "subtitle": "Unsere KI-gestützte Suche verbindet Sie mit perfekten Immobilien in Marbella, Estepona, Fuengirola und darüber hinaus",
-    "location": "Standort",
-    "type": "Immobilientyp",
-    "price": "Preisklasse",
-    "beds": "Schlafzimmer",
-    "baths": "Badezimmer",
-    "aiMatch": "🤖 KI-gestützte Immobiliensuche",
-    "aiPlaceholder": "Fragen Sie mich alles: 'Zeigen Sie mir Strandvillen unter €3M in Marbella' oder 'Ich brauche ein Familienhaus mit 4 Schlafzimmern und Pool in Estepona'",
-    "searchButton": "Immobilien Suchen",
-    "popular": "Beliebte Suchen",
-    "locations": {
-      "all": "Alle Standorte",
-      "marbella": "Marbella",
-      "estepona": "Estepona",
-      "fuengirola": "Fuengirola",
-      "benalmadena": "Benalmádena",
-      "mijas": "Mijas"
-    },
-    "propertyTypes": {
-      "all": "Alle Typen",
-      "villa": "Luxusvilla",
-      "apartment": "Strand Apartment",
-      "penthouse": "Penthouse",
-      "townhouse": "Reihenhaus",
-      "plot": "Baugrundstück"
-    },
-    "priceRanges": {
-      "all": "Jeder Preis",
-      "500k-1m": "€500K - €1M",
-      "1m-2m": "€1M - €2M",
-      "2m-5m": "€2M - €5M",
-      "5m+": "€5M+"
-    },
-    "bedrooms": {
-      "any": "Beliebig",
-      "1": "1+",
-      "2": "2+",
-      "3": "3+",
-      "4": "4+",
-      "5": "5+"
-    }
+    "placeholder": "Immobilien suchen...",
+    "button": "Immobilien Suchen"
   },
-  "faq": {
-    "title": "Häufig Gestellte Fragen",
-    "subtitle": "Expertenantworten auf 275 häufige Fragen zum Kauf von Luxusimmobilien an der Costa del Sol.",
-    "description": "Von Marbellas Golden Mile bis zu Esteponas New Golden Mile, Fuengirolas Strand und Benalmádenas Hügeln—wir haben Sie abgedeckt.",
-    "searchPlaceholder": "275 Antworten durchsuchen (z.B., 'Können Ausländer in Marbella kaufen?')",
-    "categories": {
-      "all": "Alle Kategorien",
-      "legal": "Rechtliches",
-      "fees": "Gebühren & Kosten",
-      "visas": "Visa/Aufenthalt",
-      "rentals": "Kurzzeitvermietung",
-      "taxes": "Steuern",
-      "management": "Immobilienverwaltung",
-      "mortgages": "Hypotheken",
-      "process": "Kaufprozess",
-      "afterSale": "Nach dem Verkauf",
-      "general": "Allgemein",
-      "market": "Markttrends"
-    },
-    "resultsCount": "{{count}} von 275 Fragen angezeigt",
-    "noResults": "Keine Ergebnisse für Ihre Suche gefunden. Versuchen Sie andere Suchbegriffe oder durchsuchen Sie alle Kategorien.",
-    "stillQuestions": "Noch Fragen?",
-    "stillQuestionsText": "Können Sie nicht finden, wonach Sie suchen? Unsere Costa del Sol Experten helfen Ihnen gerne mit persönlicher Beratung.",
-    "speakToExpert": "Mit einem Experten Sprechen"
+  "cta": {
+    "bookViewing": "Buchen Sie Ihre Private Besichtigung",
+    "readMore": "Weiterlesen",
+    "contactUs": "Kontaktieren Sie Uns",
+    "viewAll": "Alle Anzeigen"
   },
-  "locations": {
-    "marbella": "Marbella Luxushäuser",
-    "estepona": "Estepona Immobilien",
-    "fuengirola": "Fuengirola Villen",
-    "benalmadena": "Benalmádena Anwesen",
-    "mijas": "Mijas Häuser"
+  "fallback": {
+    "title": "Inhalt nicht auf Deutsch verfügbar",
+    "description": "Dieser Inhalt ist derzeit in anderen Sprachen verfügbar.",
+    "switchLanguage": "Zur verfügbaren Sprache wechseln"
   },
-  "popularSearches": [
-    "Marbella Strandvilla €2M-€5M",
-    "Estepona Penthouse Meerblick",
-    "Fuengirola Familienhaus 4+ Schlafzimmer",
-    "Golden Mile Luxusapartment",
-    "New Golden Mile moderne Villa"
-  ]
+  "loading": "Laden...",
+  "welcome": "Willkommen"
 }

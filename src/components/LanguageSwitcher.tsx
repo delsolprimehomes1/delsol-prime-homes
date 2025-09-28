@@ -7,9 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Globe, ChevronDown } from 'lucide-react';
+import { Globe, ChevronDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { languageConfig, type SupportedLanguage } from '@/i18n';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LanguageSwitcherProps {
   currentPath?: string;
@@ -22,33 +23,18 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   className,
   variant = 'default'
 }) => {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language as SupportedLanguage;
+  const { currentLanguage, setLanguage, getContentCount } = useLanguage();
 
   const languages = Object.entries(languageConfig).map(([code, config]) => ({
     code: code as SupportedLanguage,
-    ...config
+    ...config,
+    contentCount: getContentCount(code as SupportedLanguage)
   }));
 
   const selectedLanguage = languages.find(lang => lang.code === currentLanguage) || languages[0];
 
   const handleLanguageChange = (language: typeof languages[0]) => {
-    i18n.changeLanguage(language.code);
-    
-    // Update URL to include language parameter
-    const path = currentPath || window.location.pathname;
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('lang', language.code);
-    
-    // Navigate to the same page with new language
-    if (path.includes('/qa/')) {
-      // For individual QA articles, redirect to QA hub with language
-      window.history.pushState({}, '', `/qa?lang=${language.code}`);
-      window.location.reload(); // Reload to fetch new language content
-    } else {
-      window.history.pushState({}, '', `${path}?${searchParams.toString()}`);
-      window.location.reload(); // Reload to fetch new language content
-    }
+    setLanguage(language.code);
   };
 
   if (variant === 'compact') {
@@ -78,7 +64,17 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
                 )}
               >
                 <span className="text-lg">{language.flag}</span>
-                <span>{language.name}</span>
+                <div className="flex flex-col">
+                  <span>{language.name}</span>
+                  {language.contentCount > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {language.contentCount} articles
+                    </span>
+                  )}
+                </div>
+                {currentLanguage === language.code && (
+                  <Check className="w-4 h-4 ml-auto" />
+                )}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -115,9 +111,16 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
             )}
           >
             <span className="text-lg">{language.flag}</span>
-            <span>{language.name}</span>
+            <div className="flex flex-col">
+              <span>{language.name}</span>
+              {language.contentCount > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {language.contentCount} articles
+                </span>
+              )}
+            </div>
             {currentLanguage === language.code && (
-              <span className="ml-auto text-xs text-muted-foreground">Current</span>
+              <Check className="w-4 h-4 ml-auto" />
             )}
           </DropdownMenuItem>
         ))}

@@ -1,108 +1,28 @@
 {
-  "hero": {
-    "h1": "Köp Lyxbostäder på Costa Del Sol",
-    "h2": "Marbella, Estepona & Fuengirola Fastighetsexperter",
-    "sub": "Med över 15 års expertis matchar vi dig med de finaste fastigheterna i Marbella, Estepona & Fuengirola.",
-    "question": "Vilket lyxhem letar du efter?",
-    "answer": "Oavsett om du söker en strandvilla på Marbellas Golden Mile, en modern penthouse på Esteponas New Golden Mile, eller en familjeegendom i Fuengirolas kullar, har vi exklusiv tillgång till Costa del Sols mest eftertraktade fastigheter."
-  },
-  "cta": {
-    "bookViewing": "Boka Din Privata Visning",
-    "exploreTours": "Utforska Virtuella Turer",
-    "search": "Sök Lyxfastigheter",
-    "bookConsultation": "Planera Expertkonsultation",
-    "viewAllFaqs": "Se alla FAQ (275)",
-    "backToTop": "Tillbaka Till Toppen"
-  },
   "nav": {
     "home": "Hem",
     "properties": "Fastigheter",
-    "about": "Om Oss",
+    "blog": "Blog",
+    "qa": "Frågor & Svar",
     "contact": "Kontakt",
-    "faq": "FAQ",
     "language": "Språk"
   },
   "search": {
     "title": "Hitta Ditt Drömhem på Costa Del Sol på 60 Sekunder",
-    "subtitle": "Vår AI-drivna sökning kopplar dig med perfekta fastigheter över Marbella, Estepona, Fuengirola och därutöver",
-    "location": "Plats",
-    "type": "Fastighetstyp",
-    "price": "Prisintervall",
-    "beds": "Sovrum",
-    "baths": "Badrum",
-    "aiMatch": "🤖 AI-driven Fastighetsmatchning",
-    "aiPlaceholder": "Fråga mig vad som helst: 'Visa mig strandvillor under €3M i Marbella' eller 'Jag behöver ett 4-sovrum familjehus med pool i Estepona'",
-    "searchButton": "Sök Fastigheter",
-    "popular": "Populära Sökningar",
-    "locations": {
-      "all": "Alla Platser",
-      "marbella": "Marbella",
-      "estepona": "Estepona",
-      "fuengirola": "Fuengirola",
-      "benalmadena": "Benalmádena",
-      "mijas": "Mijas"
-    },
-    "propertyTypes": {
-      "all": "Alla Typer",
-      "villa": "Lyxvilla",
-      "apartment": "Strandlägenhet",
-      "penthouse": "Penthouse",
-      "townhouse": "Radhus",
-      "plot": "Byggtomt"
-    },
-    "priceRanges": {
-      "all": "Alla Priser",
-      "500k-1m": "€500K - €1M",
-      "1m-2m": "€1M - €2M",
-      "2m-5m": "€2M - €5M",
-      "5m+": "€5M+"
-    },
-    "bedrooms": {
-      "any": "Alla",
-      "1": "1+",
-      "2": "2+",
-      "3": "3+",
-      "4": "4+",
-      "5": "5+"
-    }
+    "placeholder": "Sök fastigheter...",
+    "button": "Sök Fastigheter"
   },
-  "faq": {
-    "title": "Vanliga Frågor",
-    "subtitle": "Expertsvar på 275 vanliga frågor om att köpa lyxfastigheter på Costa del Sol.",
-    "description": "Från Marbellas Golden Mile till Esteponas New Golden Mile, Fuengirolas strand och Benalmádenas kullar—vi har dig täckt.",
-    "searchPlaceholder": "Sök bland 275 svar (t.ex., 'Kan utlänningar köpa i Marbella?')",
-    "categories": {
-      "all": "Alla Kategorier",
-      "legal": "Juridik",
-      "fees": "Avgifter & Kostnader",
-      "visas": "Visum/Uppehållstillstånd",
-      "rentals": "Korttidsuthyrning",
-      "taxes": "Skatter",
-      "management": "Fastighetsförvaltning",
-      "mortgages": "Bolån",
-      "process": "Köpprocess",
-      "afterSale": "Efter Försäljning",
-      "general": "Allmänt",
-      "market": "Marknadstrender"
-    },
-    "resultsCount": "Visar {{count}} av 275 frågor",
-    "noResults": "Inga resultat hittades för din sökning. Prova andra sökord eller bläddra bland alla kategorier.",
-    "stillQuestions": "Har Du Fortfarande Frågor?",
-    "stillQuestionsText": "Kan du inte hitta det du letar efter? Våra Costa del Sol-experter är här för att hjälpa med personlig rådgivning.",
-    "speakToExpert": "Prata med en Expert"
+  "cta": {
+    "bookViewing": "Boka Din Privata Visning",
+    "readMore": "Läs Mer",
+    "contactUs": "Kontakta Oss",
+    "viewAll": "Se Alla"
   },
-  "locations": {
-    "marbella": "Marbella Lyxhem",
-    "estepona": "Estepona Fastigheter",
-    "fuengirola": "Fuengirola Villor",
-    "benalmadena": "Benalmádena Egendomar",
-    "mijas": "Mijas Hem"
+  "fallback": {
+    "title": "Innehåll inte tillgängligt på svenska",
+    "description": "Detta innehåll är för närvarande tillgängligt på andra språk.",
+    "switchLanguage": "Byt till tillgängligt språk"
   },
-  "popularSearches": [
-    "Marbella strandvilla €2M-€5M",
-    "Estepona penthouse havsutsikt",
-    "Fuengirola familjevilla 4+ sovrum",
-    "Golden Mile lyxlägenhet",
-    "New Golden Mile modern villa"
-  ]
+  "loading": "Laddar...",
+  "welcome": "Välkommen"
 }

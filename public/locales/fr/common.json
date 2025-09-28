@@ -1,108 +1,28 @@
 {
-  "hero": {
-    "h1": "Achetez des Maisons de Luxe sur la Costa Del Sol",
-    "h2": "Experts Immobiliers Marbella, Estepona & Fuengirola",
-    "sub": "Avec plus de 15 ans d'expertise, nous vous mettons en relation avec les plus belles propriétés de Marbella, Estepona & Fuengirola.",
-    "question": "Quelle maison de luxe recherchez-vous?",
-    "answer": "Que vous recherchiez une villa en bord de mer sur le Golden Mile de Marbella, un penthouse moderne sur le New Golden Mile d'Estepona, ou un domaine familial dans les collines de Fuengirola, nous avons un accès exclusif aux propriétés les plus convoitées de la Costa del Sol."
-  },
-  "cta": {
-    "bookViewing": "Réservez Votre Visite Privée",
-    "exploreTours": "Explorez les Visites Virtuelles",
-    "search": "Rechercher des Propriétés de Luxe",
-    "bookConsultation": "Planifier une Consultation d'Expert",
-    "viewAllFaqs": "Voir toutes les FAQ (275)",
-    "backToTop": "Retour en Haut"
-  },
   "nav": {
     "home": "Accueil",
     "properties": "Propriétés",
-    "about": "À Propos",
+    "blog": "Blog",
+    "qa": "Questions & Réponses",
     "contact": "Contact",
-    "faq": "FAQ",
     "language": "Langue"
   },
   "search": {
     "title": "Trouvez Votre Maison de Rêve sur la Costa Del Sol en 60 Secondes",
-    "subtitle": "Notre recherche alimentée par IA vous connecte avec des propriétés parfaites à travers Marbella, Estepona, Fuengirola et au-delà",
-    "location": "Emplacement",
-    "type": "Type de Propriété",
-    "price": "Gamme de Prix",
-    "beds": "Chambres",
-    "baths": "Salles de Bain",
-    "aiMatch": "🤖 Correspondance de Propriété par IA",
-    "aiPlaceholder": "Demandez-moi tout: 'Montrez-moi des villas en bord de mer sous 3M€ à Marbella' ou 'J'ai besoin d'une maison familiale 4 chambres avec piscine à Estepona'",
-    "searchButton": "Rechercher des Propriétés",
-    "popular": "Recherches Populaires",
-    "locations": {
-      "all": "Tous les Emplacements",
-      "marbella": "Marbella",
-      "estepona": "Estepona",
-      "fuengirola": "Fuengirola",
-      "benalmadena": "Benalmádena",
-      "mijas": "Mijas"
-    },
-    "propertyTypes": {
-      "all": "Tous les Types",
-      "villa": "Villa de Luxe",
-      "apartment": "Appartement en Bord de Mer",
-      "penthouse": "Penthouse",
-      "townhouse": "Maison de Ville",
-      "plot": "Terrain à Bâtir"
-    },
-    "priceRanges": {
-      "all": "Tout Prix",
-      "500k-1m": "€500K - €1M",
-      "1m-2m": "€1M - €2M",
-      "2m-5m": "€2M - €5M",
-      "5m+": "€5M+"
-    },
-    "bedrooms": {
-      "any": "Toute",
-      "1": "1+",
-      "2": "2+",
-      "3": "3+",
-      "4": "4+",
-      "5": "5+"
-    }
+    "placeholder": "Rechercher des propriétés...",
+    "button": "Rechercher des Propriétés"
   },
-  "faq": {
-    "title": "Questions Fréquemment Posées",
-    "subtitle": "Réponses d'experts à 275 questions courantes sur l'achat de propriétés de luxe sur la Costa del Sol.",
-    "description": "Du Golden Mile de Marbella au New Golden Mile d'Estepona, du front de mer de Fuengirola aux collines de Benalmádena—nous vous couvrons.",
-    "searchPlaceholder": "Rechercher 275 réponses (ex., 'Les étrangers peuvent-ils acheter à Marbella?')",
-    "categories": {
-      "all": "Toutes les Catégories",
-      "legal": "Juridique",
-      "fees": "Frais et Coûts",
-      "visas": "Visas/Résidence",
-      "rentals": "Location Court Terme",
-      "taxes": "Taxes",
-      "management": "Gestion Immobilière",
-      "mortgages": "Hypothèques",
-      "process": "Processus d'Achat",
-      "afterSale": "Après-Vente",
-      "general": "Général",
-      "market": "Tendances du Marché"
-    },
-    "resultsCount": "Affichage de {{count}} sur 275 questions",
-    "noResults": "Aucun résultat trouvé pour votre recherche. Essayez des mots-clés différents ou parcourez toutes les catégories.",
-    "stillQuestions": "Encore des Questions?",
-    "stillQuestionsText": "Vous ne trouvez pas ce que vous cherchez? Nos experts de la Costa del Sol sont là pour vous aider avec des conseils personnalisés.",
-    "speakToExpert": "Parler à un Expert"
+  "cta": {
+    "bookViewing": "Réservez Votre Visite Privée",
+    "readMore": "Lire Plus",
+    "contactUs": "Nous Contacter",
+    "viewAll": "Voir Tout"
   },
-  "locations": {
-    "marbella": "Maisons de Luxe Marbella",
-    "estepona": "Propriétés Estepona",
-    "fuengirola": "Villas Fuengirola",
-    "benalmadena": "Domaines Benalmádena",
-    "mijas": "Maisons Mijas"
+  "fallback": {
+    "title": "Contenu non disponible en français",
+    "description": "Ce contenu est actuellement disponible dans d'autres langues.",
+    "switchLanguage": "Changer vers la langue disponible"
   },
-  "popularSearches": [
-    "Villa front de mer Marbella €2M-€5M",
-    "Penthouse Estepona vue mer",
-    "Villa familiale Fuengirola 4+ chambres",
-    "Appartement luxe Golden Mile",
-    "Villa moderne New Golden Mile"
-  ]
+  "loading": "Chargement...",
+  "welcome": "Bienvenue"
 }
