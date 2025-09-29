@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { processMarkdownContent } from '@/utils/markdown';
 
 interface QAArticle {
   id: string;
@@ -55,9 +56,10 @@ export const QACard = ({ article, animationDelay = 0 }: QACardProps) => {
         </CardHeader>
         
         <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6">
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-4 line-clamp-3">
-            {article.excerpt}
-          </p>
+          <div 
+            className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-4 line-clamp-3"
+            dangerouslySetInnerHTML={{ __html: processMarkdownContent(article.excerpt) }}
+          />
           
           {article.tags && article.tags.length > 0 && (
             <div className="flex items-start gap-2 mb-4">

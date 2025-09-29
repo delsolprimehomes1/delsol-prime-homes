@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Calendar, Tag, Clock, MessageSquare, Shield, CheckCircle } from 'lucide-react';
+import { processMarkdownContent } from '@/utils/markdown';
 
 interface QAArticle {
   id: string;
@@ -73,9 +74,10 @@ export const QAEnhancedCard: React.FC<QAEnhancedCardProps> = ({
               </h3>
 
               {/* Excerpt */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                {article.excerpt}
-              </p>
+              <div 
+                className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3"
+                dangerouslySetInnerHTML={{ __html: processMarkdownContent(article.excerpt) }}
+              />
 
               {/* Quality Indicators */}
               <div className="flex items-center gap-2 mb-4">
