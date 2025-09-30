@@ -13,6 +13,7 @@ import { KeyTakeawaysBox } from './qa/KeyTakeawaysBox';
 import { SmartMidPageCTA } from './qa/SmartMidPageCTA';
 import { DataComparisonTable } from './qa/DataComparisonTable';
 import { ContextualContentProcessor } from './qa/ContextualContentProcessor';
+import { DiagramDisplay } from './qa/DiagramDisplay';
 import { useRelatedArticles } from '@/hooks/useRelatedArticles';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import FunnelProgressBar from '@/components/qa/FunnelProgressBar';
@@ -29,6 +30,10 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
   className = "" 
 }) => {
   const { mobile, tablet, desktop } = useResponsiveLayout();
+  
+  // Extract diagram from markdown_frontmatter
+  const diagram = article.markdown_frontmatter?.diagram;
+  
   // Fetch related articles for smart linking
   const { data: relatedArticles = [] } = useRelatedArticles({
     currentArticleId: article.id,
@@ -183,6 +188,15 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
             <div className="mb-8">
               <ServiceAreasSection geoData={geoData} />
             </div>
+
+            {/* Visual Content (AI-Generated Image/Diagram or Mermaid) */}
+            {diagram && (
+              <DiagramDisplay 
+                diagram={diagram}
+                title={article.title}
+                className="mb-8"
+              />
+            )}
 
             {/* Main Article Content with Contextual Links */}
             <article className="mb-8">
