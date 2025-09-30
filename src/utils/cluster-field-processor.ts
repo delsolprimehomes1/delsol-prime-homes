@@ -109,8 +109,16 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
     // Process TOFU articles
     for (const [index, article] of data.tofuArticles.entries()) {
+      // Validate required fields
+      if (!article.title?.trim() || !article.content?.trim()) {
+        errors.push(`TOFU ${index + 1}: Missing required fields (title or content)`);
+        continue;
+      }
+
       const existingId = await findExistingArticleByTitle(article.title, data.language);
       const slug = generateSlug(article.title);
+      const currentPosition = position;
+      position += 1;
       
       if (existingId) {
         // Update existing article
@@ -124,11 +132,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             funnel_stage: 'TOFU',
             topic: data.topic,
             cluster_id: cluster.id,
-            cluster_position: position++,
-            tags: article.tags,
-            location_focus: article.locationFocus,
-            target_audience: article.targetAudience,
-            intent: article.intent,
+            cluster_position: currentPosition,
+            tags: article.tags || [],
+            location_focus: article.locationFocus || null,
+            target_audience: article.targetAudience || null,
+            intent: article.intent || null,
             markdown_frontmatter: createFrontmatter(article, 'TOFU'),
             ai_optimization_score: 85,
             voice_search_ready: true,
@@ -154,11 +162,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             topic: data.topic,
             language: data.language,
             cluster_id: cluster.id,
-            cluster_position: position++,
-            tags: article.tags,
-            location_focus: article.locationFocus,
-            target_audience: article.targetAudience,
-            intent: article.intent,
+            cluster_position: currentPosition,
+            tags: article.tags || [],
+            location_focus: article.locationFocus || null,
+            target_audience: article.targetAudience || null,
+            intent: article.intent || null,
             markdown_frontmatter: createFrontmatter(article, 'TOFU'),
             ai_optimization_score: 85,
             voice_search_ready: true,
@@ -177,8 +185,16 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
     // Process MOFU articles
     for (const [index, article] of data.mofuArticles.entries()) {
+      // Validate required fields
+      if (!article.title?.trim() || !article.content?.trim()) {
+        errors.push(`MOFU ${index + 1}: Missing required fields (title or content)`);
+        continue;
+      }
+
       const existingId = await findExistingArticleByTitle(article.title, data.language);
       const slug = generateSlug(article.title);
+      const currentPosition = position;
+      position += 1;
       
       if (existingId) {
         // Update existing article
@@ -192,11 +208,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             funnel_stage: 'MOFU',
             topic: data.topic,
             cluster_id: cluster.id,
-            cluster_position: position++,
-            tags: article.tags,
-            location_focus: article.locationFocus,
-            target_audience: article.targetAudience,
-            intent: article.intent,
+            cluster_position: currentPosition,
+            tags: article.tags || [],
+            location_focus: article.locationFocus || null,
+            target_audience: article.targetAudience || null,
+            intent: article.intent || null,
             markdown_frontmatter: createFrontmatter(article, 'MOFU'),
             ai_optimization_score: 90,
             voice_search_ready: true,
@@ -222,11 +238,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             topic: data.topic,
             language: data.language,
             cluster_id: cluster.id,
-            cluster_position: position++,
-            tags: article.tags,
-            location_focus: article.locationFocus,
-            target_audience: article.targetAudience,
-            intent: article.intent,
+            cluster_position: currentPosition,
+            tags: article.tags || [],
+            location_focus: article.locationFocus || null,
+            target_audience: article.targetAudience || null,
+            intent: article.intent || null,
             markdown_frontmatter: createFrontmatter(article, 'MOFU'),
             ai_optimization_score: 90,
             voice_search_ready: true,
@@ -244,72 +260,78 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
     }
 
     // Process BOFU article
-    const existingBofuId = await findExistingArticleByTitle(data.bofuArticle.title, data.language);
-    const slug = generateSlug(data.bofuArticle.title);
-    
-    if (existingBofuId) {
-      // Update existing article
-      const { error: bofuError } = await supabase
-        .from('qa_articles')
-        .update({
-          title: data.bofuArticle.title,
-          slug,
-          content: data.bofuArticle.content,
-          excerpt: generateExcerpt(data.bofuArticle.content),
-          funnel_stage: 'BOFU',
-          topic: data.topic,
-          cluster_id: cluster.id,
-          cluster_position: position++,
-          tags: data.bofuArticle.tags,
-          location_focus: data.bofuArticle.locationFocus,
-          target_audience: data.bofuArticle.targetAudience,
-          intent: data.bofuArticle.intent,
-          markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
-          ai_optimization_score: 95,
-          voice_search_ready: true,
-          citation_ready: true,
-          appointment_booking_enabled: true,
-          final_cta_type: 'booking',
-        })
-        .eq('id', existingBofuId);
-
-      if (bofuError) {
-        errors.push(`BOFU: ${bofuError.message}`);
-      } else {
-        articleIds['bofu-0'] = existingBofuId;
-      }
+    if (!data.bofuArticle.title?.trim() || !data.bofuArticle.content?.trim()) {
+      errors.push(`BOFU: Missing required fields (title or content)`);
     } else {
-      // Create new article
-      const { data: inserted, error: bofuError } = await supabase
-        .from('qa_articles')
-        .insert({
-          title: data.bofuArticle.title,
-          slug,
-          content: data.bofuArticle.content,
-          excerpt: generateExcerpt(data.bofuArticle.content),
-          funnel_stage: 'BOFU',
-          topic: data.topic,
-          language: data.language,
-          cluster_id: cluster.id,
-          cluster_position: position++,
-          tags: data.bofuArticle.tags,
-          location_focus: data.bofuArticle.locationFocus,
-          target_audience: data.bofuArticle.targetAudience,
-          intent: data.bofuArticle.intent,
-          markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
-          ai_optimization_score: 95,
-          voice_search_ready: true,
-          citation_ready: true,
-          appointment_booking_enabled: true,
-          final_cta_type: 'booking',
-        })
-        .select()
-        .single();
+      const existingBofuId = await findExistingArticleByTitle(data.bofuArticle.title, data.language);
+      const slug = generateSlug(data.bofuArticle.title);
+      const currentPosition = position;
+      position += 1;
+      
+      if (existingBofuId) {
+        // Update existing article
+        const { error: bofuError } = await supabase
+          .from('qa_articles')
+          .update({
+            title: data.bofuArticle.title,
+            slug,
+            content: data.bofuArticle.content,
+            excerpt: generateExcerpt(data.bofuArticle.content),
+            funnel_stage: 'BOFU',
+            topic: data.topic,
+            cluster_id: cluster.id,
+            cluster_position: currentPosition,
+            tags: data.bofuArticle.tags || [],
+            location_focus: data.bofuArticle.locationFocus || null,
+            target_audience: data.bofuArticle.targetAudience || null,
+            intent: data.bofuArticle.intent || null,
+            markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
+            ai_optimization_score: 95,
+            voice_search_ready: true,
+            citation_ready: true,
+            appointment_booking_enabled: true,
+            final_cta_type: 'booking',
+          })
+          .eq('id', existingBofuId);
 
-      if (bofuError) {
-        errors.push(`BOFU: ${bofuError.message}`);
-      } else if (inserted) {
-        articleIds['bofu-0'] = inserted.id;
+        if (bofuError) {
+          errors.push(`BOFU: ${bofuError.message}`);
+        } else {
+          articleIds['bofu-0'] = existingBofuId;
+        }
+      } else {
+        // Create new article
+        const { data: inserted, error: bofuError } = await supabase
+          .from('qa_articles')
+          .insert({
+            title: data.bofuArticle.title,
+            slug,
+            content: data.bofuArticle.content,
+            excerpt: generateExcerpt(data.bofuArticle.content),
+            funnel_stage: 'BOFU',
+            topic: data.topic,
+            language: data.language,
+            cluster_id: cluster.id,
+            cluster_position: currentPosition,
+            tags: data.bofuArticle.tags || [],
+            location_focus: data.bofuArticle.locationFocus || null,
+            target_audience: data.bofuArticle.targetAudience || null,
+            intent: data.bofuArticle.intent || null,
+            markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
+            ai_optimization_score: 95,
+            voice_search_ready: true,
+            citation_ready: true,
+            appointment_booking_enabled: true,
+            final_cta_type: 'booking',
+          })
+          .select()
+          .single();
+
+        if (bofuError) {
+          errors.push(`BOFU: ${bofuError.message}`);
+        } else if (inserted) {
+          articleIds['bofu-0'] = inserted.id;
+        }
       }
     }
 
