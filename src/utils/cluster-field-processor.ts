@@ -116,12 +116,19 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
         continue;
       }
 
+      const currentPosition = position;
+      
+      // Validate position is within constraint bounds (1-6)
+      if (currentPosition < 1 || currentPosition > 6) {
+        errors.push(`TOFU ${index + 1}: Invalid cluster_position ${currentPosition} (must be 1-6)`);
+        console.error(`TOFU ${index + 1}: cluster_position ${currentPosition} is out of bounds`);
+        continue;
+      }
+
+      console.log(`Processing TOFU ${index + 1}: cluster_position=${currentPosition}, title="${article.title?.substring(0, 50)}"`);
+
       const existingId = await findExistingArticleByTitle(article.title, data.language);
       const slug = generateSlug(article.title);
-      const currentPosition = position;
-      position += 1;
-      
-      console.log(`Processing TOFU ${index + 1}: position=${currentPosition}, title="${article.title?.substring(0, 50)}"`);
       
       if (existingId) {
         // Update existing article
@@ -149,8 +156,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
         if (error) {
           errors.push(`TOFU ${index + 1}: ${error.message}`);
+          console.error(`TOFU ${index + 1} failed with cluster_position=${currentPosition}:`, error);
         } else {
           articleIds[`tofu-${index}`] = existingId;
+          position += 1; // Only increment on success
+          console.log(`TOFU ${index + 1} updated successfully with cluster_position=${currentPosition}`);
         }
       } else {
         // Create new article
@@ -180,8 +190,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
         if (error) {
           errors.push(`TOFU ${index + 1}: ${error.message}`);
+          console.error(`TOFU ${index + 1} failed with cluster_position=${currentPosition}:`, error);
         } else if (inserted) {
           articleIds[`tofu-${index}`] = inserted.id;
+          position += 1; // Only increment on success
+          console.log(`TOFU ${index + 1} created successfully with cluster_position=${currentPosition}`);
         }
       }
     }
@@ -194,10 +207,19 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
         continue;
       }
 
+      const currentPosition = position;
+      
+      // Validate position is within constraint bounds (1-6)
+      if (currentPosition < 1 || currentPosition > 6) {
+        errors.push(`MOFU ${index + 1}: Invalid cluster_position ${currentPosition} (must be 1-6)`);
+        console.error(`MOFU ${index + 1}: cluster_position ${currentPosition} is out of bounds`);
+        continue;
+      }
+
+      console.log(`Processing MOFU ${index + 1}: cluster_position=${currentPosition}, title="${article.title?.substring(0, 50)}"`);
+
       const existingId = await findExistingArticleByTitle(article.title, data.language);
       const slug = generateSlug(article.title);
-      const currentPosition = position;
-      position += 1;
       
       if (existingId) {
         // Update existing article
@@ -225,8 +247,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
         if (error) {
           errors.push(`MOFU ${index + 1}: ${error.message}`);
+          console.error(`MOFU ${index + 1} failed with cluster_position=${currentPosition}:`, error);
         } else {
           articleIds[`mofu-${index}`] = existingId;
+          position += 1; // Only increment on success
+          console.log(`MOFU ${index + 1} updated successfully with cluster_position=${currentPosition}`);
         }
       } else {
         // Create new article
@@ -256,8 +281,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
         if (error) {
           errors.push(`MOFU ${index + 1}: ${error.message}`);
+          console.error(`MOFU ${index + 1} failed with cluster_position=${currentPosition}:`, error);
         } else if (inserted) {
           articleIds[`mofu-${index}`] = inserted.id;
+          position += 1; // Only increment on success
+          console.log(`MOFU ${index + 1} created successfully with cluster_position=${currentPosition}`);
         }
       }
     }
@@ -266,74 +294,88 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
     if (!data.bofuArticle.title?.trim() || !data.bofuArticle.content?.trim()) {
       errors.push(`BOFU: Missing required fields (title or content)`);
     } else {
-      const existingBofuId = await findExistingArticleByTitle(data.bofuArticle.title, data.language);
-      const slug = generateSlug(data.bofuArticle.title);
       const currentPosition = position;
-      position += 1;
       
-      if (existingBofuId) {
-        // Update existing article
-        const { error: bofuError } = await supabase
-          .from('qa_articles')
-          .update({
-            title: data.bofuArticle.title,
-            slug,
-            content: data.bofuArticle.content,
-            excerpt: generateExcerpt(data.bofuArticle.content),
-            funnel_stage: 'BOFU',
-            topic: data.topic,
-            cluster_id: cluster.id,
-            cluster_position: currentPosition,
-            tags: data.bofuArticle.tags || [],
-            location_focus: data.bofuArticle.locationFocus || null,
-            target_audience: data.bofuArticle.targetAudience || null,
-            intent: data.bofuArticle.intent || null,
-            markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
-            ai_optimization_score: 95,
-            voice_search_ready: true,
-            citation_ready: true,
-            appointment_booking_enabled: true,
-            final_cta_type: 'booking',
-          })
-          .eq('id', existingBofuId);
-
-        if (bofuError) {
-          errors.push(`BOFU: ${bofuError.message}`);
-        } else {
-          articleIds['bofu-0'] = existingBofuId;
-        }
+      // Validate position is within constraint bounds (1-6)
+      if (currentPosition < 1 || currentPosition > 6) {
+        errors.push(`BOFU: Invalid cluster_position ${currentPosition} (must be 1-6)`);
+        console.error(`BOFU: cluster_position ${currentPosition} is out of bounds`);
       } else {
-        // Create new article
-        const { data: inserted, error: bofuError } = await supabase
-          .from('qa_articles')
-          .insert({
-            title: data.bofuArticle.title,
-            slug,
-            content: data.bofuArticle.content,
-            excerpt: generateExcerpt(data.bofuArticle.content),
-            funnel_stage: 'BOFU',
-            topic: data.topic,
-            language: data.language,
-            cluster_id: cluster.id,
-            cluster_position: currentPosition,
-            tags: data.bofuArticle.tags || [],
-            location_focus: data.bofuArticle.locationFocus || null,
-            target_audience: data.bofuArticle.targetAudience || null,
-            intent: data.bofuArticle.intent || null,
-            markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
-            ai_optimization_score: 95,
-            voice_search_ready: true,
-            citation_ready: true,
-            appointment_booking_enabled: true,
-            final_cta_type: 'booking',
-          })
-          .select()
-          .single();
+        console.log(`Processing BOFU: cluster_position=${currentPosition}, title="${data.bofuArticle.title?.substring(0, 50)}"`);
 
-        if (bofuError) {
-          errors.push(`BOFU: ${bofuError.message}`);
-        } else if (inserted) {
-          articleIds['bofu-0'] = inserted.id;
+        const existingBofuId = await findExistingArticleByTitle(data.bofuArticle.title, data.language);
+        const slug = generateSlug(data.bofuArticle.title);
+        
+        if (existingBofuId) {
+          // Update existing article
+          const { error: bofuError } = await supabase
+            .from('qa_articles')
+            .update({
+              title: data.bofuArticle.title,
+              slug,
+              content: data.bofuArticle.content,
+              excerpt: generateExcerpt(data.bofuArticle.content),
+              funnel_stage: 'BOFU',
+              topic: data.topic,
+              cluster_id: cluster.id,
+              cluster_position: currentPosition,
+              tags: data.bofuArticle.tags || [],
+              location_focus: data.bofuArticle.locationFocus || null,
+              target_audience: data.bofuArticle.targetAudience || null,
+              intent: data.bofuArticle.intent || null,
+              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
+              ai_optimization_score: 95,
+              voice_search_ready: true,
+              citation_ready: true,
+              appointment_booking_enabled: true,
+              final_cta_type: 'booking',
+            })
+            .eq('id', existingBofuId);
+
+          if (bofuError) {
+            errors.push(`BOFU: ${bofuError.message}`);
+            console.error(`BOFU failed with cluster_position=${currentPosition}:`, bofuError);
+          } else {
+            articleIds['bofu-0'] = existingBofuId;
+            position += 1; // Only increment on success
+            console.log(`BOFU updated successfully with cluster_position=${currentPosition}`);
+          }
+        } else {
+          // Create new article
+          const { data: inserted, error: bofuError } = await supabase
+            .from('qa_articles')
+            .insert({
+              title: data.bofuArticle.title,
+              slug,
+              content: data.bofuArticle.content,
+              excerpt: generateExcerpt(data.bofuArticle.content),
+              funnel_stage: 'BOFU',
+              topic: data.topic,
+              language: data.language,
+              cluster_id: cluster.id,
+              cluster_position: currentPosition,
+              tags: data.bofuArticle.tags || [],
+              location_focus: data.bofuArticle.locationFocus || null,
+              target_audience: data.bofuArticle.targetAudience || null,
+              intent: data.bofuArticle.intent || null,
+              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
+              ai_optimization_score: 95,
+              voice_search_ready: true,
+              citation_ready: true,
+              appointment_booking_enabled: true,
+              final_cta_type: 'booking',
+            })
+            .select()
+            .single();
+
+          if (bofuError) {
+            errors.push(`BOFU: ${bofuError.message}`);
+            console.error(`BOFU failed with cluster_position=${currentPosition}:`, bofuError);
+          } else if (inserted) {
+            articleIds['bofu-0'] = inserted.id;
+            position += 1; // Only increment on success
+            console.log(`BOFU created successfully with cluster_position=${currentPosition}`);
+          }
         }
       }
     }
