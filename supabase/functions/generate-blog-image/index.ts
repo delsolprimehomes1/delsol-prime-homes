@@ -190,8 +190,8 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   const lowerTitle = title.toLowerCase();
   const lowerContent = content.toLowerCase();
   
-  // Brand colors and styling with explicit 2025 date context
-  const brandStyle = "DelSol Prime Homes branding, luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, use 2025 for any dates (NEVER 2024 or any other year)";
+  // Brand colors and styling with explicit 2025 date context (no company name for cleaner visuals)
+  const brandStyle = "luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, use 2025 for any dates (NEVER 2024 or any other year)";
   const currentYear = "2025";
   
   if (visualType === 'diagram') {
