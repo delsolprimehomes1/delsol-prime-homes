@@ -53,14 +53,14 @@ serve(async (req) => {
     console.log('Generated prompt:', imagePrompt);
     console.log('Visual type:', visualType);
 
-    // Use nano-banana/edit for high-quality image generation with brand consistency
-    const endpoint = 'https://fal.run/fal-ai/nano-banana/edit';
-    const aspectRatio = visualType === 'diagram' ? '1:1' : '16:9';
+    // Use flux/schnell for fast, high-quality image generation
+    const endpoint = 'https://fal.run/fal-ai/flux/schnell';
+    const imageSize = visualType === 'diagram' ? 'square' : 'landscape_16_9';
     
     console.log('Calling FAL.ai:', {
       endpoint,
       visualType,
-      aspectRatio,
+      imageSize,
       apiKeyConfigured: !!falApiKey,
       apiKeyLength: falApiKey.length
     });
@@ -73,10 +73,10 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         prompt: imagePrompt,
-        aspect_ratio: aspectRatio,
-        guidance_scale: 3.5,
-        num_inference_steps: 28,
-        seed: Math.floor(Math.random() * 1000000)
+        image_size: imageSize,
+        num_inference_steps: 4,
+        num_images: 1,
+        enable_safety_checker: true
       }),
     });
 
