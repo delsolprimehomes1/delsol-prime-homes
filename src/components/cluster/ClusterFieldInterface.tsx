@@ -57,15 +57,34 @@ export const ClusterFieldInterface = () => {
     return (completed / 6) * 100;
   };
 
+  const calculateWordCount = (article: ArticleField) => {
+    return article.content.trim().split(/\s+/).length;
+  };
+
+  const getWordCountStatus = (wordCount: number) => {
+    if (wordCount >= 800) return { label: '✅ Ready', color: 'text-green-600' };
+    if (wordCount >= 500) return { label: '⚠️ Will enhance', color: 'text-amber-600' };
+    if (wordCount >= 200) return { label: '🚀 Will enhance', color: 'text-blue-600' };
+    return { label: '❌ Too short', color: 'text-red-600' };
+  };
+
+  const getTotalWordCount = () => {
+    const allArticles = [...tofuArticles, ...mofuArticles, bofuArticle];
+    return allArticles.reduce((sum, article) => sum + calculateWordCount(article), 0);
+  };
+
+  const getReadyArticlesCount = () => {
+    const allArticles = [...tofuArticles, ...mofuArticles, bofuArticle];
+    return allArticles.filter(a => calculateWordCount(a) >= 800).length;
+  };
+
   const isValid = () => {
+    const allArticles = [...tofuArticles, ...mofuArticles, bofuArticle];
     return (
       clusterTitle &&
       clusterDescription &&
       topic &&
-      tofuArticles.every(a => a.title && a.content) &&
-      mofuArticles.every(a => a.title && a.content) &&
-      bofuArticle.title &&
-      bofuArticle.content
+      allArticles.every(a => a.title && a.content && calculateWordCount(a) >= 200) // Min 200 words for AI enhancement
     );
   };
 
@@ -137,6 +156,29 @@ export const ClusterFieldInterface = () => {
             </div>
             <Progress value={progress} />
           </div>
+
+          {/* Word Count Summary */}
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-900 mb-1">
+                    Total: {getTotalWordCount().toLocaleString()} words
+                  </h3>
+                  <p className="text-sm text-blue-700">
+                    AI enhances articles under 800 words automatically
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-blue-900">
+                    {getReadyArticlesCount()}
+                    <span className="text-lg text-blue-600 font-normal">/6</span>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1">Ready (800+)</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
 
@@ -144,41 +186,71 @@ export const ClusterFieldInterface = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">TOFU Articles (3 Required)</h3>
           <div className="space-y-3">
-            {tofuArticles.map((article, index) => (
-              <ArticleFieldCard
-                key={`tofu-${index}`}
-                index={index}
-                stage="TOFU"
-                article={article}
-                onChange={(updated) => updateTofuArticle(index, updated)}
-              />
-            ))}
+            {tofuArticles.map((article, index) => {
+              const wordCount = calculateWordCount(article);
+              const status = getWordCountStatus(wordCount);
+              return (
+                <div key={`tofu-${index}`}>
+                  <div className="flex items-center justify-between mb-1 px-1">
+                    <span className="text-sm font-medium text-muted-foreground">Article {index + 1}</span>
+                    <span className={`text-xs font-semibold ${status.color}`}>
+                      {wordCount} words {status.label}
+                    </span>
+                  </div>
+                  <ArticleFieldCard
+                    index={index}
+                    stage="TOFU"
+                    article={article}
+                    onChange={(updated) => updateTofuArticle(index, updated)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
 
         <div>
           <h3 className="text-lg font-semibold mb-3">MOFU Articles (2 Required)</h3>
           <div className="space-y-3">
-            {mofuArticles.map((article, index) => (
-              <ArticleFieldCard
-                key={`mofu-${index}`}
-                index={index}
-                stage="MOFU"
-                article={article}
-                onChange={(updated) => updateMofuArticle(index, updated)}
-              />
-            ))}
+            {mofuArticles.map((article, index) => {
+              const wordCount = calculateWordCount(article);
+              const status = getWordCountStatus(wordCount);
+              return (
+                <div key={`mofu-${index}`}>
+                  <div className="flex items-center justify-between mb-1 px-1">
+                    <span className="text-sm font-medium text-muted-foreground">Article {index + 1}</span>
+                    <span className={`text-xs font-semibold ${status.color}`}>
+                      {wordCount} words {status.label}
+                    </span>
+                  </div>
+                  <ArticleFieldCard
+                    index={index}
+                    stage="MOFU"
+                    article={article}
+                    onChange={(updated) => updateMofuArticle(index, updated)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
 
         <div>
           <h3 className="text-lg font-semibold mb-3">BOFU Article (1 Required)</h3>
-          <ArticleFieldCard
-            index={0}
-            stage="BOFU"
-            article={bofuArticle}
-            onChange={setBofuArticle}
-          />
+          <div>
+            <div className="flex items-center justify-between mb-1 px-1">
+              <span className="text-sm font-medium text-muted-foreground">Article 1</span>
+              <span className={`text-xs font-semibold ${getWordCountStatus(calculateWordCount(bofuArticle)).color}`}>
+                {calculateWordCount(bofuArticle)} words {getWordCountStatus(calculateWordCount(bofuArticle)).label}
+              </span>
+            </div>
+            <ArticleFieldCard
+              index={0}
+              stage="BOFU"
+              article={bofuArticle}
+              onChange={setBofuArticle}
+            />
+          </div>
         </div>
       </div>
 
@@ -193,15 +265,18 @@ export const ClusterFieldInterface = () => {
             {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Processing Cluster...
+                AI Enhancing & Importing...
               </>
             ) : (
               <>
                 <CheckCircle2 className="mr-2 h-5 w-5" />
-                Import Complete Cluster
+                Import with AI Enhancement (800+ words/article)
               </>
             )}
           </Button>
+          <p className="text-xs text-center text-muted-foreground mt-2">
+            Articles under 800 words will be automatically enhanced with stage-specific content
+          </p>
         </CardContent>
       </Card>
 

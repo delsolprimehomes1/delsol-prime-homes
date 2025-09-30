@@ -24,6 +24,57 @@ interface ProcessResult {
   errors?: string[];
 }
 
+// Helper function to enhance content if needed (800+ words with stage-specific optimization)
+async function enhanceContentIfNeeded(
+  article: ArticleField, 
+  stage: string, 
+  clusterData: { topic: string; language: string }
+): Promise<ArticleField> {
+  const wordCount = article.content.trim().split(/\s+/).length;
+  
+  // Only enhance if content is less than 800 words
+  if (wordCount >= 800) {
+    console.log(`✓ Article "${article.title}" already has ${wordCount} words, skipping enhancement`);
+    return article;
+  }
+
+  console.log(`🚀 Enhancing "${article.title}" (${wordCount} words) for ${stage} stage...`);
+  
+  try {
+    const { data, error } = await supabase.functions.invoke('content-enhancer', {
+      body: {
+        title: article.title,
+        content: article.content,
+        stage: stage,
+        topic: clusterData.topic,
+        locationFocus: article.locationFocus || 'Costa del Sol',
+        targetAudience: article.targetAudience || 'International property buyers',
+        tags: article.tags
+      }
+    });
+
+    if (error) {
+      console.error(`❌ Enhancement error for "${article.title}":`, error);
+      return article; // Return original if enhancement fails
+    }
+
+    if (data?.enhancedContent) {
+      const enhancedWordCount = data.enhancedContent.trim().split(/\s+/).length;
+      console.log(`✅ Enhanced "${article.title}" to ${enhancedWordCount} words (${data.meetsMinimum ? 'MEETS' : 'BELOW'} 800 minimum)`);
+      
+      return {
+        ...article,
+        content: data.enhancedContent
+      };
+    }
+
+    return article;
+  } catch (err) {
+    console.error(`⚠️ Enhancement exception for "${article.title}":`, err);
+    return article; // Return original on error
+  }
+}
+
 const generateSlug = (title: string): string => {
   const baseSlug = title
     .toLowerCase()
@@ -143,11 +194,27 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
       throw new Error(`Failed to create cluster: ${clusterError?.message}`);
     }
 
+    console.log('\n🔄 Phase 1: AI Content Enhancement (ensuring 800+ words per article)...');
+    
+    // Enhance all articles in parallel
+    const [enhancedTofuArticles, enhancedMofuArticles, enhancedBofuArticle] = await Promise.all([
+      Promise.all(data.tofuArticles.map(article => 
+        enhanceContentIfNeeded(article, 'TOFU', { topic: data.topic, language: data.language })
+      )),
+      Promise.all(data.mofuArticles.map(article => 
+        enhanceContentIfNeeded(article, 'MOFU', { topic: data.topic, language: data.language })
+      )),
+      enhanceContentIfNeeded(data.bofuArticle, 'BOFU', { topic: data.topic, language: data.language })
+    ]);
+
+    console.log('✅ Phase 1 Complete: All articles enhanced\n');
+    console.log('🔄 Phase 2: Creating articles in database...\n');
+
     const articleIds: { [key: string]: string } = {};
     let position = 1;
 
-    // Process TOFU articles
-    for (const [index, article] of data.tofuArticles.entries()) {
+    // Process TOFU articles (using enhanced content)
+    for (const [index, article] of enhancedTofuArticles.entries()) {
       // Validate required fields
       if (!article.title?.trim() || !article.content?.trim()) {
         console.log(`Skipping TOFU ${index + 1}: Missing required fields`);
@@ -245,8 +312,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
       }
     }
 
-    // Process MOFU articles
-    for (const [index, article] of data.mofuArticles.entries()) {
+    // Process MOFU articles (using enhanced content)
+    for (const [index, article] of enhancedMofuArticles.entries()) {
       // Validate required fields
       if (!article.title?.trim() || !article.content?.trim()) {
         errors.push(`MOFU ${index + 1}: Missing required fields (title or content)`);
@@ -343,12 +410,12 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
       }
     }
 
-    // Process BOFU article
-    if (!data.bofuArticle.title?.trim() || !data.bofuArticle.content?.trim()) {
+    // Process BOFU article (using enhanced content)
+    if (!enhancedBofuArticle.title?.trim() || !enhancedBofuArticle.content?.trim()) {
       errors.push(`BOFU: Missing required fields (title or content)`);
     } else {
       // Validate word count
-      const wordCount = data.bofuArticle.content.trim().split(/\s+/).length;
+      const wordCount = enhancedBofuArticle.content.trim().split(/\s+/).length;
       if (wordCount < 800) {
         console.warn(`BOFU: Only ${wordCount} words (minimum 800 recommended)`);
         errors.push(`BOFU: Content has ${wordCount} words, below 800 word minimum`);
@@ -360,29 +427,29 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
         errors.push(`BOFU: Invalid cluster_position ${currentPosition} (must be 1-6)`);
         console.error(`BOFU: cluster_position ${currentPosition} is out of bounds`);
       } else {
-        console.log(`Processing BOFU: cluster_position=${currentPosition}, title="${data.bofuArticle.title?.substring(0, 50)}"`);
+        console.log(`Processing BOFU: cluster_position=${currentPosition}, title="${enhancedBofuArticle.title?.substring(0, 50)}"`);
 
-        const existingBofuId = await findExistingArticleByTitle(data.bofuArticle.title, data.language);
-        const slug = generateSlug(data.bofuArticle.title);
+        const existingBofuId = await findExistingArticleByTitle(enhancedBofuArticle.title, data.language);
+        const slug = generateSlug(enhancedBofuArticle.title);
         
         if (existingBofuId) {
           // Update existing article
           const { error: bofuError } = await supabase
             .from('qa_articles')
             .update({
-              title: data.bofuArticle.title,
+              title: enhancedBofuArticle.title,
               slug,
-              content: data.bofuArticle.content,
-              excerpt: generateExcerpt(data.bofuArticle.content),
+              content: enhancedBofuArticle.content,
+              excerpt: generateExcerpt(enhancedBofuArticle.content),
               funnel_stage: 'BOFU',
               topic: data.topic,
               cluster_id: cluster.id,
               cluster_position: currentPosition,
-              tags: data.bofuArticle.tags || [],
-              location_focus: data.bofuArticle.locationFocus || null,
-              target_audience: data.bofuArticle.targetAudience || null,
-              intent: data.bofuArticle.intent || null,
-              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU', cluster.id, data.clusterTitle),
+              tags: enhancedBofuArticle.tags || [],
+              location_focus: enhancedBofuArticle.locationFocus || null,
+              target_audience: enhancedBofuArticle.targetAudience || null,
+              intent: enhancedBofuArticle.intent || null,
+              markdown_frontmatter: createFrontmatter(enhancedBofuArticle, 'BOFU', cluster.id, data.clusterTitle),
               ai_optimization_score: wordCount >= 800 ? 95 : 80,
               voice_search_ready: true,
               citation_ready: true,
@@ -404,20 +471,20 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
           const { data: inserted, error: bofuError } = await supabase
             .from('qa_articles')
             .insert({
-              title: data.bofuArticle.title,
+              title: enhancedBofuArticle.title,
               slug,
-              content: data.bofuArticle.content,
-              excerpt: generateExcerpt(data.bofuArticle.content),
+              content: enhancedBofuArticle.content,
+              excerpt: generateExcerpt(enhancedBofuArticle.content),
               funnel_stage: 'BOFU',
               topic: data.topic,
               language: data.language,
               cluster_id: cluster.id,
               cluster_position: currentPosition,
-              tags: data.bofuArticle.tags || [],
-              location_focus: data.bofuArticle.locationFocus || null,
-              target_audience: data.bofuArticle.targetAudience || null,
-              intent: data.bofuArticle.intent || null,
-              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU', cluster.id, data.clusterTitle),
+              tags: enhancedBofuArticle.tags || [],
+              location_focus: enhancedBofuArticle.locationFocus || null,
+              target_audience: enhancedBofuArticle.targetAudience || null,
+              intent: enhancedBofuArticle.intent || null,
+              markdown_frontmatter: createFrontmatter(enhancedBofuArticle, 'BOFU', cluster.id, data.clusterTitle),
               ai_optimization_score: wordCount >= 800 ? 95 : 80,
               voice_search_ready: true,
               citation_ready: true,

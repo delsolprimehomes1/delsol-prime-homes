@@ -26,40 +26,72 @@ serve(async (req) => {
 
 **Brand Context:**
 - Brand: DelSol Prime Homes
-- Logo: https://qvrvcvmoudxchipvzksh.supabase.co/storage/v1/object/public/article-visuals/DelSolPrimeHomes-Logo.png
 - Voice: Professional, authoritative, helpful - real estate expertise for Costa del Sol property buyers
 - Market: 2025 Costa del Sol luxury property market with current trends and data
+- Location: Costa del Sol, Málaga Province, Spain
 
-**Your Task:** Expand content to meet 800-1,200 word minimum while optimizing for:
+**CRITICAL REQUIREMENTS:**
+1. **Word Count**: MUST produce 800-1,200 words minimum (aim for 900-1,000 words)
+2. **Stay On Topic**: Expand ONLY the core topic - do not drift to unrelated subjects
+3. **Maintain Funnel Stage**: Match the exact intent and depth of the ${stage} stage
+4. **Localize Content**: Costa del Sol-specific locations, neighborhoods, market data
+5. **Humanize**: Natural, conversational tone with local expertise and first-hand insights
+
+**Your Task:** Expand content to 800-1,200 words while optimizing for:
 
 **SEO (Search Engine Optimization):**
-- Natural keyword integration
-- Semantic richness and related terms
-- Clear heading hierarchy (H2, H3)
-- Meta-worthy introductions
+- Natural keyword integration throughout all sections
+- Semantic richness with related terms and synonyms
+- Clear H2/H3 heading hierarchy with target keywords
+- Meta-worthy introduction (50-160 characters summary potential)
+- Internal linking opportunities (mention related topics)
+- Long-tail keyword phrases in subheadings
 
 **AEO (Answer Engine Optimization):**
-- Direct, concise answers upfront
-- Structured question-answer format
-- Featured snippet-ready content
+- Direct answer in first 2-3 sentences (featured snippet ready)
+- Question-answer format sections
+- "Quick Answer" box at the top (30-50 words)
+- Conversational natural language
+- Voice search friendly phrasing
+- "People also ask" style subsections
 
 **GEO (Generative Engine Optimization):**
-- AI-citeable facts and data
+- AI-citeable facts with specific data points
 - Clear attribution and expertise signals
+- Structured information hierarchy
 - Contextual depth for LLM comprehension
+- Quotable statistics and insights
+- Definitive statements that AI can cite
 
 **E-E-A-T (Experience, Expertise, Authoritativeness, Trust):**
-- Local market expertise and insights
-- Specific examples and data points (relevant to 2025)
-- Professional tone with authority
-- First-hand market knowledge
+- Local market expertise and first-hand insights
+- Specific 2025 examples and current data points
+- Professional authoritative tone
+- Real neighborhood names and locations
+- Price ranges and market trends
+- Expert recommendations
+- Trust signals (years of experience, local knowledge)
+
+**JSON-LD & Speakable Optimization:**
+- Structure content for Article schema markup
+- Create FAQ-ready Q&A sections
+- Include speakable content blocks (2-3 sentences)
+- HowTo sections where applicable
+- Breadcrumb-friendly navigation hints
+- Location entity mentions for LocalBusiness schema
 
 **Structure Requirements:**
-- Clear H2 sections with descriptive titles
-- Bullet points for scannable content
-- Real examples and specific locations
-- Data points and market insights (2025 context)
-- Voice search-friendly natural language`;
+- **Introduction**: Direct answer + context (100-150 words)
+- **H2 Sections**: 3-5 main sections with descriptive titles including keywords
+- **H3 Subsections**: Break down complex topics
+- **Bullet Points**: Scannable lists for key information
+- **Real Examples**: Specific Costa del Sol locations, neighborhoods, properties
+- **Data Points**: 2025 market insights, prices, statistics
+- **Voice Search Q&A**: 2-3 conversational questions with natural answers
+- **Conclusion**: Actionable next steps (50-100 words)
+
+**Funnel Stage Requirements:**`;
+
 
     const userPrompt = `Expand this ${stage} funnel article to 800-1,200 words while maintaining quality:
 
@@ -70,22 +102,35 @@ serve(async (req) => {
 **Tags:** ${tags?.join(', ') || 'N/A'}
 **Funnel Stage Context:** ${getFunnelContext(stage)}
 
-**Current Content:**
+**Current Content (${content.split(/\s+/).length} words):**
 ${content}
 
-**Requirements:**
-1. Expand to 800-1,200 words with substantial depth
-2. Add specific Costa del Sol locations, neighborhoods, and market data
-3. Include voice search-optimized Q&A sections
-4. Add expert insights demonstrating local knowledge
-5. Structure with clear H2/H3 headings
-6. Include bullet points for scannability
-7. Optimize for featured snippets with direct answers
-8. Add contextual information for AI comprehension
-9. Maintain professional, authoritative tone
-10. Keep all existing factual information accurate
+**CRITICAL REQUIREMENTS:**
+1. **Target Word Count**: 800-1,200 words (aim for 900-1,000 words)
+2. **Stay On Topic**: Only expand on "${title}" - do not drift to other subjects
+3. **Match Funnel Stage**: Write in ${stage} style (see stage requirements above)
+4. **Costa del Sol Specific**: Add real locations, neighborhoods, prices, market data for 2025
+5. **Voice Search Q&A**: Include 2-3 conversational Q&A sections with natural language
+6. **Expert Insights**: Demonstrate local market knowledge and first-hand experience
+7. **Heading Structure**: Use H2 for main sections, H3 for subsections (with keywords)
+8. **Scannable Format**: Include bullet points, numbered lists, short paragraphs
+9. **Featured Snippet Ready**: Start with direct 2-3 sentence answer to main question
+10. **AI-Citeable**: Include specific data points, statistics, and quotable insights
+11. **Speakable Content**: Create 2-3 sentence blocks perfect for voice assistants
+12. **Schema Markup Ready**: Structure for FAQ, HowTo, Article JSON-LD
+13. **E-E-A-T Signals**: Show expertise, experience, authority, and trustworthiness
+14. **Keep Facts Accurate**: Maintain all existing factual information
 
-Return ONLY the enhanced markdown content, no explanations.`;
+**Output Format:**
+- Start with a "Quick Answer" section (30-50 words)
+- Follow with expanded introduction (100-150 words)
+- 3-5 main H2 sections with descriptive keyword-rich titles
+- Each H2 section should be 150-250 words
+- Include H3 subsections where needed
+- Add "Voice Search Q&A" section with 2-3 questions
+- End with actionable conclusion (50-100 words)
+
+Return ONLY the enhanced markdown content in this exact structure, no explanations or meta-commentary.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -146,12 +191,45 @@ Return ONLY the enhanced markdown content, no explanations.`;
 function getFunnelContext(stage: string): string {
   switch (stage) {
     case 'TOFU':
-      return 'Top of funnel - Educational, informational content for awareness stage. Focus on answering basic questions.';
+      return `Top of Funnel (Awareness Stage):
+- **Goal**: Educate and inform potential buyers who are just starting their research
+- **Content Style**: Educational, approachable, foundational knowledge
+- **Focus**: "What is...", "How does...", "Why should I...", "Understanding..."
+- **Tone**: Friendly expert guiding newcomers
+- **Keywords**: Broad, general terms (e.g., "Costa del Sol property", "buying in Spain")
+- **Structure**: Simple explanations, overviews, introductory concepts
+- **Examples**: General market overviews, location guides, basic process explanations
+- **CTAs**: Soft (e.g., "Learn more", "Explore options", "Read our guide")
+- **Depth**: Surface level with comprehensive coverage of basics
+- **Voice Search**: Answer "what", "where", "when" questions conversationally`;
+      
     case 'MOFU':
-      return 'Middle of funnel - Consideration stage content. Compare options, explain processes, build trust.';
+      return `Middle of Funnel (Consideration Stage):
+- **Goal**: Help buyers evaluate options and make informed decisions
+- **Content Style**: Comparative, analytical, detailed guidance
+- **Focus**: "Compare...", "What to consider...", "Best options for...", "How to choose..."
+- **Tone**: Trusted advisor helping with decision-making
+- **Keywords**: Specific comparisons (e.g., "Marbella vs Estepona", "villa vs apartment")
+- **Structure**: Comparison tables, pros/cons lists, detailed breakdowns
+- **Examples**: Neighborhood comparisons, process deep-dives, cost analyses
+- **CTAs**: Medium engagement (e.g., "Compare properties", "Get personalized advice", "Schedule consultation")
+- **Depth**: Detailed analysis with multiple perspectives
+- **Voice Search**: Answer "how", "which", "should I" questions with nuanced responses`;
+      
     case 'BOFU':
-      return 'Bottom of funnel - Decision stage. Specific services, calls-to-action, conversion-focused.';
+      return `Bottom of Funnel (Decision Stage):
+- **Goal**: Convert researched buyers into clients ready to take action
+- **Content Style**: Action-oriented, service-specific, conversion-focused
+- **Focus**: "How to buy...", "Get started with...", "Our services for...", "Contact us to..."
+- **Tone**: Professional partner ready to execute
+- **Keywords**: Action-oriented (e.g., "buy villa Marbella", "property viewing service", "legal assistance")
+- **Structure**: Step-by-step guides, service descriptions, success stories, pricing
+- **Examples**: Specific services, client testimonials, detailed process walkthroughs
+- **CTAs**: Strong direct (e.g., "Book viewing", "Contact our team", "Get started today", "Request consultation")
+- **Depth**: Comprehensive implementation details with clear next steps
+- **Voice Search**: Answer "how do I", "where can I", "who can help" with specific actionable responses`;
+      
     default:
-      return 'General informational content';
+      return 'General informational content with balanced approach';
   }
 }
