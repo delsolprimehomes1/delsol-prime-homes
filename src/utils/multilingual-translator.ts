@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface TranslationRequest {
   sourceArticleId: string;
-  targetLanguage: 'es' | 'de' | 'nl' | 'fr';
+  targetLanguage: 'es' | 'de' | 'nl' | 'fr' | 'hu';
   priority: 'high' | 'medium' | 'low';
 }
 
@@ -26,6 +26,7 @@ export interface MultilingualResult {
   germanArticles: number;
   dutchArticles: number;
   frenchArticles: number;
+  hungarianArticles: number;
   translationDetails: {
     sourceId: string;
     targetId: string;
@@ -101,6 +102,39 @@ const TRANSLATION_PATTERNS = {
       'property investment': 'Immobilieninvestition',
       'legal process': 'Rechtsverfahren',
       'real estate market': 'Immobilienmarkt'
+    }
+  },
+  hu: {
+    propertyTerms: {
+      'property': 'ingatlan',
+      'real estate': 'ingatlan',
+      'investment': 'befektetés',
+      'villa': 'villa',
+      'apartment': 'lakás',
+      'townhouse': 'sorház',
+      'penthouse': 'penthouse',
+      'Costa del Sol': 'Costa del Sol',
+      'Marbella': 'Marbella',
+      'Estepona': 'Estepona',
+      'tax': 'adó',
+      'mortgage': 'jelzálog',
+      'buying process': 'vásárlási folyamat',
+      'legal requirements': 'jogi követelmények'
+    },
+    questionStarters: {
+      'What is': 'Mi az',
+      'How do': 'Hogyan',
+      'Where can': 'Hol lehet',
+      'When should': 'Mikor kell',
+      'Why is': 'Miért',
+      'Which': 'Melyik'
+    },
+    commonPhrases: {
+      'Costa del Sol property': 'ingatlan a Costa del Sol-on',
+      'international buyers': 'nemzetközi vásárlók',
+      'property investment': 'ingatlan befektetés',
+      'legal process': 'jogi folyamat',
+      'real estate market': 'ingatlanpiac'
     }
   }
 };
@@ -417,6 +451,7 @@ export const createSpanishTOFUTranslations = async (): Promise<MultilingualResul
     germanArticles: 0,
     dutchArticles: 0,
     frenchArticles: 0,
+    hungarianArticles: 0,
     translationDetails
   };
 };
@@ -493,6 +528,7 @@ export const createGermanInvestmentTranslations = async (): Promise<Multilingual
     germanArticles: germanCount,
     dutchArticles: 0,
     frenchArticles: 0,
+    hungarianArticles: 0,
     translationDetails
   };
 };
@@ -514,6 +550,7 @@ export const runPhase3MultilingualImplementation = async (): Promise<Multilingua
     germanArticles: germanResult.germanArticles,
     dutchArticles: 0,
     frenchArticles: 0,
+    hungarianArticles: 0,
     translationDetails: [
       ...spanishResult.translationDetails,
       ...germanResult.translationDetails

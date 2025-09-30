@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "home": "Főoldal",
+    "properties": "Ingatlanok",
+    "blog": "Blog",
+    "qa": "Kérdések és Válaszok",
+    "contact": "Kapcsolat",
+    "language": "Nyelv"
+  },
+  "search": {
+    "title": "Luxus otthont keres Costa Del Sol-on?",
+    "placeholder": "Ingatlanok keresése...",
+    "button": "Ingatlanok Keresése",
+    "selectLocation": "Válasszon Helyszínt",
+    "propertyType": "Ingatlan Típusa",
+    "priceRange": "Ár Tartomány",
+    "bedrooms": "Hálószobák"
+  },
+  "cta": {
+    "bookViewing": "Foglaljon Privát Megtekintést",
+    "readMore": "Tovább Olvasom",
+    "contactUs": "Kapcsolat",
+    "viewAll": "Összes Megtekintése",
+    "virtualTours": "Virtuális Túrák"
+  },
+  "hero": {
+    "title": "Luxus Otthonokat Keres",
+    "subtitle": "Costa Del Sol-on?",
+    "description": "Segítünk Önnek exkluzív villák vásárlásában",
+    "locations": "Marbella, Estepona és Fuengirola",
+    "expertise": "15+ Év Luxus Ingatlan Szakértelem",
+    "features": "Prémium villák • Óceán kilátás • Zárt közösségek • Privát medencék"
+  },
+  "fallback": {
+    "title": "A tartalom nem érhető el magyar nyelven",
+    "description": "Ez a tartalom jelenleg más nyelveken érhető el.",
+    "switchLanguage": "Váltson elérhető nyelvre"
+  },
+  "qa": {
+    "title": "Gyakran Ismételt Kérdések",
+    "description": "Szakértői válaszok a Costa del Sol ingatlanvásárlási útjához",
+    "search": {
+      "placeholder": "Kérdések, témák vagy kulcsszavak keresése...",
+      "filterByTopic": "Szűrés Téma Szerint",
+      "allTopics": "Minden Téma"
+    },
+    "viewModes": {
+      "label": "Nézet",
+      "clusters": "Téma Csoportok",
+      "stages": "Vásárlói Út"
+    },
+    "stages": {
+      "tofu": {
+        "label": "Kezdés",
+        "description": "Alapvető információk kezdő vásárlóknak"
+      },
+      "mofu": {
+        "label": "Lehetőségek Kutatása",
+        "description": "Részletes útmutatók megalapozott döntéshozatalhoz"
+      },
+      "bofu": {
+        "label": "Készen Áll a Vásárlásra",
+        "description": "Végső megfontolások és ellenőrző listák"
+      }
+    }
+  },
+  "loading": "Betöltés...",
+  "welcome": "Üdvözöljük"
+}

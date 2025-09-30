@@ -5,7 +5,7 @@ import type { SupportedLanguage } from '@/i18n';
  */
 export const generateHreflangUrls = (
   basePath: string,
-  supportedLanguages: SupportedLanguage[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da'],
+  supportedLanguages: SupportedLanguage[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'hu'],
   baseUrl: string = 'https://delsolprimehomes.com'
 ): Array<{ href: string; hreflang: string }> => {
   const hreflangs: Array<{ href: string; hreflang: string }> = supportedLanguages.map(lang => ({
@@ -31,7 +31,7 @@ export const getCurrentLanguageFromUrl = (): SupportedLanguage => {
   const urlParams = new URLSearchParams(window.location.search);
   const langParam = urlParams.get('lang') as SupportedLanguage;
   
-  const supportedLanguages: SupportedLanguage[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da'];
+  const supportedLanguages: SupportedLanguage[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'hu'];
   
   if (langParam && supportedLanguages.includes(langParam)) {
     return langParam;
@@ -61,7 +61,7 @@ export const generateAlternateLanguages = (
   currentPath: string,
   baseUrl: string = 'https://delsolprimehomes.com'
 ): Record<SupportedLanguage, string> => {
-  const languages: SupportedLanguage[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da'];
+  const languages: SupportedLanguage[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'hu'];
   
   return languages.reduce((acc, lang) => {
     acc[lang] = `${baseUrl}${currentPath}?lang=${lang}`;
@@ -166,7 +166,8 @@ export const generateOpenGraphLocales = (availableLanguages: string[]): string[]
     'es': 'es_ES',
     'de': 'de_DE',
     'nl': 'nl_NL',
-    'fr': 'fr_FR'
+    'fr': 'fr_FR',
+    'hu': 'hu_HU'
   };
   
   return availableLanguages.map(lang => localeMap[lang] || localeMap['en']);
@@ -179,7 +180,7 @@ export const detectLanguageFromSlug = (slug: string): {
   language: SupportedLanguage | 'es';
   cleanSlug: string;
 } => {
-  const supportedLanguages: (SupportedLanguage | 'es')[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'es'];
+  const supportedLanguages: (SupportedLanguage | 'es')[] = ['en', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'es', 'hu'];
   
   // Check if slug starts with a language prefix (e.g., "es-", "de-", "fr-")
   for (const lang of supportedLanguages) {
