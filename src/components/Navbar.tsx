@@ -53,16 +53,12 @@ const Navbar = () => {
     { name: t('nav.qa'), href: '/faq' },
   ];
 
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-    { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
-    { code: 'da', name: 'Dansk', flag: '🇩🇰' },
-  ];
+  // Generate languages array from languageConfig
+  const languages = Object.entries(languageConfig).map(([code, config]) => ({
+    code,
+    name: config.name,
+    flag: config.flag,
+  }));
 
   const selectedLanguage = languages.find(lang => lang.code === currentLang) || languages[0];
 
