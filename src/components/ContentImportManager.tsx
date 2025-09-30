@@ -442,7 +442,29 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
 
     } catch (error) {
       console.error('Smart Import Error:', error);
-      const errorMessage = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
+      
+      // Enhanced error message extraction
+      const getErrorMessage = (error: any): string => {
+        // Handle Supabase/PostgreSQL errors
+        if (error && typeof error === 'object' && error.message) {
+          return error.message;
+        }
+        
+        // Handle standard JavaScript errors
+        if (error instanceof Error) {
+          return error.message;
+        }
+        
+        // Handle string errors
+        if (typeof error === 'string') {
+          return error;
+        }
+        
+        // Fallback for any other error type
+        return `Unknown error occurred: ${JSON.stringify(error)}`;
+      };
+      
+      const errorMessage = getErrorMessage(error);
       toast({
         title: "Import Failed", 
         description: errorMessage,
