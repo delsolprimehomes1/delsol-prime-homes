@@ -180,15 +180,51 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
   };
 
   const handleSmartImport = async () => {
-    if (!batchName.trim() || !content.trim()) {
-      toast({
-        title: "Missing Information",
-        description: clusterMode 
-          ? "Please provide cluster title, description, and 6 articles."
-          : "Please provide both a batch name and content to import.",
-        variant: "destructive"
-      });
-      return;
+    // Validation: Separate checks for cluster mode vs batch mode
+    if (clusterMode) {
+      // Cluster mode: require cluster title, description, and content
+      if (!clusterTitle.trim()) {
+        toast({
+          title: "Missing Cluster Title",
+          description: "Please provide a cluster title.",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!clusterDescription.trim()) {
+        toast({
+          title: "Missing Cluster Description",
+          description: "Please provide a cluster description.",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!content.trim()) {
+        toast({
+          title: "Missing Content",
+          description: "Please provide 6 articles (3 TOFU, 2 MOFU, 1 BOFU).",
+          variant: "destructive"
+        });
+        return;
+      }
+    } else {
+      // Batch mode: require batch name and content
+      if (!batchName.trim()) {
+        toast({
+          title: "Missing Batch Name",
+          description: "Please provide a batch name.",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (!content.trim()) {
+        toast({
+          title: "Missing Content",
+          description: "Please provide content to import.",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     setIsProcessing(true);
@@ -362,8 +398,8 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
 
         // Import as cluster with auto-linking
         const clusterResult = await ClusterImportValidator.importClusterWithLinking(
-          clusterTitle || batchName,
-          clusterDescription || `Auto-imported cluster: ${batchName}`,
+          clusterTitle,
+          clusterDescription,
           clusterArticles,
           'en'
         );
