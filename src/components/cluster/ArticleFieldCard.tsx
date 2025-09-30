@@ -4,10 +4,13 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, CheckCircle2, Circle } from 'lucide-react';
+import { ChevronDown, CheckCircle2, Circle, Sparkles, AlertTriangle, Loader2 } from 'lucide-react';
 import { SEOFieldsSection } from './SEOFieldsSection';
 import { DiagramPreview } from './DiagramPreview';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface ArticleField {
   title: string;
@@ -28,12 +31,56 @@ interface ArticleFieldCardProps {
 
 export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFieldCardProps) => {
   const [isOpen, setIsOpen] = useState(index === 0);
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
+  const wordCount = article.content.trim() ? article.content.trim().split(/\s+/).length : 0;
+  const meetsMinimum = wordCount >= 800;
   const isComplete = article.title && article.content;
+  
   const stageColors = {
     TOFU: 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
     MOFU: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
     BOFU: 'bg-green-500/10 text-green-700 dark:text-green-300',
+  };
+
+  const getWordCountColor = () => {
+    if (wordCount < 800) return 'text-destructive';
+    if (wordCount >= 800 && wordCount <= 1200) return 'text-green-600 dark:text-green-400';
+    return 'text-amber-600 dark:text-amber-400';
+  };
+
+  const handleAIEnhance = async () => {
+    if (!article.title || !article.content) {
+      toast.error('Please add title and content first');
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('content-enhancer', {
+        body: {
+          title: article.title,
+          content: article.content,
+          stage,
+          topic: article.tags?.[0] || 'Property',
+          locationFocus: article.locationFocus || 'Costa del Sol',
+          targetAudience: article.targetAudience || 'International buyers',
+          tags: article.tags,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.enhancedContent) {
+        onChange({ ...article, content: data.enhancedContent });
+        toast.success(`Content enhanced to ${data.wordCount} words`);
+      }
+    } catch (error) {
+      console.error('Enhancement error:', error);
+      toast.error('Failed to enhance content');
+    } finally {
+      setIsEnhancing(false);
+    }
   };
 
   return (
@@ -74,7 +121,36 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
             </div>
 
             <div>
-              <Label htmlFor={`${stage}-${index}-content`}>Content *</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor={`${stage}-${index}-content`}>Content *</Label>
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm font-semibold ${getWordCountColor()}`}>
+                    {wordCount} words {meetsMinimum ? '✓' : ''}
+                  </span>
+                  {!meetsMinimum && wordCount > 0 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={handleAIEnhance}
+                      disabled={isEnhancing}
+                      className="gap-2"
+                    >
+                      {isEnhancing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Enhancing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4" />
+                          AI Enhance to 800+ words
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
               <Textarea
                 id={`${stage}-${index}-content`}
                 value={article.content}
@@ -83,9 +159,17 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
                 rows={12}
                 className="mt-1.5 font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {article.content.length} characters
-              </p>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  {article.content.length} characters
+                </p>
+                {!meetsMinimum && wordCount > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertTriangle className="w-3 h-3" />
+                    Minimum 800 words required
+                  </div>
+                )}
+              </div>
             </div>
 
             <DiagramPreview

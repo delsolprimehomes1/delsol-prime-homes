@@ -1,5 +1,11 @@
 import { supabase } from '@/integrations/supabase/client';
 import { ArticleField } from '@/components/cluster/ArticleFieldCard';
+import { 
+  generateArticleSchema, 
+  generateFAQSchema, 
+  generateHowToSchema,
+  generateBreadcrumbSchema 
+} from './enhanced-schema-generator';
 
 interface ClusterFieldData {
   clusterTitle: string;
@@ -72,7 +78,18 @@ const generateExcerpt = (content: string): string => {
   return cleaned.substring(0, 200) + (cleaned.length > 200 ? '...' : '');
 };
 
-const createFrontmatter = (article: ArticleField, stage: string) => {
+const createFrontmatter = (article: ArticleField, stage: string, clusterId: string, clusterTitle: string) => {
+  const wordCount = article.content.trim().split(/\s+/).length;
+  
+  const articleSchema = generateArticleSchema(article, stage, clusterId, clusterTitle, {
+    includeSpeakable: true,
+    includeEEAT: true,
+  });
+  
+  const faqSchema = generateFAQSchema(article.content);
+  const howToSchema = generateHowToSchema(article);
+  const breadcrumbSchema = generateBreadcrumbSchema(clusterTitle, article.title, clusterId);
+
   return {
     tags: article.tags,
     location_focus: article.locationFocus,
@@ -80,6 +97,17 @@ const createFrontmatter = (article: ArticleField, stage: string) => {
     intent: article.intent,
     diagram: article.diagram || null,
     funnel_stage: stage,
+    word_count: wordCount,
+    schemas: {
+      article: articleSchema,
+      ...(faqSchema && { faq: faqSchema }),
+      ...(howToSchema && { howTo: howToSchema }),
+      breadcrumb: breadcrumbSchema,
+    },
+    seo_optimized: true,
+    aeo_ready: wordCount >= 800,
+    geo_optimized: true,
+    eeat_signals: true,
   };
 };
 
@@ -116,6 +144,13 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
         continue;
       }
 
+      // Validate word count
+      const wordCount = article.content.trim().split(/\s+/).length;
+      if (wordCount < 800) {
+        console.warn(`TOFU ${index + 1}: Only ${wordCount} words (minimum 800 recommended)`);
+        errors.push(`TOFU ${index + 1}: Content has ${wordCount} words, below 800 word minimum`);
+      }
+
       const currentPosition = position;
       
       // Validate position is within constraint bounds (1-6)
@@ -147,8 +182,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             location_focus: article.locationFocus || null,
             target_audience: article.targetAudience || null,
             intent: article.intent || null,
-            markdown_frontmatter: createFrontmatter(article, 'TOFU'),
-            ai_optimization_score: 85,
+            markdown_frontmatter: createFrontmatter(article, 'TOFU', cluster.id, data.clusterTitle),
+            ai_optimization_score: wordCount >= 800 ? 90 : 75,
             voice_search_ready: true,
             citation_ready: true,
           })
@@ -180,8 +215,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             location_focus: article.locationFocus || null,
             target_audience: article.targetAudience || null,
             intent: article.intent || null,
-            markdown_frontmatter: createFrontmatter(article, 'TOFU'),
-            ai_optimization_score: 85,
+            markdown_frontmatter: createFrontmatter(article, 'TOFU', cluster.id, data.clusterTitle),
+            ai_optimization_score: wordCount >= 800 ? 90 : 75,
             voice_search_ready: true,
             citation_ready: true,
           })
@@ -205,6 +240,13 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
       if (!article.title?.trim() || !article.content?.trim()) {
         errors.push(`MOFU ${index + 1}: Missing required fields (title or content)`);
         continue;
+      }
+
+      // Validate word count
+      const wordCount = article.content.trim().split(/\s+/).length;
+      if (wordCount < 800) {
+        console.warn(`MOFU ${index + 1}: Only ${wordCount} words (minimum 800 recommended)`);
+        errors.push(`MOFU ${index + 1}: Content has ${wordCount} words, below 800 word minimum`);
       }
 
       const currentPosition = position;
@@ -238,8 +280,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             location_focus: article.locationFocus || null,
             target_audience: article.targetAudience || null,
             intent: article.intent || null,
-            markdown_frontmatter: createFrontmatter(article, 'MOFU'),
-            ai_optimization_score: 90,
+            markdown_frontmatter: createFrontmatter(article, 'MOFU', cluster.id, data.clusterTitle),
+            ai_optimization_score: wordCount >= 800 ? 92 : 78,
             voice_search_ready: true,
             citation_ready: true,
           })
@@ -271,8 +313,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             location_focus: article.locationFocus || null,
             target_audience: article.targetAudience || null,
             intent: article.intent || null,
-            markdown_frontmatter: createFrontmatter(article, 'MOFU'),
-            ai_optimization_score: 90,
+            markdown_frontmatter: createFrontmatter(article, 'MOFU', cluster.id, data.clusterTitle),
+            ai_optimization_score: wordCount >= 800 ? 92 : 78,
             voice_search_ready: true,
             citation_ready: true,
           })
@@ -294,6 +336,12 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
     if (!data.bofuArticle.title?.trim() || !data.bofuArticle.content?.trim()) {
       errors.push(`BOFU: Missing required fields (title or content)`);
     } else {
+      // Validate word count
+      const wordCount = data.bofuArticle.content.trim().split(/\s+/).length;
+      if (wordCount < 800) {
+        console.warn(`BOFU: Only ${wordCount} words (minimum 800 recommended)`);
+        errors.push(`BOFU: Content has ${wordCount} words, below 800 word minimum`);
+      }
       const currentPosition = position;
       
       // Validate position is within constraint bounds (1-6)
@@ -323,8 +371,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
               location_focus: data.bofuArticle.locationFocus || null,
               target_audience: data.bofuArticle.targetAudience || null,
               intent: data.bofuArticle.intent || null,
-              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
-              ai_optimization_score: 95,
+              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU', cluster.id, data.clusterTitle),
+              ai_optimization_score: wordCount >= 800 ? 95 : 80,
               voice_search_ready: true,
               citation_ready: true,
               appointment_booking_enabled: true,
@@ -358,8 +406,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
               location_focus: data.bofuArticle.locationFocus || null,
               target_audience: data.bofuArticle.targetAudience || null,
               intent: data.bofuArticle.intent || null,
-              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU'),
-              ai_optimization_score: 95,
+              markdown_frontmatter: createFrontmatter(data.bofuArticle, 'BOFU', cluster.id, data.clusterTitle),
+              ai_optimization_score: wordCount >= 800 ? 95 : 80,
               voice_search_ready: true,
               citation_ready: true,
               appointment_booking_enabled: true,
