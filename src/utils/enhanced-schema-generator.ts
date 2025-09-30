@@ -67,10 +67,10 @@ export const generateArticleSchema = (
     // Publisher
     publisher: {
       '@type': 'Organization',
-      name: 'Costa del Sol Properties',
+      name: 'DelSol Prime Homes',
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/logo.png`,
+        url: `${baseUrl}/assets/DelSolPrimeHomes-Logo.png`,
       },
     },
 

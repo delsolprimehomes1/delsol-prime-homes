@@ -27,13 +27,13 @@ export function faqJsonLd(locale: SupportedLanguage, faqs: FAQItem[]) {
 
 export function orgJsonLd(locale: SupportedLanguage) {
   const orgNames = {
-    en: "DelSolPrimeHomes - Costa Del Sol Luxury Real Estate",
-    nl: "DelSolPrimeHomes - Costa Del Sol Luxe Vastgoed",
-    fr: "DelSolPrimeHomes - Immobilier de Luxe Costa Del Sol",
-    de: "DelSolPrimeHomes - Costa Del Sol Luxus Immobilien",
-    pl: "DelSolPrimeHomes - Luksusowe Nieruchomości Costa Del Sol",
-    sv: "DelSolPrimeHomes - Costa Del Sol Lyxfastigheter",
-    da: "DelSolPrimeHomes - Costa Del Sol Luksusejendomme"
+    en: "DelSol Prime Homes - Costa Del Sol Luxury Real Estate",
+    nl: "DelSol Prime Homes - Costa Del Sol Luxe Vastgoed",
+    fr: "DelSol Prime Homes - Immobilier de Luxe Costa Del Sol",
+    de: "DelSol Prime Homes - Costa Del Sol Luxus Immobilien",
+    pl: "DelSol Prime Homes - Luksusowe Nieruchomości Costa Del Sol",
+    sv: "DelSol Prime Homes - Costa Del Sol Lyxfastigheter",
+    da: "DelSol Prime Homes - Costa Del Sol Luksusejendomme"
   };
 
   const descriptions = {
@@ -52,12 +52,12 @@ export function orgJsonLd(locale: SupportedLanguage) {
     "inLanguage": locale,
     "@id": "https://delsolprimehomes.com/#org",
     "name": orgNames[locale],
-    "alternateName": "DelSolPrimeHomes",
+    "alternateName": "DelSol Prime Homes",
     "url": "https://delsolprimehomes.com",
     "description": descriptions[locale],
     "logo": {
       "@type": "ImageObject",
-      "url": "https://delsolprimehomes.com/assets/logo.png"
+      "url": "https://delsolprimehomes.com/assets/DelSolPrimeHomes-Logo.png"
     },
     "sameAs": [
       "https://www.linkedin.com/company/delsolprimehomes",
@@ -146,13 +146,13 @@ export function placeJsonLd(locale: SupportedLanguage) {
 
 export function localBusinessJsonLd(locale: SupportedLanguage) {
   const businessNames = {
-    en: "DelSolPrimeHomes - Costa Del Sol Real Estate",
-    nl: "DelSolPrimeHomes - Costa Del Sol Vastgoed", 
-    fr: "DelSolPrimeHomes - Immobilier Costa Del Sol",
-    de: "DelSolPrimeHomes - Costa Del Sol Immobilien",
-    pl: "DelSolPrimeHomes - Nieruchomości Costa Del Sol",
-    sv: "DelSolPrimeHomes - Costa Del Sol Fastigheter",
-    da: "DelSolPrimeHomes - Costa Del Sol Ejendomme"
+    en: "DelSol Prime Homes - Costa Del Sol Real Estate",
+    nl: "DelSol Prime Homes - Costa Del Sol Vastgoed", 
+    fr: "DelSol Prime Homes - Immobilier Costa Del Sol",
+    de: "DelSol Prime Homes - Costa Del Sol Immobilien",
+    pl: "DelSol Prime Homes - Nieruchomości Costa Del Sol",
+    sv: "DelSol Prime Homes - Costa Del Sol Fastigheter",
+    da: "DelSol Prime Homes - Costa Del Sol Ejendomme"
   };
 
   return {

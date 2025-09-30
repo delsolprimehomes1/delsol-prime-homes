@@ -190,8 +190,8 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   const lowerTitle = title.toLowerCase();
   const lowerContent = content.toLowerCase();
   
-  // Brand colors and styling
-  const brandStyle = "DelSol Prime Homes branding, luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean";
+  // Brand colors and styling (2025 context)
+  const brandStyle = "DelSol Prime Homes branding, luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, 2025 market context";
   
   if (visualType === 'diagram') {
     // Generate diagram-specific prompts
@@ -218,7 +218,7 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   if (funnelStage === 'TOFU') {
     // Top of funnel: broad, aspirational imagery
     if (lowerTitle.includes('costa del sol') || tags.includes('costa-del-sol')) {
-      basePrompt = "Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture";
+      basePrompt = "Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture, 2025 modern aesthetic";
     } else if (lowerTitle.includes('property') || lowerTitle.includes('home')) {
       basePrompt = "Beautiful luxury property exterior, modern architecture, landscaped gardens, professional real estate photography";
     } else if (lowerTitle.includes('guide') || lowerTitle.includes('tips')) {

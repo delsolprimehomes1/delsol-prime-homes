@@ -22,7 +22,15 @@ serve(async (req) => {
 
     console.log(`Enhancing ${stage} article: "${title}" (current: ${content.split(/\s+/).length} words)`);
 
-    const systemPrompt = `You are an expert SEO content writer specializing in Costa del Sol luxury property market. Your task is to expand content to meet 800-1,200 word minimum while optimizing for:
+    const systemPrompt = `You are an expert SEO content writer specializing in Costa del Sol luxury property market. Current year: 2025.
+
+**Brand Context:**
+- Brand: DelSol Prime Homes
+- Logo: https://qvrvcvmoudxchipvzksh.supabase.co/storage/v1/object/public/article-visuals/DelSolPrimeHomes-Logo.png
+- Voice: Professional, authoritative, helpful - real estate expertise for Costa del Sol property buyers
+- Market: 2025 Costa del Sol luxury property market with current trends and data
+
+**Your Task:** Expand content to meet 800-1,200 word minimum while optimizing for:
 
 **SEO (Search Engine Optimization):**
 - Natural keyword integration
@@ -42,17 +50,15 @@ serve(async (req) => {
 
 **E-E-A-T (Experience, Expertise, Authoritativeness, Trust):**
 - Local market expertise and insights
-- Specific examples and data points
+- Specific examples and data points (relevant to 2025)
 - Professional tone with authority
 - First-hand market knowledge
-
-**Brand Voice:** Professional, authoritative, helpful - real estate expertise for Costa del Sol property buyers.
 
 **Structure Requirements:**
 - Clear H2 sections with descriptive titles
 - Bullet points for scannable content
 - Real examples and specific locations
-- Data points and market insights
+- Data points and market insights (2025 context)
 - Voice search-friendly natural language`;
 
     const userPrompt = `Expand this ${stage} funnel article to 800-1,200 words while maintaining quality:

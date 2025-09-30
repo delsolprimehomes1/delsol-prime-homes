@@ -36,7 +36,7 @@ export const generateQAArticleSchema = (
     "inLanguage": qaData.language,
     "author": {
       "@type": "Organization",
-      "name": qaData.author_name || "DelSolPrimeHomes Expert",
+      "name": qaData.author_name || "DelSol Prime Homes Expert",
       "url": qaData.author_url || `${baseUrl}/about`,
       "knowsAbout": [
         "Costa del Sol Real Estate",
@@ -48,10 +48,10 @@ export const generateQAArticleSchema = (
     },
     "publisher": {
       "@type": "Organization",
-      "name": "DelSolPrimeHomes",
+      "name": "DelSol Prime Homes",
       "logo": {
         "@type": "ImageObject",
-        "url": `${baseUrl}/logo.png`
+        "url": `${baseUrl}/assets/DelSolPrimeHomes-Logo.png`
       },
       "knowsAbout": [
         "AI Property Assistance",
@@ -97,7 +97,7 @@ export const generateQAArticleSchema = (
         "inLanguage": qaData.language,
         "author": {
           "@type": "Organization",
-          "name": qaData.author_name || "DelSolPrimeHomes Expert"
+          "name": qaData.author_name || "DelSol Prime Homes Expert"
         },
         "dateCreated": qaData.created_at,
         "upvoteCount": 0
@@ -179,7 +179,7 @@ export const generateAIServiceSchema = (
     "inLanguage": language,
     "provider": {
       "@type": "Organization",
-      "name": "DelSolPrimeHomes"
+      "name": "DelSol Prime Homes"
     },
     "areaServed": {
       "@type": "Place",
@@ -272,13 +272,13 @@ export const generateOpenGraphData = (
     'og:title': qaData.question,
     'og:description': qaData.answer_short,
     'og:url': articleUrl,
-    'og:site_name': 'DelSolPrimeHomes',
+    'og:site_name': 'DelSol Prime Homes',
     'og:locale': qaData.language === 'en' ? 'en_US' : `${qaData.language}_ES`,
     'og:image': `${baseUrl}/assets/og-image.jpg`,
     'og:image:width': '1200',
     'og:image:height': '630',
     'og:image:type': 'image/jpeg',
-    'article:author': 'DelSolPrimeHomes Expert',
+    'article:author': 'DelSol Prime Homes Expert',
     'article:section': qaData.category || 'Property Guide',
     'article:tag': 'Costa del Sol, Property, Real Estate'
   };
@@ -301,7 +301,7 @@ export const generateTwitterCardData = (
     'twitter:title': qaData.question,
     'twitter:description': qaData.answer_short,
     'twitter:image': `${baseUrl}/assets/twitter-card.jpg`,
-    'twitter:image:alt': 'DelSolPrimeHomes - Costa del Sol Property Experts'
+    'twitter:image:alt': 'DelSol Prime Homes - Costa del Sol Property Experts'
   };
 };
 
