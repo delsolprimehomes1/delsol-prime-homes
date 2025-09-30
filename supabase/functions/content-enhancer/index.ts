@@ -33,9 +33,10 @@ serve(async (req) => {
 **CRITICAL REQUIREMENTS:**
 1. **Word Count**: MUST produce 800-1,200 words minimum (aim for 900-1,000 words)
 2. **Stay On Topic**: Expand ONLY the core topic - do not drift to unrelated subjects
-3. **Maintain Funnel Stage**: Match the exact intent and depth of the ${stage} stage
+3. **Match Content Intent**: Match the exact intent and depth required for this article
 4. **Localize Content**: Costa del Sol-specific locations, neighborhoods, market data
 5. **Humanize**: Natural, conversational tone with local expertise and first-hand insights
+6. **NO INTERNAL TERMINOLOGY**: NEVER mention funnel stages, TOFU, MOFU, BOFU, or any backend strategy terms in the content itself
 
 **Your Task:** Expand content to 800-1,200 words while optimizing for:
 
@@ -90,17 +91,17 @@ serve(async (req) => {
 - **Voice Search Q&A**: 2-3 conversational questions with natural answers
 - **Conclusion**: Actionable next steps (50-100 words)
 
-**Funnel Stage Requirements:**`;
+**Content Characteristics:**`;
 
 
-    const userPrompt = `Expand this ${stage} funnel article to 800-1,200 words while maintaining quality:
+    const userPrompt = `Expand this article to 800-1,200 words while maintaining quality:
 
 **Title:** ${title}
 **Topic:** ${topic}
 **Location Focus:** ${locationFocus || 'Costa del Sol'}
 **Target Audience:** ${targetAudience || 'International property buyers'}
 **Tags:** ${tags?.join(', ') || 'N/A'}
-**Funnel Stage Context:** ${getFunnelContext(stage)}
+**Content Approach:** ${getFunnelContext(stage)}
 
 **Current Content (${content.split(/\s+/).length} words):**
 ${content}
@@ -108,7 +109,7 @@ ${content}
 **CRITICAL REQUIREMENTS:**
 1. **Target Word Count**: 800-1,200 words (aim for 900-1,000 words)
 2. **Stay On Topic**: Only expand on "${title}" - do not drift to other subjects
-3. **Match Funnel Stage**: Write in ${stage} style (see stage requirements above)
+3. **Match Content Style**: Write according to the content characteristics above
 4. **Costa del Sol Specific**: Add real locations, neighborhoods, prices, market data for 2025
 5. **Voice Search Q&A**: Include 2-3 conversational Q&A sections with natural language
 6. **Expert Insights**: Demonstrate local market knowledge and first-hand experience
@@ -120,6 +121,7 @@ ${content}
 12. **Schema Markup Ready**: Structure for FAQ, HowTo, Article JSON-LD
 13. **E-E-A-T Signals**: Show expertise, experience, authority, and trustworthiness
 14. **Keep Facts Accurate**: Maintain all existing factual information
+15. **NO INTERNAL TERMS**: NEVER mention funnel, TOFU, MOFU, BOFU, or any backend terminology in the content
 
 **Output Format:**
 - Start with a "Quick Answer" section (30-50 words)
@@ -130,7 +132,7 @@ ${content}
 - Add "Voice Search Q&A" section with 2-3 questions
 - End with actionable conclusion (50-100 words)
 
-Return ONLY the enhanced markdown content in this exact structure, no explanations or meta-commentary.`;
+Return ONLY the enhanced markdown content in this exact structure, no explanations or meta-commentary about the enhancement process or internal classification.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -191,45 +193,39 @@ Return ONLY the enhanced markdown content in this exact structure, no explanatio
 function getFunnelContext(stage: string): string {
   switch (stage) {
     case 'TOFU':
-      return `Top of Funnel (Awareness Stage):
-- **Goal**: Educate and inform potential buyers who are just starting their research
+      return `Educational, introductory content approach:
 - **Content Style**: Educational, approachable, foundational knowledge
-- **Focus**: "What is...", "How does...", "Why should I...", "Understanding..."
-- **Tone**: Friendly expert guiding newcomers
-- **Keywords**: Broad, general terms (e.g., "Costa del Sol property", "buying in Spain")
-- **Structure**: Simple explanations, overviews, introductory concepts
-- **Examples**: General market overviews, location guides, basic process explanations
-- **CTAs**: Soft (e.g., "Learn more", "Explore options", "Read our guide")
-- **Depth**: Surface level with comprehensive coverage of basics
-- **Voice Search**: Answer "what", "where", "when" questions conversationally`;
+- **Focus**: "What is...", "How does...", "Why...", "Understanding..." style questions
+- **Tone**: Friendly expert sharing helpful guidance
+- **Keywords**: Broad market terms and general location information
+- **Structure**: Clear explanations, market overviews, introductory concepts
+- **Examples**: Market trends, area guides, basic buying information
+- **Target Length**: 800-1,000 words with comprehensive basics
+- **Voice Search**: Natural answers to common "what", "where", "when" questions`;
       
     case 'MOFU':
-      return `Middle of Funnel (Consideration Stage):
-- **Goal**: Help buyers evaluate options and make informed decisions
-- **Content Style**: Comparative, analytical, detailed guidance
-- **Focus**: "Compare...", "What to consider...", "Best options for...", "How to choose..."
-- **Tone**: Trusted advisor helping with decision-making
-- **Keywords**: Specific comparisons (e.g., "Marbella vs Estepona", "villa vs apartment")
-- **Structure**: Comparison tables, pros/cons lists, detailed breakdowns
-- **Examples**: Neighborhood comparisons, process deep-dives, cost analyses
-- **CTAs**: Medium engagement (e.g., "Compare properties", "Get personalized advice", "Schedule consultation")
-- **Depth**: Detailed analysis with multiple perspectives
-- **Voice Search**: Answer "how", "which", "should I" questions with nuanced responses`;
+      return `Comparative, analytical content approach:
+- **Content Style**: Detailed comparisons and decision-support information
+- **Focus**: "Compare...", "Consider...", "Best options for...", "How to choose..." formats
+- **Tone**: Trusted advisor providing in-depth analysis
+- **Keywords**: Specific neighborhood names, detailed process terms, comparison topics
+- **Structure**: Comparison sections, pros/cons analysis, detailed breakdowns
+- **Examples**: Area comparisons, investment analysis, detailed process guides
+- **Target Length**: 1,000-1,200 words with thorough analysis
+- **Voice Search**: Nuanced answers to "how", "which", "should I" questions`;
       
     case 'BOFU':
-      return `Bottom of Funnel (Decision Stage):
-- **Goal**: Convert researched buyers into clients ready to take action
-- **Content Style**: Action-oriented, service-specific, conversion-focused
-- **Focus**: "How to buy...", "Get started with...", "Our services for...", "Contact us to..."
-- **Tone**: Professional partner ready to execute
-- **Keywords**: Action-oriented (e.g., "buy villa Marbella", "property viewing service", "legal assistance")
-- **Structure**: Step-by-step guides, service descriptions, success stories, pricing
-- **Examples**: Specific services, client testimonials, detailed process walkthroughs
-- **CTAs**: Strong direct (e.g., "Book viewing", "Contact our team", "Get started today", "Request consultation")
-- **Depth**: Comprehensive implementation details with clear next steps
-- **Voice Search**: Answer "how do I", "where can I", "who can help" with specific actionable responses`;
+      return `Action-oriented, practical content approach:
+- **Content Style**: Specific, service-focused, ready-to-act information
+- **Focus**: "How to proceed...", "Next steps...", "Getting started with..." approaches
+- **Tone**: Professional expert ready to assist with specific needs
+- **Keywords**: Service names, action verbs, specific property types
+- **Structure**: Step-by-step guides, clear processes, practical next steps
+- **Examples**: Booking information, service descriptions, detailed procedures
+- **Target Length**: 800-1,000 words with actionable details
+- **Voice Search**: Direct answers to "how do I", "where can I", "who can help" queries`;
       
     default:
-      return 'General informational content with balanced approach';
+      return 'Balanced informational content with practical insights';
   }
 }
