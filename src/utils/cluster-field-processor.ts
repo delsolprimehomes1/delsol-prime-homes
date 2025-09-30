@@ -90,12 +90,21 @@ const createFrontmatter = (article: ArticleField, stage: string, clusterId: stri
   const howToSchema = generateHowToSchema(article);
   const breadcrumbSchema = generateBreadcrumbSchema(clusterTitle, article.title, clusterId);
 
+  // Enhanced visual metadata for AI/LLM understanding
+  const visualMetadata = article.diagram ? {
+    diagram: article.diagram,
+    diagram_alt_text: article.diagramAltText || null,
+    diagram_title: article.diagramTitle || null,
+    diagram_description: article.diagramDescription || null,
+    diagram_keywords: article.diagramKeywords || [],
+  } : { diagram: null };
+
   return {
     tags: article.tags,
     location_focus: article.locationFocus,
     target_audience: article.targetAudience,
     intent: article.intent,
-    diagram: article.diagram || null,
+    ...visualMetadata,
     funnel_stage: stage,
     word_count: wordCount,
     schemas: {
@@ -108,6 +117,8 @@ const createFrontmatter = (article: ArticleField, stage: string, clusterId: stri
     aeo_ready: wordCount >= 800,
     geo_optimized: true,
     eeat_signals: true,
+    visual_accessibility: !!(article.diagram && article.diagramAltText),
+    ai_citability: !!(article.diagram && article.diagramDescription),
   };
 };
 

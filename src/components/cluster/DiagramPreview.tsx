@@ -16,6 +16,14 @@ interface DiagramPreviewProps {
   articleContent: string;
   funnelStage: string;
   tags: string[];
+  altText?: string;
+  onAltTextChange?: (altText: string) => void;
+  titleAttr?: string;
+  onTitleAttrChange?: (title: string) => void;
+  description?: string;
+  onDescriptionChange?: (description: string) => void;
+  keywords?: string[];
+  onKeywordsChange?: (keywords: string[]) => void;
 }
 
 export const DiagramPreview = ({ 
@@ -24,11 +32,21 @@ export const DiagramPreview = ({
   articleTitle, 
   articleContent, 
   funnelStage,
-  tags 
+  tags,
+  altText = '',
+  onAltTextChange,
+  titleAttr = '',
+  onTitleAttrChange,
+  description = '',
+  onDescriptionChange,
+  keywords = [],
+  onKeywordsChange
 }: DiagramPreviewProps) => {
   const [visualType, setVisualType] = useState<'ai-image' | 'ai-diagram' | 'mermaid'>('mermaid');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showMetadata, setShowMetadata] = useState(false);
 
   const generateAIVisual = async (type: 'image' | 'diagram') => {
     if (!articleTitle || !articleContent) {
@@ -70,12 +88,55 @@ export const DiagramPreview = ({
         setGeneratedImageUrl(data.imageUrl);
         onChange(data.imageUrl);
         toast.success(`AI ${type} generated successfully!`);
+        
+        // Automatically analyze the generated image for metadata
+        if (onAltTextChange && onTitleAttrChange && onDescriptionChange) {
+          analyzeVisualMetadata(data.imageUrl);
+        }
       }
     } catch (error) {
       console.error('Error generating AI visual:', error);
       toast.error(error instanceof Error ? error.message : `Failed to generate AI ${type}`);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const analyzeVisualMetadata = async (imageUrl: string) => {
+    setIsAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-visual-content', {
+        body: {
+          imageUrl,
+          articleTitle,
+          articleContent,
+          funnelStage,
+          tags,
+        }
+      });
+
+      if (error) {
+        console.error('Metadata analysis error:', error);
+        toast.error('Failed to analyze image metadata');
+        return;
+      }
+
+      if (data?.success && data.metadata) {
+        const { altText: generatedAlt, title: generatedTitle, description: generatedDesc, keywords: generatedKeys } = data.metadata;
+        
+        if (onAltTextChange) onAltTextChange(generatedAlt);
+        if (onTitleAttrChange) onTitleAttrChange(generatedTitle);
+        if (onDescriptionChange) onDescriptionChange(generatedDesc);
+        if (onKeywordsChange) onKeywordsChange(generatedKeys);
+        
+        setShowMetadata(true);
+        toast.success('AI metadata generated for accessibility & SEO');
+      }
+    } catch (error) {
+      console.error('Error analyzing visual metadata:', error);
+      toast.error('Failed to analyze image');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -157,18 +218,93 @@ export const DiagramPreview = ({
               <div className="text-sm text-muted-foreground mb-2">Generated Visual:</div>
               <img 
                 src={generatedImageUrl} 
-                alt="Generated visual" 
+                alt={altText || "Generated visual"} 
+                title={titleAttr}
                 className="w-full h-auto rounded-md"
               />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => generateAIVisual(visualType === 'ai-image' ? 'image' : 'diagram')}
-                className="mt-2 w-full"
-                disabled={isGenerating}
-              >
-                Regenerate
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generateAIVisual(visualType === 'ai-image' ? 'image' : 'diagram')}
+                  className="flex-1"
+                  disabled={isGenerating}
+                >
+                  Regenerate
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => analyzeVisualMetadata(generatedImageUrl)}
+                  className="flex-1"
+                  disabled={isAnalyzing}
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    'Generate Metadata'
+                  )}
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {showMetadata && (altText || titleAttr || description) && (
+            <Card className="p-4 bg-primary/5 border-primary/20">
+              <div className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                AI-Generated Metadata
+              </div>
+              <div className="space-y-3">
+                {altText && (
+                  <div>
+                    <Label className="text-xs">Alt Text (Accessibility)</Label>
+                    <Textarea
+                      value={altText}
+                      onChange={(e) => onAltTextChange?.(e.target.value)}
+                      rows={2}
+                      className="mt-1 text-sm"
+                    />
+                  </div>
+                )}
+                {titleAttr && (
+                  <div>
+                    <Label className="text-xs">Title Attribute (Hover Text)</Label>
+                    <Textarea
+                      value={titleAttr}
+                      onChange={(e) => onTitleAttrChange?.(e.target.value)}
+                      rows={2}
+                      className="mt-1 text-sm"
+                    />
+                  </div>
+                )}
+                {description && (
+                  <div>
+                    <Label className="text-xs">Long Description (AI/LLM Understanding)</Label>
+                    <Textarea
+                      value={description}
+                      onChange={(e) => onDescriptionChange?.(e.target.value)}
+                      rows={3}
+                      className="mt-1 text-sm"
+                    />
+                  </div>
+                )}
+                {keywords && keywords.length > 0 && (
+                  <div>
+                    <Label className="text-xs">Keywords</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {keywords.map((kw, idx) => (
+                        <span key={idx} className="text-xs bg-primary/10 px-2 py-1 rounded">
+                          {kw}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </Card>
           )}
 

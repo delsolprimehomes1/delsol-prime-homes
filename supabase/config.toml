@@ -3,6 +3,9 @@ project_id = "qvrvcvmoudxchipvzksh"
 [functions.ai-advisor-chat]
 verify_jwt = false
 
+[functions.analyze-visual-content]
+verify_jwt = false
+
 [functions.content-enhancer]
 verify_jwt = false
 

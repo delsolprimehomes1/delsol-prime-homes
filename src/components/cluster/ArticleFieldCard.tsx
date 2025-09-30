@@ -16,6 +16,10 @@ export interface ArticleField {
   title: string;
   content: string;
   diagram: string;
+  diagramAltText?: string;
+  diagramTitle?: string;
+  diagramDescription?: string;
+  diagramKeywords?: string[];
   tags: string[];
   locationFocus: string;
   targetAudience: string;
@@ -179,6 +183,14 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
               articleContent={article.content}
               funnelStage={stage}
               tags={article.tags}
+              altText={article.diagramAltText}
+              onAltTextChange={(diagramAltText) => onChange({ ...article, diagramAltText })}
+              titleAttr={article.diagramTitle}
+              onTitleAttrChange={(diagramTitle) => onChange({ ...article, diagramTitle })}
+              description={article.diagramDescription}
+              onDescriptionChange={(diagramDescription) => onChange({ ...article, diagramDescription })}
+              keywords={article.diagramKeywords}
+              onKeywordsChange={(diagramKeywords) => onChange({ ...article, diagramKeywords })}
             />
 
             <SEOFieldsSection

@@ -106,12 +106,33 @@ export const generateArticleSchema = (
     ...(includeSpeakable && {
       speakable: {
         '@type': 'SpeakableSpecification',
-        cssSelector: ['.article-content', '.quick-answer', 'h1', 'h2'],
+        cssSelector: ['.article-content', '.quick-answer', 'h1', 'h2', '.visual-description'],
         xpath: [
           '/html/body/article/h1',
           '/html/body/article/div[@class="quick-answer"]',
           '/html/body/article/div[@class="article-content"]',
+          '/html/body/article/div[@class="visual-description"]',
         ],
+      },
+    }),
+
+    // Enhanced image schema if diagram exists
+    ...(article.diagram && {
+      image: {
+        '@type': 'ImageObject',
+        url: article.diagram,
+        ...(article.diagramAltText && { 
+          name: article.diagramAltText,
+          description: article.diagramDescription || article.diagramAltText,
+        }),
+        ...(article.diagramKeywords && article.diagramKeywords.length > 0 && {
+          keywords: article.diagramKeywords.join(', '),
+        }),
+        encodingFormat: article.diagram.includes('.png') ? 'image/png' : 
+                       article.diagram.includes('.jpg') || article.diagram.includes('.jpeg') ? 'image/jpeg' :
+                       article.diagram.includes('.webp') ? 'image/webp' : 'image/png',
+        accessibilityFeature: article.diagramAltText ? ['alternativeText', 'longDescription'] : [],
+        usageInfo: 'Educational and informational purposes for Costa del Sol property market',
       },
     }),
 
