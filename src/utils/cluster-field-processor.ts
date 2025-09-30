@@ -105,7 +105,7 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
     }
 
     const articleIds: { [key: string]: string } = {};
-    let position = 0;
+    let position = 1;
 
     // Process TOFU articles
     for (const [index, article] of data.tofuArticles.entries()) {
