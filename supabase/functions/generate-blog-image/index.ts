@@ -30,9 +30,15 @@ serve(async (req) => {
     const finalTitle = title || blogTitle;
     const finalContent = content || blogContent;
     
-    const falApiKey = Deno.env.get('FAL_AI_API_KEY');
+    const falApiKey = Deno.env.get('FAL_AI_API_KEY')?.trim();
     if (!falApiKey) {
       throw new Error('FAL_AI_API_KEY not configured');
+    }
+
+    // Validate API key doesn't contain invalid characters
+    if (falApiKey.includes('\n') || falApiKey.includes('\r') || falApiKey !== falApiKey.trim()) {
+      console.error('FAL_AI_API_KEY contains invalid characters');
+      throw new Error('FAL_AI_API_KEY contains invalid characters (whitespace or newlines). Please update the secret.');
     }
 
     // Generate prompt based on visual type and content
@@ -47,8 +53,19 @@ serve(async (req) => {
     console.log('Generated prompt:', imagePrompt);
     console.log('Visual type:', visualType);
 
-    // Use nano-banana for image generation with brand consistency
-    const imageResponse = await fetch('https://fal.run/fal-ai/flux/schnell', {
+    // Use nano-banana/edit for high-quality image generation with brand consistency
+    const endpoint = 'https://fal.run/fal-ai/nano-banana/edit';
+    const aspectRatio = visualType === 'diagram' ? '1:1' : '16:9';
+    
+    console.log('Calling FAL.ai:', {
+      endpoint,
+      visualType,
+      aspectRatio,
+      apiKeyConfigured: !!falApiKey,
+      apiKeyLength: falApiKey.length
+    });
+
+    const imageResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falApiKey}`,
@@ -56,17 +73,24 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         prompt: imagePrompt,
-        image_size: visualType === 'diagram' ? 'square' : 'landscape_16_9',
-        num_inference_steps: 4,
-        num_images: 1,
-        enable_safety_checker: true
+        aspect_ratio: aspectRatio,
+        guidance_scale: 3.5,
+        num_inference_steps: 28,
+        seed: Math.floor(Math.random() * 1000000)
       }),
     });
 
     if (!imageResponse.ok) {
       const errorText = await imageResponse.text();
-      console.error('FAL.ai API error:', errorText);
-      throw new Error(`FAL.ai API error: ${imageResponse.status}`);
+      console.error('FAL.ai API error:', {
+        status: imageResponse.status,
+        statusText: imageResponse.statusText,
+        errorBody: errorText,
+        apiKeyLength: falApiKey.length,
+        apiKeyPrefix: falApiKey.substring(0, 8) + '...',
+        endpoint
+      });
+      throw new Error(`FAL.ai API error: ${imageResponse.status} - ${errorText.substring(0, 200)}`);
     }
 
     const imageData = await imageResponse.json();
@@ -122,9 +146,27 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error generating image:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Unknown error occurred';
+    let errorDetails = '';
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      
+      if (errorMessage.includes('ByteString')) {
+        errorDetails = 'API key configuration error. Please update your FAL_AI_API_KEY secret.';
+      } else if (errorMessage.includes('FAL.ai API error')) {
+        errorDetails = 'Image generation service error. Please try again.';
+      } else if (errorMessage.includes('upload')) {
+        errorDetails = 'Failed to save the generated image. Please try again.';
+      }
+    }
+    
     return new Response(JSON.stringify({ 
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
+      error: errorMessage,
+      details: errorDetails || errorMessage
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

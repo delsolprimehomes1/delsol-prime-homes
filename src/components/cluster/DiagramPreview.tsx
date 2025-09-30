@@ -37,6 +37,8 @@ export const DiagramPreview = ({
     }
 
     setIsGenerating(true);
+    setGeneratedImageUrl('');
+    
     try {
       const { data, error } = await supabase.functions.invoke('generate-blog-image', {
         body: {
@@ -51,16 +53,27 @@ export const DiagramPreview = ({
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        toast.error(error.message || `Failed to generate AI ${type}`);
+        return;
+      }
 
-      if (data?.imageUrl) {
+      if (!data?.success) {
+        console.error('Generation failed:', data);
+        const errorMsg = data?.details || data?.error || `Failed to generate AI ${type}`;
+        toast.error(errorMsg);
+        return;
+      }
+
+      if (data.imageUrl) {
         setGeneratedImageUrl(data.imageUrl);
         onChange(data.imageUrl);
         toast.success(`AI ${type} generated successfully!`);
       }
     } catch (error) {
       console.error('Error generating AI visual:', error);
-      toast.error(`Failed to generate AI ${type}`);
+      toast.error(error instanceof Error ? error.message : `Failed to generate AI ${type}`);
     } finally {
       setIsGenerating(false);
     }
