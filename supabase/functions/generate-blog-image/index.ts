@@ -194,6 +194,9 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   const brandStyle = "luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, use 2025 for any dates (NEVER 2024 or any other year)";
   const currentYear = "2025";
   
+  // Explicit negative prompt to exclude all branding, logos, domains, and websites
+  const negativePrompt = "no logos, no website URLs, no domains, no company names, no branded content, no contact information, no text overlays, no watermarks, no signs with text";
+  
   if (visualType === 'diagram') {
     // Generate diagram-specific prompts with explicit 2025 date instructions
     let diagramType = "professional infographic";
@@ -210,10 +213,10 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
       diagramType = "pricing breakdown chart";
     }
     
-    // Add explicit 2025 instructions for diagrams - especially for reports
-    const yearInstructions = "IMPORTANT: Use year 2025 for all dates. If showing a report or data, display 'Costa del Sol Real Estate Report 2025' or '2025 Data'. Never use 2024 or any other year.";
+    // Add explicit 2025 instructions for diagrams - generic report branding
+    const yearInstructions = "IMPORTANT: Use year 2025 for all dates. If showing a report or data, display 'Property Market Analysis 2025' or 'Real Estate Data 2025'. Never use 2024 or any other year.";
     
-    return `${diagramType} about ${title}, ${brandStyle}, ${yearInstructions}, clean layout, easy to read, charts and icons, white background, blue and gold accents, high quality infographic design, show "${currentYear}" clearly if dates are visible`;
+    return `${diagramType} about ${title}, ${brandStyle}, ${yearInstructions}, clean minimal layout, easy to read, charts and icons, white background, blue and gold accents, high quality infographic design, show "${currentYear}" clearly if dates are visible, clean design without any branding elements, ${negativePrompt}`;
   }
   
   // Generate image-specific prompts for different funnel stages
@@ -222,40 +225,40 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   if (funnelStage === 'TOFU') {
     // Top of funnel: broad, aspirational imagery
     if (lowerTitle.includes('costa del sol') || tags.includes('costa-del-sol')) {
-      basePrompt = `Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture, modern ${currentYear} aesthetic`;
+      basePrompt = `Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture, modern ${currentYear} aesthetic, clean architecture without signage`;
     } else if (lowerTitle.includes('property') || lowerTitle.includes('home')) {
-      basePrompt = "Beautiful luxury property exterior, modern architecture, landscaped gardens, professional real estate photography";
+      basePrompt = "Beautiful luxury property exterior, modern architecture, landscaped gardens, professional real estate photography, clean exterior without any signs";
     } else if (lowerTitle.includes('guide') || lowerTitle.includes('tips')) {
-      basePrompt = "Elegant workspace with property documents and laptop, professional real estate planning concept";
+      basePrompt = "Elegant workspace with property documents and laptop, professional real estate planning concept, clean desk without branded materials";
     }
   } else if (funnelStage === 'MOFU') {
     // Middle of funnel: more specific, showing details
     if (lowerTitle.includes('inspection') || lowerTitle.includes('viewing')) {
-      basePrompt = "Professional real estate agent showing property details to clients, modern villa interior";
+      basePrompt = "Professional real estate agent showing property details to clients, modern villa interior, clean professional setting";
     } else if (lowerTitle.includes('investment') || lowerTitle.includes('market')) {
-      basePrompt = `Modern office with property market charts showing ${currentYear} data and analysis, professional investment concept`;
+      basePrompt = `Modern office with property market charts showing ${currentYear} data and analysis, professional investment concept, clean charts without branded elements`;
     } else if (lowerTitle.includes('area') || lowerTitle.includes('location')) {
-      basePrompt = "Beautiful neighborhood street with luxury homes, Costa del Sol architecture, palm trees";
+      basePrompt = "Beautiful neighborhood street with luxury homes, Costa del Sol architecture, palm trees, clean street without signage";
     }
   } else if (funnelStage === 'BOFU') {
     // Bottom of funnel: action-oriented, trust-building
     if (lowerTitle.includes('contact') || lowerTitle.includes('schedule')) {
-      basePrompt = "Professional real estate agent in modern office, welcoming consultation setup";
+      basePrompt = "Professional real estate agent in modern office, welcoming consultation setup, clean office without branded materials";
     } else if (lowerTitle.includes('service') || lowerTitle.includes('team')) {
-      basePrompt = "Confident real estate professionals team, modern office, Costa del Sol luxury setting";
+      basePrompt = "Confident real estate professionals team, modern office, Costa del Sol luxury setting, clean professional environment";
     } else {
-      basePrompt = "Professional handshake closing property deal, modern office with property keys";
+      basePrompt = "Professional handshake closing property deal, modern office with property keys, clean setting";
     }
   }
   
-  // Add real estate specific themes
+  // Add real estate specific themes - sanitized to avoid text/branding
   if (lowerTitle.includes('fsbo') || lowerContent.includes('for sale by owner')) {
-    basePrompt = "For Sale sign outside beautiful modern home, professional real estate listing photography";
+    basePrompt = "Beautiful modern home exterior with minimal generic for sale post (no text visible), professional real estate listing photography, clean exterior";
   } else if (lowerTitle.includes('realtor') || lowerTitle.includes('agent')) {
-    basePrompt = "Professional real estate agent with tablet showing properties, modern office setting";
+    basePrompt = "Professional real estate agent with tablet showing properties, modern office setting, clean professional appearance";
   } else if (lowerTitle.includes('villa') || lowerTitle.includes('luxury')) {
-    basePrompt = "Stunning luxury villa exterior, infinity pool, Mediterranean views, sunset lighting";
+    basePrompt = "Stunning luxury villa exterior, infinity pool, Mediterranean views, sunset lighting, pristine architecture";
   }
   
-  return `${basePrompt}, ${brandStyle}, high quality, professional photography, bright natural lighting, 16:9 composition, suitable for blog header, ${currentYear} context`;
+  return `${basePrompt}, ${brandStyle}, high quality, professional photography, bright natural lighting, 16:9 composition, suitable for blog header, ${currentYear} context, clean visuals without text overlays or branding, ${negativePrompt}`;
 }
