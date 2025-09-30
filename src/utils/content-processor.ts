@@ -25,20 +25,27 @@ export interface ContentBatch {
 export class ContentProcessor {
   /**
    * Parse new markdown format (## headers) into structured data
+   * Enhanced with more flexible pattern matching
    */
   static parseNewFormatBlock(markdownContent: string, language: SupportedLanguage = 'en'): StructuredQAContent {
-    // Extract funnel stage from header like "## **1. TOFU**"
-    const stageMatch = markdownContent.match(/##\s*\*\*\d+\.\s*(TOFU|MOFU|BOFU)\s*\*\*/i);
-    let altStageMatch = null;
+    // Extract funnel stage from header - try multiple patterns
+    let stageMatch = markdownContent.match(/##\s*\*\*\d+\.\s*(TOFU|MOFU|BOFU)\s*\*\*/i);
+    
     if (!stageMatch) {
-      // Try alternative format
-      altStageMatch = markdownContent.match(/##\s*\*\*(TOFU|MOFU|BOFU)\s*\*\*/i);
-      if (!altStageMatch) {
-        throw new Error(`Could not find funnel stage (TOFU/MOFU/BOFU) in content. Content preview: ${markdownContent.substring(0, 200)}...`);
-      }
+      // Try alternative format without numbering
+      stageMatch = markdownContent.match(/##\s*\*\*(TOFU|MOFU|BOFU)\s*\*\*/i);
     }
-    const stageResult = stageMatch || altStageMatch;
-    const funnelStage = stageResult![1].toUpperCase() as 'TOFU' | 'MOFU' | 'BOFU';
+    
+    if (!stageMatch) {
+      // Try simple heading format
+      stageMatch = markdownContent.match(/##?\s+(TOFU|MOFU|BOFU)/i);
+    }
+    
+    if (!stageMatch) {
+      throw new Error(`Could not find funnel stage (TOFU/MOFU/BOFU) in content. Content preview: ${markdownContent.substring(0, 200)}...`);
+    }
+    
+    const funnelStage = stageMatch[1].toUpperCase() as 'TOFU' | 'MOFU' | 'BOFU';
 
     // Extract question title from header like "## **Question text**"
     const titleMatch = markdownContent.match(/##\s*\*\*([^*]+?)\*\*(?!\s*$)/g);
@@ -76,22 +83,32 @@ export class ContentProcessor {
       throw new Error('Missing required Short Explanation or Detailed Explanation sections');
     }
 
-    // Extract SEO fields
+    // Extract SEO fields - make them optional with sensible defaults
     const seoFieldsSection = markdownContent.match(/##\s*SEO-fields\s*\n([\s\S]*?)$/);
-    if (!seoFieldsSection) {
-      throw new Error('Missing SEO-fields section');
+    
+    let tags: string[] = [];
+    let locationFocus = 'Costa del Sol';
+    let targetAudience = 'Property Buyers';
+    let intent = 'Informational';
+    
+    if (seoFieldsSection) {
+      const seoContent = seoFieldsSection[1];
+      const tagsMatch = seoContent.match(/\*\*Tags:\*\*\s*([^\n]+)/);
+      const locationMatch = seoContent.match(/\*\*Location focus:\*\*\s*([^\n]+)/);
+      const audienceMatch = seoContent.match(/\*\*Target audience:\*\*\s*([^\n]+)/);
+      const intentMatch = seoContent.match(/\*\*Intent:\*\*\s*([^\n]+)/);
+
+      tags = tagsMatch ? tagsMatch[1].split(',').map(tag => tag.trim()) : [];
+      locationFocus = locationMatch ? locationMatch[1].trim() : locationFocus;
+      targetAudience = audienceMatch ? audienceMatch[1].trim() : targetAudience;
+      intent = intentMatch ? intentMatch[1].trim() : intent;
+    } else {
+      // Try to extract tags from any line that looks like "Tags: ..."
+      const anyTagsMatch = markdownContent.match(/(?:\*\*)?Tags:?(?:\*\*)?\s*([^\n]+)/i);
+      if (anyTagsMatch) {
+        tags = anyTagsMatch[1].split(',').map(tag => tag.trim());
+      }
     }
-
-    const seoContent = seoFieldsSection[1];
-    const tagsMatch = seoContent.match(/\*\*Tags:\*\*\s*([^\n]+)/);
-    const locationMatch = seoContent.match(/\*\*Location focus:\*\*\s*([^\n]+)/);
-    const audienceMatch = seoContent.match(/\*\*Target audience:\*\*\s*([^\n]+)/);
-    const intentMatch = seoContent.match(/\*\*Intent:\*\*\s*([^\n]+)/);
-
-    const tags = tagsMatch ? tagsMatch[1].split(',').map(tag => tag.trim()) : [];
-    const locationFocus = locationMatch ? locationMatch[1].trim() : '';
-    const targetAudience = audienceMatch ? audienceMatch[1].trim() : '';
-    const intent = intentMatch ? intentMatch[1].trim() : '';
 
     return {
       title,

@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, CheckCircle, AlertCircle, Loader2, BarChart3, AlertTriangle, Link2, Mic, Brain, Zap, Network, Download, Package } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Upload, CheckCircle, AlertCircle, Loader2, BarChart3, AlertTriangle, Link2, Mic, Brain, Zap, Network, Download, Package, FileText } from 'lucide-react';
 import { ContentProcessor, type ContentBatch } from '@/utils/content-processor';
 import { FunnelAnalyzer, type FunnelBottleneck, type TopicAnalysis, type DuplicateCandidate } from '@/utils/funnel-analyzer';
 import { SmartLinkingEngine, type SmartLinkingSuggestion } from '@/utils/smart-linking';
@@ -232,24 +233,67 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     setResults(null);
 
     try {
-      // Step 1: Parse content
-      const isNewFormat = content.includes('## **') && content.includes('SEO-fields');
+      // Step 1: Enhanced content format detection
+      const hasNewFormatMarkers = content.includes('## **') && content.includes('SEO-fields');
+      const hasOldFormatMarkers = content.includes('```') && content.includes('title:');
+      const hasFunnelStages = /(?:TOFU|MOFU|BOFU)/i.test(content);
       
-      let questionBlocks: string[];
+      let questionBlocks: string[] = [];
+      let detectedFormat = 'unknown';
       
-      if (isNewFormat) {
+      // Try multiple parsing strategies in order of preference
+      if (hasNewFormatMarkers) {
+        // Strategy 1: New format with numbered sections (## **1. TOFU**)
+        detectedFormat = 'new-numbered';
         questionBlocks = content
-          .split(/(?=##\s*\*\*\d+\.\s*(?:TOFU|MOFU|BOFU))/)
+          .split(/(?=##\s*\*\*\d+\.\s*(?:TOFU|MOFU|BOFU))/i)
           .filter(block => block.trim().length > 0);
-      } else {
+      }
+      
+      if (questionBlocks.length === 0 && content.includes('## **')) {
+        // Strategy 2: New format without numbering (## **TOFU**)
+        detectedFormat = 'new-simple';
+        questionBlocks = content
+          .split(/(?=##\s*\*\*(?:TOFU|MOFU|BOFU))/i)
+          .filter(block => block.trim().length > 0);
+      }
+      
+      if (questionBlocks.length === 0 && hasFunnelStages) {
+        // Strategy 3: Any heading with funnel stage
+        detectedFormat = 'heading-based';
+        questionBlocks = content
+          .split(/(?=##?\s+.*?(?:TOFU|MOFU|BOFU))/i)
+          .filter(block => block.trim().length > 0 && /(?:TOFU|MOFU|BOFU)/i.test(block));
+      }
+      
+      if (questionBlocks.length === 0 && hasOldFormatMarkers) {
+        // Strategy 4: Old format with frontmatter
+        detectedFormat = 'old-frontmatter';
         questionBlocks = content
           .split(/(?=```\s*title:)/)
           .filter(block => block.trim().length > 0);
       }
 
       if (questionBlocks.length === 0) {
-        throw new Error('No valid question blocks found in the content');
+        // Provide detailed format error message
+        const errorDetails = [
+          'Could not parse any articles from the content.',
+          '\nExpected formats:',
+          '1. New Format: ## **1. TOFU** or ## **TOFU**',
+          '2. Old Format: ``` title: ... ```',
+          '\nDetected in your content:',
+          `- Has "## **": ${content.includes('## **')}`,
+          `- Has "SEO-fields": ${content.includes('SEO-fields')}`,
+          `- Has funnel stages (TOFU/MOFU/BOFU): ${hasFunnelStages}`,
+          `- Has old format markers: ${hasOldFormatMarkers}`,
+          '\nFirst 300 characters of your content:',
+          content.substring(0, 300) + '...'
+        ].join('\n');
+        
+        throw new Error(errorDetails);
       }
+
+      console.log(`✓ Detected format: ${detectedFormat}, found ${questionBlocks.length} article blocks`);
 
       // CLUSTER DETECTION: Check if this is exactly 6 articles (3-2-1 structure)
       const isClusterImport = questionBlocks.length === 6;
@@ -273,7 +317,8 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       for (let i = 0; i < questionBlocks.length; i++) {
         try {
           let question;
-          if (isNewFormat) {
+          // Use appropriate parser based on detected format
+          if (detectedFormat.startsWith('new-') || detectedFormat === 'heading-based') {
             question = ContentProcessor.parseNewFormatBlock(questionBlocks[i], 'en');
           } else {
             question = ContentProcessor.parseContentBlock(questionBlocks[i]);
@@ -1024,6 +1069,59 @@ Always ask the developer about the available internet infrastructure during your
                   <strong>Cluster Mode:</strong> Drop exactly 6 articles (3 TOFU, 2 MOFU, 1 BOFU) to automatically create a structured cluster with proper journey flow linking.
                 </AlertDescription>
               </Alert>
+
+              {/* Format Help */}
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Show Expected Format Examples
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <Card className="bg-muted/50">
+                    <CardContent className="p-4 space-y-3 text-sm">
+                      <div>
+                        <div className="font-semibold mb-1">✅ Supported Format 1: New Format (Numbered)</div>
+                        <pre className="bg-background p-2 rounded text-xs overflow-x-auto">
+{`## **1. TOFU**
+## **Your Question Title Here**
+
+## **Short Explanation**
+Brief answer text...
+
+## **Detailed Explanation**
+Detailed answer text...
+
+## SEO-fields
+**Tags:** property, investment
+**Location focus:** Costa del Sol
+**Target audience:** Property Buyers
+**Intent:** Informational`}
+                        </pre>
+                      </div>
+                      
+                      <div>
+                        <div className="font-semibold mb-1">✅ Supported Format 2: New Format (Simple)</div>
+                        <pre className="bg-background p-2 rounded text-xs overflow-x-auto">
+{`## **TOFU**
+## **Your Question Title Here**
+
+## **Short Explanation**
+Brief answer text...
+
+## **Detailed Explanation**
+Detailed answer text...`}
+                        </pre>
+                      </div>
+
+                      <div className="text-xs text-muted-foreground mt-2">
+                        💡 <strong>Tip:</strong> SEO-fields section is optional. If not provided, default values will be used.
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CollapsibleContent>
+              </Collapsible>
 
               <div>
                 <label className="text-sm font-medium mb-2 block">Cluster Title</label>
