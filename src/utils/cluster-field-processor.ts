@@ -111,6 +111,7 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
     for (const [index, article] of data.tofuArticles.entries()) {
       // Validate required fields
       if (!article.title?.trim() || !article.content?.trim()) {
+        console.log(`Skipping TOFU ${index + 1}: Missing required fields`);
         errors.push(`TOFU ${index + 1}: Missing required fields (title or content)`);
         continue;
       }
@@ -119,6 +120,8 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
       const slug = generateSlug(article.title);
       const currentPosition = position;
       position += 1;
+      
+      console.log(`Processing TOFU ${index + 1}: position=${currentPosition}, title="${article.title?.substring(0, 50)}"`);
       
       if (existingId) {
         // Update existing article
