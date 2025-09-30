@@ -16,6 +16,7 @@ import QA from "./pages/QA";
 import QAPost from "./pages/QAPost";
 import ContentManager from "./pages/ContentManager";
 import QACategoryMigration from "./pages/QACategoryMigration";
+import ClusterReorganization from "./pages/ClusterReorganization";
 import AIOptimizationDashboard from "./pages/AIOptimizationDashboard";
 import BlogBuilderPage from "./pages/BlogBuilder";
 import NotFound from "./pages/NotFound";
@@ -46,7 +47,8 @@ const App = () => (
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />
               <Route path="/blog-builder" element={<BlogBuilderPage />} />
               <Route path="/book-viewing" element={<BookViewing />} />
-              <Route path="/admin/qa-migration" element={<QACategoryMigration />} />
+          <Route path="/admin/qa-migration" element={<QACategoryMigration />} />
+          <Route path="/admin/cluster-reorganization" element={<ClusterReorganization />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />
