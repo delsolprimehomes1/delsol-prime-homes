@@ -91,6 +91,10 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
             <DiagramPreview
               value={article.diagram}
               onChange={(diagram) => onChange({ ...article, diagram })}
+              articleTitle={article.title}
+              articleContent={article.content}
+              funnelStage={stage}
+              tags={article.tags}
             />
 
             <SEOFieldsSection
