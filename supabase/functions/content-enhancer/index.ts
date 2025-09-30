@@ -91,7 +91,19 @@ serve(async (req) => {
 - **Voice Search Q&A**: 2-3 conversational questions with natural answers
 - **Conclusion**: Actionable next steps (50-100 words)
 
-**Content Characteristics:**`;
+**Content Characteristics:**
+
+**LOCALIZATION & HUMANIZATION (CRITICAL):**
+- **Micro-Local Details**: Use specific street names (e.g., "Calle Larios", "Paseo Marítimo"), neighborhoods (e.g., "Golden Mile", "Nueva Andalucía"), local landmarks
+- **Seasonal Context**: Mention 2025 seasonal events, weather patterns, local festivals
+- **Cultural Integration**: Naturally weave in Spanish terms with context (e.g., "chiringuitos (beachfront restaurants)", "paseo (evening stroll)")
+- **Personal Expertise Signals**: Use phrases like "In my experience with Costa del Sol properties...", "I've noticed that clients...", "Local residents often tell me..."
+- **Sensory Descriptions**: Paint vivid pictures - the smell of orange blossoms, sound of waves, sight of white villages
+- **Local Personality**: Capture the laid-back Mediterranean lifestyle, the blend of traditional and modern, the cosmopolitan yet authentic atmosphere
+- **First-Hand Insights**: Share specific observations about traffic patterns, best times to visit markets, hidden local spots
+- **Authentic Voice**: Write as a knowledgeable local expert who lives and breathes Costa del Sol, not a distant copywriter
+
+**WRITING STYLE ADAPTATION (Stage-Specific):**`;
 
 
     const userPrompt = `Expand this article to 800-1,200 words while maintaining quality:
@@ -193,39 +205,88 @@ Return ONLY the enhanced markdown content in this exact structure, no explanatio
 function getFunnelContext(stage: string): string {
   switch (stage) {
     case 'TOFU':
-      return `Educational, introductory content approach:
-- **Content Style**: Educational, approachable, foundational knowledge
-- **Focus**: "What is...", "How does...", "Why...", "Understanding..." style questions
-- **Tone**: Friendly expert sharing helpful guidance
-- **Keywords**: Broad market terms and general location information
-- **Structure**: Clear explanations, market overviews, introductory concepts
-- **Examples**: Market trends, area guides, basic buying information
-- **Target Length**: 800-1,000 words with comprehensive basics
-- **Voice Search**: Natural answers to common "what", "where", "when" questions`;
+      return `**INSPIRATIONAL STORYTELLER VOICE** - Discovery & Dream Phase
+
+**Writing Style:**
+- Paint lifestyle pictures that make readers dream and visualize themselves in Costa del Sol
+- Use evocative, sensory language: "imagine waking up to...", "picture yourself strolling through..."
+- Tell stories through locations: describe the experience of a morning coffee at Atarazanas Market, the feeling of a sunset walk in Marbella
+- Build excitement and curiosity about the Costa del Sol lifestyle
+- Keep tone warm, inviting, aspirational but accessible
+
+**Content Focus:**
+- **What/Where/Why Questions**: "What makes Málaga special?", "Where are the best beaches?", "Why do expats love Costa del Sol?"
+- **Lifestyle Experiences**: Focus on daily life, culture, food, activities, community
+- **Broad Introduction**: Overview of areas, general market trends, lifestyle benefits
+- **Discovery Elements**: Hidden gems, local secrets, cultural insights
+- **Emotional Connection**: Help readers fall in love with the location first
+
+**Language Patterns:**
+- "Discover...", "Experience...", "Imagine...", "Step into..."
+- Rich sensory details: sounds, smells, sights, feelings
+- Storytelling structure: beginning with a scene, building interest
+- Conversational and friendly: "You'll find...", "Many expats discover..."
+- Paint word pictures: "cobblestone streets lined with orange trees", "golden beaches stretching for miles"
+
+**Target Length**: 800-1,000 words with comprehensive lifestyle introduction
+**Voice Search**: Natural answers to "what", "where", "why" questions about Costa del Sol life`;
       
     case 'MOFU':
-      return `Comparative, analytical content approach:
-- **Content Style**: Detailed comparisons and decision-support information
-- **Focus**: "Compare...", "Consider...", "Best options for...", "How to choose..." formats
-- **Tone**: Trusted advisor providing in-depth analysis
-- **Keywords**: Specific neighborhood names, detailed process terms, comparison topics
-- **Structure**: Comparison sections, pros/cons analysis, detailed breakdowns
-- **Examples**: Area comparisons, investment analysis, detailed process guides
-- **Target Length**: 1,000-1,200 words with thorough analysis
-- **Voice Search**: Nuanced answers to "how", "which", "should I" questions`;
+      return `**KNOWLEDGEABLE LOCAL ADVISOR VOICE** - Analysis & Comparison Phase
+
+**Writing Style:**
+- Write as a trusted advisor who has deep local market knowledge and helps people make informed decisions
+- Use analytical but accessible language with specific data and comparisons
+- Balance facts with insights: "While Marbella offers X, Nueva Andalucía provides Y..."
+- Show expertise through detailed comparisons and nuanced understanding
+- Maintain professional yet approachable tone of a helpful expert
+
+**Content Focus:**
+- **Comparison & Analysis**: "Marbella vs Estepona", "Best areas for investment", "Comparing property types"
+- **Decision Support**: Pros/cons, detailed breakdowns, investment analysis
+- **Specific Neighborhoods**: Deep dives into particular areas with data
+- **Market Intelligence**: Pricing trends, rental yields, appreciation rates
+- **Detailed Processes**: Buying procedures, legal considerations, practical steps
+
+**Language Patterns:**
+- "When comparing...", "Consider that...", "In my experience advising clients..."
+- Data-driven: "Properties in this area average €X per m²...", "Based on 2025 market data..."
+- Comparative structure: "On one hand... on the other hand...", "While X offers... Y provides..."
+- Expert insights: "I've noticed that...", "Clients often find...", "Local market trends show..."
+- Balanced analysis with specific examples from real neighborhoods
+
+**Target Length**: 1,000-1,200 words with thorough analytical depth
+**Voice Search**: Nuanced answers to "how", "which", "should I" questions with comparisons`;
       
     case 'BOFU':
-      return `Action-oriented, practical content approach:
-- **Content Style**: Specific, service-focused, ready-to-act information
-- **Focus**: "How to proceed...", "Next steps...", "Getting started with..." approaches
-- **Tone**: Professional expert ready to assist with specific needs
-- **Keywords**: Service names, action verbs, specific property types
-- **Structure**: Step-by-step guides, clear processes, practical next steps
-- **Examples**: Booking information, service descriptions, detailed procedures
-- **Target Length**: 800-1,000 words with actionable details
-- **Voice Search**: Direct answers to "how do I", "where can I", "who can help" queries`;
+      return `**PROFESSIONAL CONSULTANT VOICE** - Action & Decision Phase
+
+**Writing Style:**
+- Direct, confident, and action-oriented like a professional ready to help them proceed
+- Clear step-by-step guidance with specific next actions
+- Authoritative but warm: "Here's exactly what you need to do..."
+- Remove uncertainty with precise information and clear processes
+- Professional expertise with personal touch: "I'll guide you through..."
+
+**Content Focus:**
+- **Action Steps**: "How to book a viewing", "Next steps for buying", "Getting started with..."
+- **Service Details**: Specific offerings, what's included, what to expect
+- **Clear Processes**: Timeline, requirements, documentation, procedures
+- **Immediate Value**: What happens next, how to proceed, who to contact
+- **Practical Details**: Costs, timeframes, required documents, logistics
+
+**Language Patterns:**
+- "Here's how to...", "The first step is...", "You'll need to...", "I'll help you..."
+- Action verbs: "Schedule", "Book", "Start", "Begin", "Secure"
+- Clear instructions: numbered steps, bullet point checklists
+- Remove barriers: "Simply contact us...", "The process is straightforward..."
+- Confidence building: "With over X years experience...", "We specialize in..."
+- Direct call-to-action language woven naturally throughout
+
+**Target Length**: 800-1,000 words with actionable, specific details
+**Voice Search**: Direct answers to "how do I", "where can I", "who can help" queries`;
       
     default:
-      return 'Balanced informational content with practical insights';
+      return 'Balanced informational content with practical insights and local expertise';
   }
 }
