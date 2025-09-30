@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, CheckCircle, AlertCircle, Loader2, BarChart3, AlertTriangle, Link2, Mic, Brain, Zap } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Loader2, BarChart3, AlertTriangle, Link2, Mic, Brain, Zap, Network, Download, Package } from 'lucide-react';
 import { ContentProcessor, type ContentBatch } from '@/utils/content-processor';
 import { FunnelAnalyzer, type FunnelBottleneck, type TopicAnalysis, type DuplicateCandidate } from '@/utils/funnel-analyzer';
 import { SmartLinkingEngine, type SmartLinkingSuggestion } from '@/utils/smart-linking';
@@ -16,6 +16,10 @@ import { generateMaximalAISchema } from '@/utils/comprehensive-ai-schemas';
 import { validateSchemaForAI, testLLMCitation } from '@/utils/schema-validation';
 import { AIContentEnhancer } from '@/components/AIContentEnhancer';
 import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
+import { ClusterJourneyValidator } from '@/components/ClusterJourneyValidator';
+import { ClusterImportValidator } from '@/utils/cluster-import-validator';
+import { ClusterGitHubExporter } from '@/utils/cluster-github-export';
+import { ClusterManager } from '@/utils/cluster-manager';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImportManagerProps {
@@ -33,6 +37,9 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     errors: string[];
     duplicates: DuplicateCandidate[];
     linkingSuggestions: SmartLinkingSuggestion[];
+    clusterDetected?: boolean;
+    clusterValidation?: any;
+    clusterId?: string;
     aiOptimization?: {
       averageScore: number;
       voiceSearchReadiness: number;
@@ -47,6 +54,12 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
       }>;
     };
   } | null>(null);
+
+  // Cluster mode states
+  const [clusterMode, setClusterMode] = useState(false);
+  const [clusterTitle, setClusterTitle] = useState('');
+  const [clusterDescription, setClusterDescription] = useState('');
+  const [suggestedClusters, setSuggestedClusters] = useState<any[]>([]);
   
   // Analysis states
   const [bottlenecks, setBottlenecks] = useState<FunnelBottleneck[]>([]);
@@ -170,7 +183,9 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
     if (!batchName.trim() || !content.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please provide both a batch name and content to import.",
+        description: clusterMode 
+          ? "Please provide cluster title, description, and 6 articles."
+          : "Please provide both a batch name and content to import.",
         variant: "destructive"
       });
       return;
@@ -198,6 +213,17 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
 
       if (questionBlocks.length === 0) {
         throw new Error('No valid question blocks found in the content');
+      }
+
+      // CLUSTER DETECTION: Check if this is exactly 6 articles (3-2-1 structure)
+      const isClusterImport = questionBlocks.length === 6;
+      let clusterValidation = null;
+
+      if (isClusterImport && clusterMode) {
+        toast({
+          title: "Cluster Detected",
+          description: "Detected 6 articles - validating 3-2-1 cluster structure...",
+        });
       }
 
       const questions = [];
@@ -314,13 +340,53 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
 
       setProgress(70);
 
-      // Step 5: Enhanced import with smart linking and AI optimization
-      const batch: ContentBatch = {
-        batchName,
-        questions
-      };
+      // Step 5: CLUSTER MODE - Import as structured cluster
+      let clusterId: string | undefined;
+      if (isClusterImport && clusterMode && questions.length === 6) {
+        const clusterArticles = questions.map(q => ({
+          title: q.title,
+          content: q.detailedExplanation || q.shortExplanation,
+          excerpt: extractShortAnswer(q.detailedExplanation || q.shortExplanation, q.title),
+          funnel_stage: q.funnelStage as 'TOFU' | 'MOFU' | 'BOFU',
+          slug: q.slug,
+          topic: ContentProcessor.generateTopic(q),
+          tags: q.tags || []
+        }));
 
-      await ContentProcessor.processEnhancedBatch(batch);
+        // Validate structure
+        clusterValidation = ClusterImportValidator.detectClusterStructure(clusterArticles);
+
+        if (!clusterValidation.isValid) {
+          throw new Error(`Invalid cluster structure: ${clusterValidation.errors.join(', ')}`);
+        }
+
+        // Import as cluster with auto-linking
+        const clusterResult = await ClusterImportValidator.importClusterWithLinking(
+          clusterTitle || batchName,
+          clusterDescription || `Auto-imported cluster: ${batchName}`,
+          clusterArticles,
+          'en'
+        );
+
+        if (!clusterResult.success) {
+          throw new Error(`Cluster import failed: ${clusterResult.errors.join(', ')}`);
+        }
+
+        clusterId = clusterResult.clusterId;
+        toast({
+          title: "Cluster Created",
+          description: `Successfully created cluster with proper 3→2→1 journey flow`,
+        });
+
+      } else {
+        // Standard import
+        const batch: ContentBatch = {
+          batchName,
+          questions
+        };
+        await ContentProcessor.processEnhancedBatch(batch);
+      }
+
       setProgress(90);
 
       // Step 6: Calculate AI optimization metrics
@@ -346,6 +412,9 @@ export function ContentImportManager({ onImportComplete }: ImportManagerProps) {
         errors,
         duplicates,
         linkingSuggestions,
+        clusterDetected: isClusterImport,
+        clusterValidation,
+        clusterId,
         aiOptimization: {
           averageScore: Math.round(avgAiScore),
           voiceSearchReadiness: Math.round(voiceReadiness),
@@ -435,11 +504,12 @@ Always ask the developer about the available internet infrastructure during your
   return (
     <div className="space-y-6">
       <Tabs defaultValue="import" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="import">AI Import</TabsTrigger>
+          <TabsTrigger value="cluster">Cluster Mode</TabsTrigger>
           <TabsTrigger value="preview">AI Preview</TabsTrigger>
           <TabsTrigger value="analysis">Funnel Analysis</TabsTrigger>
-          <TabsTrigger value="linking">Link Management</TabsTrigger>
+          <TabsTrigger value="export">GitHub Export</TabsTrigger>
         </TabsList>
 
         <TabsContent value="import" className="space-y-6">
@@ -874,6 +944,261 @@ Always ask the developer about the available internet infrastructure during your
                   Import content to see smart linking suggestions
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="cluster" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Network className="h-5 w-5" />
+                Smart Cluster Import (3-2-1 Structure)
+              </CardTitle>
+              <CardDescription>
+                Auto-detect and import 6-article clusters with journey flow validation (3 TOFU → 2 MOFU → 1 BOFU)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <Package className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Cluster Mode:</strong> Drop exactly 6 articles (3 TOFU, 2 MOFU, 1 BOFU) to automatically create a structured cluster with proper journey flow linking.
+                </AlertDescription>
+              </Alert>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Cluster Title</label>
+                <Input
+                  placeholder="e.g., Costa del Sol Property Investment Guide"
+                  value={clusterTitle}
+                  onChange={(e) => setClusterTitle(e.target.value)}
+                  disabled={isProcessing}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Cluster Description</label>
+                <Textarea
+                  placeholder="Brief description of this cluster's topic and purpose..."
+                  value={clusterDescription}
+                  onChange={(e) => setClusterDescription(e.target.value)}
+                  disabled={isProcessing}
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">6 Articles (3 TOFU, 2 MOFU, 1 BOFU)</label>
+                <Textarea
+                  placeholder="Paste exactly 6 articles in the format shown in AI Import tab..."
+                  value={content}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    setClusterMode(true);
+                  }}
+                  disabled={isProcessing}
+                  rows={15}
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <Button 
+                onClick={handleSmartImport}
+                disabled={isProcessing || !clusterTitle.trim() || !content.trim()}
+                className="w-full"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Creating Cluster...
+                  </>
+                ) : (
+                  <>
+                    <Network className="h-4 w-4 mr-2" />
+                    Create 3-2-1 Cluster
+                  </>
+                )}
+              </Button>
+
+              {results?.clusterDetected && results?.clusterValidation && (
+                <ClusterJourneyValidator 
+                  clusterId={results.clusterId}
+                  onValidationComplete={(isValid) => {
+                    if (isValid) {
+                      toast({
+                        title: "Valid Cluster",
+                        description: "3-2-1 structure confirmed with proper journey flow"
+                      });
+                    }
+                  }}
+                />
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Suggest Clusters from Existing Content */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Restructure Existing Content</CardTitle>
+              <CardDescription>
+                Analyze existing QAs and suggest cluster groupings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button
+                onClick={async () => {
+                  const suggestions = await ClusterImportValidator.suggestClusterGroupings('en');
+                  setSuggestedClusters(suggestions.suggestedClusters);
+                  toast({
+                    title: "Analysis Complete",
+                    description: `Found ${suggestions.suggestedClusters.length} potential clusters`
+                  });
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analyze Existing Content
+              </Button>
+
+              {suggestedClusters.length > 0 && (
+                <div className="space-y-3">
+                  <div className="font-medium text-sm">Suggested Clusters:</div>
+                  {suggestedClusters.map((cluster, index) => (
+                    <div key={index} className="p-4 border rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium">{cluster.topic}</div>
+                        <Badge variant={cluster.canFormCluster ? "default" : "secondary"}>
+                          {cluster.canFormCluster ? "Ready" : "Incomplete"}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {cluster.articles.length} articles total
+                      </div>
+                      {!cluster.canFormCluster && cluster.missing.length > 0 && (
+                        <div className="text-xs text-destructive">
+                          Missing: {cluster.missing.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="export" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Download className="h-5 w-5" />
+                GitHub Export System
+              </CardTitle>
+              <CardDescription>
+                Export clusters as GitHub-ready Markdown + JSON with AI-optimized schemas
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Exports include H1→H2→H3 structured Markdown, comprehensive JSON-LD schemas, and README files optimized for AI/LLM discovery.
+                </AlertDescription>
+              </Alert>
+
+              <Button
+                onClick={async () => {
+                  try {
+                    const clusters = await ClusterManager.getAllClustersWithArticles('en');
+                    const exportData = await ClusterGitHubExporter.generateCompleteExport(clusters);
+
+                    // Download README
+                    const readmeBlob = new Blob([exportData.readme], { type: 'text/markdown' });
+                    const readmeUrl = URL.createObjectURL(readmeBlob);
+                    const readmeLink = document.createElement('a');
+                    readmeLink.href = readmeUrl;
+                    readmeLink.download = 'README.md';
+                    readmeLink.click();
+
+                    // Download clusters.json
+                    const jsonBlob = new Blob([exportData.clustersJSON], { type: 'application/json' });
+                    const jsonUrl = URL.createObjectURL(jsonBlob);
+                    const jsonLink = document.createElement('a');
+                    jsonLink.href = jsonUrl;
+                    jsonLink.download = 'clusters.json';
+                    jsonLink.click();
+
+                    // Download individual cluster files
+                    exportData.clusterFiles.forEach(file => {
+                      const mdBlob = new Blob([file.markdown], { type: 'text/markdown' });
+                      const mdUrl = URL.createObjectURL(mdBlob);
+                      const mdLink = document.createElement('a');
+                      mdLink.href = mdUrl;
+                      mdLink.download = `${file.filename}.md`;
+                      mdLink.click();
+                    });
+
+                    toast({
+                      title: "Export Complete",
+                      description: `Exported ${clusters.length} clusters with ${exportData.clusterFiles.length} files`
+                    });
+                  } catch (error) {
+                    toast({
+                      title: "Export Failed",
+                      description: error instanceof Error ? error.message : 'Unknown error',
+                      variant: "destructive"
+                    });
+                  }
+                }}
+                className="w-full"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export All Clusters to GitHub
+              </Button>
+
+              <div className="space-y-2 text-sm">
+                <div className="font-medium">Export Package Includes:</div>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  <li><strong>README.md</strong> - Repository overview and cluster index</li>
+                  <li><strong>clusters.json</strong> - All clusters in structured JSON format</li>
+                  <li><strong>cluster-[id].md</strong> - Individual cluster markdown files</li>
+                  <li><strong>JSON-LD Schemas</strong> - AI-optimized structured data</li>
+                  <li><strong>Speakable Content</strong> - Voice search optimization markup</li>
+                  <li><strong>Journey Flow Maps</strong> - 3→2→1 structure documentation</li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-muted rounded-lg space-y-2">
+                <div className="font-medium text-sm">AI/LLM Optimization Features:</div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <span>JSON-LD Schema.org</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <span>Voice Search Ready</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <span>Citation Optimized</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <span>H1→H2→H3 Structure</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <span>Speakable Content</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <span>Funnel Flow Maps</span>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
