@@ -6,6 +6,7 @@ import { FunnelValidationDashboard } from '@/components/FunnelValidationDashboar
 import { FunnelLinkManager } from '@/components/FunnelLinkManager';
 import { EnhancedFunnelLinkManager } from '@/components/EnhancedFunnelLinkManager';
 import { BottleneckResolutionDashboard } from '@/components/BottleneckResolutionDashboard';
+import { ClusterFieldInterface } from '@/components/cluster/ClusterFieldInterface';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -71,16 +72,20 @@ const ContentManager = () => {
         {/* Content Tabs */}
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <Tabs defaultValue="import" className="space-y-8">
+            <Tabs defaultValue="cluster" className="space-y-8">
               <TabsList className="grid w-full grid-cols-6">
-                <TabsTrigger value="import">Import Content</TabsTrigger>
+                <TabsTrigger value="cluster">Cluster Mode</TabsTrigger>
+                <TabsTrigger value="import">Bulk Import</TabsTrigger>
                 <TabsTrigger value="funnel">Funnel Overview</TabsTrigger>
                 <TabsTrigger value="bottlenecks">Fix Bottlenecks</TabsTrigger>
                 <TabsTrigger value="links">Manual Linking</TabsTrigger>
-                <TabsTrigger value="manage">Manage Articles</TabsTrigger>
                 <TabsTrigger value="analytics">Analytics</TabsTrigger>
               </TabsList>
               
+              <TabsContent value="cluster" className="space-y-6">
+                <ClusterFieldInterface />
+              </TabsContent>
+
               <TabsContent value="import" className="space-y-6">
                 <ContentImportManager />
               </TabsContent>
@@ -97,21 +102,6 @@ const ContentManager = () => {
                 <EnhancedFunnelLinkManager />
               </TabsContent>
               
-              <TabsContent value="manage" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Article Management</CardTitle>
-                    <CardDescription>
-                      Bulk management tools for existing content
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      Article management tools coming soon...
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
               
               <TabsContent value="analytics" className="space-y-6">
                 <Card>
