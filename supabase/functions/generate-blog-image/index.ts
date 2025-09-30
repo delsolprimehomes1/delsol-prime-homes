@@ -190,11 +190,12 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   const lowerTitle = title.toLowerCase();
   const lowerContent = content.toLowerCase();
   
-  // Brand colors and styling (2025 context)
-  const brandStyle = "DelSol Prime Homes branding, luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, 2025 market context";
+  // Brand colors and styling with explicit 2025 date context
+  const brandStyle = "DelSol Prime Homes branding, luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, use 2025 for any dates (NEVER 2024 or any other year)";
+  const currentYear = "2025";
   
   if (visualType === 'diagram') {
-    // Generate diagram-specific prompts
+    // Generate diagram-specific prompts with explicit 2025 date instructions
     let diagramType = "professional infographic";
     
     if (lowerTitle.includes('process') || lowerTitle.includes('steps')) {
@@ -209,7 +210,10 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
       diagramType = "pricing breakdown chart";
     }
     
-    return `${diagramType} about ${title}, ${brandStyle}, clean layout, easy to read, charts and icons, white background, blue and gold accents, high quality infographic design`;
+    // Add explicit 2025 instructions for diagrams - especially for reports
+    const yearInstructions = "IMPORTANT: Use year 2025 for all dates. If showing a report or data, display 'Costa del Sol Real Estate Report 2025' or '2025 Data'. Never use 2024 or any other year.";
+    
+    return `${diagramType} about ${title}, ${brandStyle}, ${yearInstructions}, clean layout, easy to read, charts and icons, white background, blue and gold accents, high quality infographic design, show "${currentYear}" clearly if dates are visible`;
   }
   
   // Generate image-specific prompts for different funnel stages
@@ -218,7 +222,7 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   if (funnelStage === 'TOFU') {
     // Top of funnel: broad, aspirational imagery
     if (lowerTitle.includes('costa del sol') || tags.includes('costa-del-sol')) {
-      basePrompt = "Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture, 2025 modern aesthetic";
+      basePrompt = `Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture, modern ${currentYear} aesthetic`;
     } else if (lowerTitle.includes('property') || lowerTitle.includes('home')) {
       basePrompt = "Beautiful luxury property exterior, modern architecture, landscaped gardens, professional real estate photography";
     } else if (lowerTitle.includes('guide') || lowerTitle.includes('tips')) {
@@ -229,7 +233,7 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
     if (lowerTitle.includes('inspection') || lowerTitle.includes('viewing')) {
       basePrompt = "Professional real estate agent showing property details to clients, modern villa interior";
     } else if (lowerTitle.includes('investment') || lowerTitle.includes('market')) {
-      basePrompt = "Modern office with property market charts and analysis, professional investment concept";
+      basePrompt = `Modern office with property market charts showing ${currentYear} data and analysis, professional investment concept`;
     } else if (lowerTitle.includes('area') || lowerTitle.includes('location')) {
       basePrompt = "Beautiful neighborhood street with luxury homes, Costa del Sol architecture, palm trees";
     }
@@ -253,5 +257,5 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
     basePrompt = "Stunning luxury villa exterior, infinity pool, Mediterranean views, sunset lighting";
   }
   
-  return `${basePrompt}, ${brandStyle}, high quality, professional photography, bright natural lighting, 16:9 composition, suitable for blog header`;
+  return `${basePrompt}, ${brandStyle}, high quality, professional photography, bright natural lighting, 16:9 composition, suitable for blog header, ${currentYear} context`;
 }
