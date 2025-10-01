@@ -7,6 +7,7 @@ import { FunnelLinkManager } from '@/components/FunnelLinkManager';
 import { EnhancedFunnelLinkManager } from '@/components/EnhancedFunnelLinkManager';
 import { BottleneckResolutionDashboard } from '@/components/BottleneckResolutionDashboard';
 import { ClusterFieldInterface } from '@/components/cluster/ClusterFieldInterface';
+import { BlogFieldInterface } from '@/components/blog/BlogFieldInterface';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,8 +74,9 @@ const ContentManager = () => {
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="cluster" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-7">
                 <TabsTrigger value="cluster">Cluster Mode</TabsTrigger>
+                <TabsTrigger value="blog">Blog Manager</TabsTrigger>
                 <TabsTrigger value="import">Bulk Import</TabsTrigger>
                 <TabsTrigger value="funnel">Funnel Overview</TabsTrigger>
                 <TabsTrigger value="bottlenecks">Fix Bottlenecks</TabsTrigger>
@@ -84,6 +86,20 @@ const ContentManager = () => {
               
               <TabsContent value="cluster" className="space-y-6">
                 <ClusterFieldInterface />
+              </TabsContent>
+
+              <TabsContent value="blog" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Blog Content Manager</CardTitle>
+                    <CardDescription>
+                      Create TOFU/MOFU/BOFU blog posts linked to QA clusters with comprehensive schema support
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <BlogFieldInterface />
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="import" className="space-y-6">

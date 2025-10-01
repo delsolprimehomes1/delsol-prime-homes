@@ -167,6 +167,85 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_images: {
+        Row: {
+          alt: string
+          blog_post_id: string
+          caption: string | null
+          created_at: string
+          description: string | null
+          exif: Json | null
+          filename: string
+          id: string
+          sort_order: number | null
+        }
+        Insert: {
+          alt: string
+          blog_post_id: string
+          caption?: string | null
+          created_at?: string
+          description?: string | null
+          exif?: Json | null
+          filename: string
+          id?: string
+          sort_order?: number | null
+        }
+        Update: {
+          alt?: string
+          blog_post_id?: string
+          caption?: string | null
+          created_at?: string
+          description?: string | null
+          exif?: Json | null
+          filename?: string
+          id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_images_blog_post_id_fkey"
+            columns: ["blog_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_links: {
+        Row: {
+          blog_post_id: string
+          created_at: string
+          id: string
+          relation: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          blog_post_id: string
+          created_at?: string
+          id?: string
+          relation: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          blog_post_id?: string
+          created_at?: string
+          id?: string
+          relation?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_links_blog_post_id_fkey"
+            columns: ["blog_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           ai_generated_image: boolean | null
