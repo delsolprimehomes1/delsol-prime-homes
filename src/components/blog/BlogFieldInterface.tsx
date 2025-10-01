@@ -58,8 +58,12 @@ export function BlogFieldInterface() {
 
   // Update word count when content changes
   useEffect(() => {
-    const words = content.trim().split(/\s+/).filter(Boolean).length;
+    const words = content.trim() ? content.trim().split(/\s+/).filter(Boolean).length : 0;
     setWordCount(words);
+    // Clear validation errors when content changes
+    if (validationErrors.length > 0) {
+      setValidationErrors([]);
+    }
   }, [content]);
 
   // Auto-generate canonical URL from title
@@ -132,13 +136,21 @@ export function BlogFieldInterface() {
     }
 
     setIsProcessing(true);
+    setValidationErrors([]); // Clear any existing validation errors
+    
     try {
       const selectedQA = qaArticles.find(qa => qa.id === selectedQAId);
       if (!selectedQA) return;
 
+      const ranges = {
+        TOFU: '850-1100',
+        MOFU: '950-1200',
+        BOFU: '1200-1500'
+      };
+
       const { data, error } = await supabase.functions.invoke('content-enhancer', {
         body: {
-          content: `Generate a ${funnelStage} blog post based on QA article: ${selectedQA.title}`,
+          content: `Generate a ${funnelStage} blog post based on QA article: ${selectedQA.title}. Target word count: ${ranges[funnelStage]} words.`,
           stage: funnelStage,
           topic: selectedQA.topic,
           contentType: 'blog'
@@ -237,6 +249,25 @@ export function BlogFieldInterface() {
     return 'good';
   };
 
+  const getWordCountProgress = () => {
+    const ranges = {
+      TOFU: [850, 1100],
+      MOFU: [950, 1200],
+      BOFU: [1200, 1500]
+    };
+    const [min, max] = ranges[funnelStage];
+    if (wordCount < min) return (wordCount / min) * 100;
+    if (wordCount > max) return 100;
+    return 100;
+  };
+
+  const getWordCountColor = () => {
+    const status = getWordCountStatus();
+    if (status === 'good') return 'text-green-600';
+    if (status === 'below') return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -326,16 +357,34 @@ export function BlogFieldInterface() {
       <Card>
         <CardHeader>
           <CardTitle>2. Blog Content</CardTitle>
-          <CardDescription>
+          <CardDescription className="space-y-2">
             <div className="flex items-center justify-between">
               <span>Target: {getTargetRange()} words</span>
               <Badge variant={
                 getWordCountStatus() === 'good' ? 'default' :
                 getWordCountStatus() === 'below' ? 'secondary' : 'destructive'
               }>
-                {wordCount} words
+                <span className={getWordCountColor()}>
+                  {wordCount} words
+                </span>
               </Badge>
             </div>
+            {wordCount > 0 && (
+              <div className="space-y-1">
+                <Progress value={getWordCountProgress()} className="h-2" />
+                <p className="text-xs">
+                  {getWordCountStatus() === 'good' && '✓ Word count is within target range'}
+                  {getWordCountStatus() === 'below' && `Need ${(() => {
+                    const ranges = { TOFU: [850, 1100], MOFU: [950, 1200], BOFU: [1200, 1500] };
+                    return ranges[funnelStage][0] - wordCount;
+                  })()} more words to reach minimum`}
+                  {getWordCountStatus() === 'above' && `Reduce by ${(() => {
+                    const ranges = { TOFU: [850, 1100], MOFU: [950, 1200], BOFU: [1200, 1500] };
+                    return wordCount - ranges[funnelStage][1];
+                  })()} words to stay within range`}
+                </p>
+              </div>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -421,7 +470,7 @@ export function BlogFieldInterface() {
         <CardContent className="pt-6">
           <Button 
             onClick={handlePublish} 
-            disabled={isProcessing || validationErrors.length > 0}
+            disabled={isProcessing}
             className="w-full"
             size="lg"
           >
