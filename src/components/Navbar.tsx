@@ -82,7 +82,7 @@ const Navbar = () => {
               <img 
                 src={logo} 
                 alt="DelSol Prime Homes - Luxury Real Estate Costa del Sol" 
-                className="h-10 w-auto sm:h-12 lg:h-14 hover:scale-105 transition-all duration-300 will-change-transform"
+                className="h-14 w-auto sm:h-16 lg:h-20 hover:scale-105 transition-all duration-300 will-change-transform"
               />
             </a>
           </div>
