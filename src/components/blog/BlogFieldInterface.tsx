@@ -50,6 +50,8 @@ export function BlogFieldInterface() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [wordCount, setWordCount] = useState(0);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [detectedIssues, setDetectedIssues] = useState<string[]>([]);
 
   // Fetch QA articles on mount
   useEffect(() => {
@@ -64,7 +66,12 @@ export function BlogFieldInterface() {
     if (validationErrors.length > 0) {
       setValidationErrors([]);
     }
-  }, [content]);
+    // Detect issues automatically
+    if (content.trim()) {
+      const issues = detectContentIssues(content, funnelStage, words);
+      setDetectedIssues(issues);
+    }
+  }, [content, funnelStage]);
 
   // Auto-generate canonical URL from title
   useEffect(() => {
@@ -268,6 +275,76 @@ export function BlogFieldInterface() {
     return 'text-red-600';
   };
 
+  const detectContentIssues = (content: string, funnelStage: string, wordCount: number): string[] => {
+    const issues: string[] = [];
+    const ranges = {
+      TOFU: [850, 1100],
+      MOFU: [950, 1200],
+      BOFU: [1200, 1500]
+    };
+    const [minWords, maxWords] = ranges[funnelStage];
+
+    if (wordCount < minWords) issues.push('Word count below target');
+    if (wordCount > maxWords) issues.push('Word count above target');
+    if (!content.includes('## Quick Answer')) issues.push('Missing Quick Answer section');
+    
+    const h2Count = (content.match(/^## /gm) || []).length;
+    if (h2Count < 3) issues.push('Need more H2 sections');
+    
+    if (!content.includes('### Voice Search Q&A')) issues.push('Missing Voice Search Q&A');
+
+    return issues;
+  };
+
+  const handleAIEnhancement = async () => {
+    if (!content.trim() || detectedIssues.length === 0) {
+      toast({
+        title: "No Issues Detected",
+        description: "Content is already optimized!",
+      });
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-content-optimizer', {
+        body: {
+          content,
+          funnelStage,
+          topic: qaArticles.find(qa => qa.id === selectedQAId)?.topic || 'Costa del Sol Real Estate',
+          wordCount,
+          title,
+          excerpt
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        const oldWordCount = wordCount;
+        setContent(data.content);
+        toast({
+          title: "Content Enhanced! ✨",
+          description: `Fixed ${data.issuesFixed.length} issues. Word count: ${oldWordCount} → ${data.newWordCount} words`,
+        });
+      } else {
+        toast({
+          title: "No Enhancement Needed",
+          description: data.message || "Content is already optimized!",
+        });
+      }
+    } catch (error) {
+      console.error('Enhancement error:', error);
+      toast({
+        title: "Enhancement Failed",
+        description: error instanceof Error ? error.message : "Failed to enhance content",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -388,6 +465,53 @@ export function BlogFieldInterface() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* AI Enhancement Button */}
+          {detectedIssues.length > 0 && content.trim() && (
+            <div className="p-4 border border-primary/20 rounded-lg bg-primary/5 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                      {detectedIssues.length} Issue{detectedIssues.length !== 1 ? 's' : ''} Detected
+                    </Badge>
+                  </div>
+                  <ul className="text-sm space-y-1">
+                    {detectedIssues.slice(0, 3).map((issue, idx) => (
+                      <li key={idx} className="text-muted-foreground flex items-start gap-2">
+                        <span className="text-yellow-600">•</span>
+                        {issue}
+                      </li>
+                    ))}
+                    {detectedIssues.length > 3 && (
+                      <li className="text-muted-foreground text-xs">
+                        +{detectedIssues.length - 3} more issue{detectedIssues.length - 3 !== 1 ? 's' : ''}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+                <Button
+                  onClick={handleAIEnhancement}
+                  disabled={isEnhancing}
+                  variant="default"
+                  size="sm"
+                  className="shrink-0"
+                >
+                  {isEnhancing ? (
+                    <>
+                      <span className="animate-spin mr-2">⚙️</span>
+                      Enhancing...
+                    </>
+                  ) : (
+                    <>
+                      <span className="mr-2">✨</span>
+                      AI Auto-Fix
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label>Title</Label>
             <Input
