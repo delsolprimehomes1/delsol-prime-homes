@@ -71,7 +71,7 @@ const Navbar = () => {
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b shadow-lg will-change-scroll transition-all duration-300",
       isOverHero 
-        ? "bg-secondary/30 border-white/20" // Branded navy background with transparency
+        ? "bg-secondary/90 border-white/20" // Branded navy background with high opacity
         : "bg-secondary/95 border-primary/20" // Consistent branded background
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
