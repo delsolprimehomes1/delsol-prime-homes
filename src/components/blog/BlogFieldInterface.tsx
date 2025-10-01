@@ -11,7 +11,9 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { processBlogFields } from '@/utils/blog-field-processor';
-import { Loader2, Link, Image, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { BlogLinkSelector } from './BlogLinkSelector';
+import { BlogImageManager } from './BlogImageManager';
 
 interface QAArticle {
   id: string;
@@ -382,40 +384,35 @@ export function BlogFieldInterface() {
       {/* Link Selector */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Link className="h-5 w-5" />
-            3. Link Selector (Funnel Mapping)
-          </CardTitle>
+          <CardTitle>3. Link Selector (Funnel Mapping)</CardTitle>
           <CardDescription>
             Map this blog to QA articles or other blogs in the funnel journey
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert>
-            <AlertDescription>
-              Link selector UI - Coming in next phase. Will allow explicit TOFU→MOFU→BOFU mapping.
-            </AlertDescription>
-          </Alert>
+          <BlogLinkSelector 
+            currentStage={funnelStage}
+            links={links}
+            onChange={setLinks}
+          />
         </CardContent>
       </Card>
 
       {/* Image Management */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Image className="h-5 w-5" />
-            4. Image Management
-          </CardTitle>
+          <CardTitle>4. Image Management</CardTitle>
           <CardDescription>
             Add hero image and content images (minimum 2 required)
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert>
-            <AlertDescription>
-              Image management UI - Coming in next phase. Will support AI image generation with EXIF metadata.
-            </AlertDescription>
-          </Alert>
+          <BlogImageManager 
+            images={images}
+            onChange={setImages}
+            funnelStage={funnelStage}
+            blogTitle={title}
+          />
         </CardContent>
       </Card>
 
