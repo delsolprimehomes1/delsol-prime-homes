@@ -77,23 +77,27 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Enhanced Responsive Logo */}
-          <div className="flex items-center">
-            <a href="/" className="group flex items-center gap-3 hover:opacity-90 transition-opacity duration-300">
+          <div className="flex items-center flex-shrink-0">
+            <a href="/" className="group flex items-center gap-2 hover:opacity-90 transition-opacity duration-300">
               <img 
                 src={logo} 
                 alt="DelSol Prime Homes - Luxury Real Estate Costa del Sol" 
                 className="h-16 w-auto sm:h-20 lg:h-24 hover:scale-105 transition-all duration-300 will-change-transform"
               />
-              <span className="hidden sm:block font-heading font-bold text-lg sm:text-xl lg:text-2xl bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(255,255,255,0.3)] tracking-wide animate-shimmer bg-[length:200%_100%]">
+              {/* Abbreviated on md, full on xl+ */}
+              <span className="hidden md:block xl:hidden font-heading font-bold text-base lg:text-lg bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(255,255,255,0.3)] tracking-wide animate-shimmer bg-[length:200%_100%]">
+                Del Sol
+              </span>
+              <span className="hidden xl:block font-heading font-bold text-lg xl:text-xl bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(255,255,255,0.3)] tracking-wide animate-shimmer bg-[length:200%_100%]">
                 Del Sol Prime Homes
               </span>
             </a>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-4 xl:space-x-6">
             <NavigationMenu>
-              <NavigationMenuList className="space-x-6">
+              <NavigationMenuList className="space-x-3 xl:space-x-4">
                 {navigationItems.map((item) => (
                   <NavigationMenuItem key={item.name}>
                     <NavigationMenuLink
