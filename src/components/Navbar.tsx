@@ -78,12 +78,15 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Enhanced Responsive Logo */}
           <div className="flex items-center">
-            <a href="/" className="group">
+            <a href="/" className="group flex items-center gap-3 hover:opacity-90 transition-opacity duration-300">
               <img 
                 src={logo} 
                 alt="DelSol Prime Homes - Luxury Real Estate Costa del Sol" 
                 className="h-16 w-auto sm:h-20 lg:h-24 hover:scale-105 transition-all duration-300 will-change-transform"
               />
+              <span className="text-white font-semibold text-lg sm:text-xl lg:text-2xl hidden sm:block">
+                Del Sol Prime Homes
+              </span>
             </a>
           </div>
 
