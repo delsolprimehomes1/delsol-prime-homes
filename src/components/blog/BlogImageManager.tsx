@@ -46,8 +46,11 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
 
       const { data, error } = await supabase.functions.invoke('generate-blog-image', {
         body: { 
-          prompt,
-          style: funnelStage === 'TOFU' ? 'lifestyle' : funnelStage === 'MOFU' ? 'architectural' : 'luxury'
+          blogTitle: blogTitle,
+          blogContent: aiPrompt || '',
+          funnelStage: funnelStage,
+          visualType: 'image',
+          customPrompt: aiPrompt || undefined
         }
       });
 
