@@ -24,6 +24,7 @@ import {
   extractSpeakableContent,
   generateVoiceKeywords 
 } from '@/utils/blog-content-extractor';
+import { processMarkdownContent } from '@/utils/markdown';
 
 interface BlogPost {
   id: string;
@@ -383,7 +384,7 @@ const BlogPost: React.FC = () => {
 
                   {/* Article Content */}
                   <div className="prose prose-lg max-w-none prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-li:text-muted-foreground bg-white/60 backdrop-blur-sm border border-white/20 rounded-2xl p-8">
-                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                    <div dangerouslySetInnerHTML={{ __html: processMarkdownContent(post.content) }} />
                   </div>
 
                   {/* FAQ Section */}
