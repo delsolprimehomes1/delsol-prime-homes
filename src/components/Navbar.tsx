@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { languageConfig, type SupportedLanguage } from '@/i18n';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import logo from '@/assets/DelSolPrimeHomes-Logo.png';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -77,12 +78,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Enhanced Responsive Logo */}
           <div className="flex items-center">
-            <a href="#" className="group">
-              <h1 className={cn(
-                "font-heading text-xl sm:text-2xl lg:text-3xl font-bold hover:scale-105 transition-all duration-300 will-change-transform text-white"
-              )}>
-                DelSolPrimeHomes
-              </h1>
+            <a href="/" className="group">
+              <img 
+                src={logo} 
+                alt="DelSol Prime Homes - Luxury Real Estate Costa del Sol" 
+                className="h-10 w-auto sm:h-12 lg:h-14 hover:scale-105 transition-all duration-300 will-change-transform"
+              />
             </a>
           </div>
 
