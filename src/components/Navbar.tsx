@@ -84,7 +84,7 @@ const Navbar = () => {
                 alt="DelSol Prime Homes - Luxury Real Estate Costa del Sol" 
                 className="h-16 w-auto sm:h-20 lg:h-24 hover:scale-105 transition-all duration-300 will-change-transform"
               />
-              <span className="hidden lg:block font-heading font-bold text-base lg:text-lg xl:text-xl bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(255,255,255,0.3)] tracking-wide animate-shimmer bg-[length:200%_100%]">
+              <span className="hidden lg:block font-heading font-semibold text-base lg:text-lg xl:text-xl text-white tracking-wide">
                 Del Sol Prime Homes
               </span>
             </a>
