@@ -291,7 +291,10 @@ export async function processBlogFields(data: BlogFieldData): Promise<ProcessRes
       .select()
       .single();
 
-    if (blogError) throw blogError;
+    if (blogError) {
+      console.error('Blog post insert error:', blogError);
+      throw new Error(`Failed to insert blog post: ${blogError.message || JSON.stringify(blogError)}`);
+    }
 
     const blogId = blogPost.id;
 
