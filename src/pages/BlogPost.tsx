@@ -6,10 +6,24 @@ import Navbar from '@/components/Navbar';
 import BlogCard from '@/components/BlogCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Clock, ArrowLeft, ExternalLink, Home, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, Home, ChevronRight, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { BlogReadingProgress } from '@/components/blog/BlogReadingProgress';
+import { BlogKeyTakeaways } from '@/components/blog/BlogKeyTakeaways';
+import { BlogFAQSection } from '@/components/blog/BlogFAQSection';
+import { BlogAuthorBio } from '@/components/blog/BlogAuthorBio';
+import { BlogNextSteps } from '@/components/blog/BlogNextSteps';
+import { VoiceSearchSummary } from '@/components/VoiceSearchSummary';
+import { BlogJsonLD } from '@/components/BlogJsonLD';
+import { TOCSticky } from '@/components/blog/TOCSticky';
+import { 
+  extractKeyTakeaways, 
+  extractFAQs, 
+  calculateVoiceReadingTime,
+  extractSpeakableContent,
+  generateVoiceKeywords 
+} from '@/utils/blog-content-extractor';
 
 interface BlogPost {
   id: string;
@@ -50,10 +64,6 @@ interface BlogCategory {
   language: string;
 }
 
-interface FAQ {
-  question: string;
-  answer: string;
-}
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -143,84 +153,37 @@ const BlogPost: React.FC = () => {
     return Math.ceil(words / wordsPerMinute);
   };
 
-  const generateStructuredData = () => {
-    if (!post) return '';
+  // Extract structured content
+  const keyTakeaways = post ? extractKeyTakeaways(post.content, post.excerpt) : [];
+  const faqs = post ? extractFAQs(post.content, post.city_tags?.[0]) : [];
+  const voiceReadingTime = post ? calculateVoiceReadingTime(post.content) : 0;
+  const speakableContent = post ? extractSpeakableContent(post.content, post.excerpt) : '';
+  const voiceKeywords = post ? generateVoiceKeywords(post.title, post.city_tags?.[0]) : [];
 
-    const baseUrl = 'https://delsolprimehomes.com';
-    
-    const blogPosting = {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "headline": post.title,
-      "description": post.meta_description || post.excerpt,
-      "inLanguage": post.language,
-      "articleSection": category?.name || post.category_key,
-      "keywords": post.keywords?.join(', ') || post.tags?.join(', ') || '',
-      "mainEntityOfPage": post.canonical_url || `${baseUrl}/blog/${post.slug}`,
-      "url": post.canonical_url || `${baseUrl}/blog/${post.slug}`,
-      "datePublished": post.published_at,
-      "dateModified": post.updated_at,
-      "author": {
-        "@type": "Organization",
-        "name": post.author || "DelSolPrimeHomes"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "DelSolPrimeHomes",
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${baseUrl}/logo.png`
-        }
-      },
-      "image": {
-        "@type": "ImageObject",
-        "url": post.featured_image.startsWith('http') ? post.featured_image : `${baseUrl}${post.featured_image}`,
-        "width": 1600,
-        "height": 900
-      }
-    };
-
-    const breadcrumbList = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": `${baseUrl}/`
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Blog",
-          "item": `${baseUrl}/blog`
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": post.title,
-          "item": post.canonical_url || `${baseUrl}/blog/${post.slug}`
-        }
-      ]
-    };
-
-    return JSON.stringify([blogPosting, breadcrumbList]);
-  };
-
-  // Sample FAQ data - in real implementation this would come from the database
-  const sampleFAQs: FAQ[] = [
+  const nextSteps = [
     {
-      question: `What makes ${post?.city_tags?.[0] || 'Costa del Sol'} properties a good investment?`,
-      answer: `${post?.city_tags?.[0] || 'Costa del Sol'} offers strong rental yields, year-round demand, and excellent capital appreciation potential due to its prime location and luxury amenities.`
+      title: 'Book a Consultation',
+      description: 'Schedule a free consultation with our property experts',
+      icon: 'calendar' as const,
+      action: 'Book Now',
+      url: '/book-viewing',
+      variant: 'default' as const
     },
     {
-      question: "How long does the buying process typically take?",
-      answer: "The typical property purchase process takes 6-8 weeks from offer acceptance to completion, depending on financing and legal requirements."
+      title: 'Explore Properties',
+      description: 'Browse our exclusive portfolio of premium properties',
+      icon: 'message' as const,
+      action: 'View Properties',
+      url: '/qa',
+      variant: 'secondary' as const
     },
     {
-      question: "What additional costs should I budget for?",
-      answer: "Budget approximately 10-12% of the purchase price for taxes, legal fees, notary costs, and registration fees."
+      title: 'Get Market Insights',
+      description: 'Download our latest market analysis and investment guide',
+      icon: 'phone' as const,
+      action: 'Download Guide',
+      url: '/blog',
+      variant: 'outline' as const
     }
   ];
 
@@ -295,12 +258,10 @@ const BlogPost: React.FC = () => {
         <meta name="twitter:title" content={post.meta_title || post.title} />
         <meta name="twitter:description" content={post.meta_description || post.excerpt} />
         <meta name="twitter:image" content={post.featured_image.startsWith('http') ? post.featured_image : `https://delsolprimehomes.com${post.featured_image}`} />
-        
-        {/* Structured Data */}
-        <script type="application/ld+json">
-          {generateStructuredData()}
-        </script>
       </Helmet>
+
+      <BlogJsonLD post={post} category={category || undefined} />
+      <BlogReadingProgress />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background/90 to-accent/10">
         <Navbar />
@@ -404,84 +365,53 @@ const BlogPost: React.FC = () => {
             </div>
           </div>
 
-          {/* TLDR Section */}
+          {/* Enhanced Content Sections */}
           <div className="px-4 mb-12">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white/60 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                <h2 className="font-heading text-xl font-semibold text-foreground mb-4">
-                  {t('blog.tldr', 'TL;DR - Key Takeaways')}
-                </h2>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <span>Prime coastal locations offer the strongest investment potential</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <span>Sea views and modern amenities drive premium pricing</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <span>Year-round rental demand ensures steady returns</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+            <div className="max-w-7xl mx-auto">
+              <div className="grid lg:grid-cols-12 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-8 space-y-8">
+                  {/* Key Takeaways */}
+                  <BlogKeyTakeaways takeaways={keyTakeaways} />
 
-          {/* Article Content */}
-          <div className="px-4 mb-12">
-            <div className="max-w-4xl mx-auto">
-              <div className="prose prose-lg max-w-none prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-li:text-muted-foreground">
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
-              </div>
-            </div>
-          </div>
+                  {/* Voice Search Summary */}
+                  <VoiceSearchSummary
+                    summary={speakableContent}
+                    keywords={voiceKeywords}
+                    readingTime={voiceReadingTime}
+                  />
 
-          {/* FAQ Section */}
-          <div className="px-4 mb-12">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="font-heading text-2xl font-semibold text-foreground mb-6">
-                {t('blog.frequentlyAskedQuestions', 'Frequently Asked Questions')}
-              </h2>
-              <Accordion type="single" collapsible className="space-y-4">
-                {sampleFAQs.map((faq, index) => (
-                  <AccordionItem
-                    key={index}
-                    value={`faq-${index}`}
-                    className="bg-white/60 backdrop-blur-sm border border-white/20 rounded-2xl px-6"
-                  >
-                    <AccordionTrigger className="text-left hover:no-underline py-6">
-                      <span className="font-medium text-foreground">{faq.question}</span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-6 text-muted-foreground">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
-          </div>
+                  {/* Article Content */}
+                  <div className="prose prose-lg max-w-none prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-li:text-muted-foreground bg-white/60 backdrop-blur-sm border border-white/20 rounded-2xl p-8">
+                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                  </div>
 
-          {/* Next Steps CTA */}
-          <div className="px-4 mb-12">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-accent/10 rounded-2xl p-8 text-center">
-                <h2 className="font-heading text-2xl font-semibold text-foreground mb-4">
-                  {t('blog.nextSteps', 'Ready to Take the Next Step?')}
-                </h2>
-                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                  {t('blog.nextStepsDescription', 'Discover exceptional properties in the areas mentioned in this article and start your Costa del Sol investment journey.')}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    {t('blog.bookViewing', 'Book Private Viewing')}
-                  </Button>
-                  <Button variant="outline" size="lg" className="bg-white/80 backdrop-blur-sm border-white/20">
-                    {t('blog.exploreProperties', `Explore Properties in ${post.city_tags?.[0] || 'Costa del Sol'}`)}
-                  </Button>
+                  {/* FAQ Section */}
+                  <BlogFAQSection faqs={faqs} />
+
+                  {/* Author Bio */}
+                  <BlogAuthorBio
+                    name={post.author || 'DelSolPrimeHomes Team'}
+                    title="Real Estate Expert"
+                    bio="Specializing in luxury properties and investment opportunities on the Costa del Sol, with over 15 years of experience helping international clients find their dream homes."
+                    credentials={['Licensed Real Estate Agent', 'Property Investment Advisor', 'Certified Negotiator']}
+                    expertise={['Luxury Property Sales', 'Investment Analysis', 'International Real Estate', 'Market Trends']}
+                    experience="15+ years in Costa del Sol real estate"
+                    email="info@delsolprimehomes.com"
+                    articleUrl={post.canonical_url || `https://delsolprimehomes.com/blog/${post.slug}`}
+                  />
+
+                  {/* Next Steps CTA */}
+                  <BlogNextSteps steps={nextSteps} />
                 </div>
+
+                {/* Sidebar */}
+                <aside className="lg:col-span-4 space-y-6">
+                  {/* Table of Contents */}
+                  <div className="lg:sticky lg:top-24">
+                    <TOCSticky content={post.content} />
+                  </div>
+                </aside>
               </div>
             </div>
           </div>
