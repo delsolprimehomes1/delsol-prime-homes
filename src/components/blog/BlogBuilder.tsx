@@ -13,6 +13,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Image, Wand2, Eye, Save, FileText } from 'lucide-react';
 import { BlogPreview } from './BlogPreview';
+import { getTemplateForStage, generateGuidedContent, type FunnelStage } from '@/utils/blog-content-templates';
+import { validateContentQuality } from '@/utils/blog-content-enhancer';
+import { AlertCircle, CheckCircle2, Lightbulb } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface BlogFormData {
   title: string;
@@ -62,6 +66,8 @@ export const BlogBuilder: React.FC = () => {
   const [humanizeToggle, setHumanizeToggle] = useState(false);
   const [activeTab, setActiveTab] = useState('editor');
   const [tagInput, setTagInput] = useState('');
+  const [contentQuality, setContentQuality] = useState({ isValid: true, warnings: [] as string[], score: 100 });
+  const [showTemplateGuide, setShowTemplateGuide] = useState(false);
 
   const handleInputChange = (field: keyof BlogFormData, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -76,6 +82,36 @@ export const BlogBuilder: React.FC = () => {
         .trim();
       setFormData(prev => ({ ...prev, slug }));
     }
+
+    // Validate content quality when content changes
+    if (field === 'content' && typeof value === 'string') {
+      const quality = validateContentQuality(value, formData.funnel_stage as FunnelStage);
+      setContentQuality(quality);
+    }
+  };
+
+  const loadTemplate = () => {
+    if (!formData.title) {
+      toast({
+        title: "Title Required",
+        description: "Please enter a blog title first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const template = generateGuidedContent(
+      formData.funnel_stage as FunnelStage,
+      formData.title
+    );
+    
+    handleInputChange('content', template);
+    setShowTemplateGuide(true);
+    
+    toast({
+      title: "Template Loaded",
+      description: `${formData.funnel_stage} content template with guidance applied`
+    });
   };
 
   const addTag = () => {
@@ -325,6 +361,14 @@ export const BlogBuilder: React.FC = () => {
                       <CardDescription>Write your blog post content in Markdown</CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
+                      <Button
+                        onClick={loadTemplate}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Lightbulb className="h-4 w-4 mr-2" />
+                        Load Template
+                      </Button>
                       <Switch
                         checked={humanizeToggle}
                         onCheckedChange={setHumanizeToggle}
@@ -342,7 +386,41 @@ export const BlogBuilder: React.FC = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
+                  {showTemplateGuide && (
+                    <Alert>
+                      <Lightbulb className="h-4 w-4" />
+                      <AlertTitle>Template Guidance</AlertTitle>
+                      <AlertDescription>
+                        {getTemplateForStage(formData.funnel_stage as FunnelStage).guidance[0]}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {contentQuality.warnings.length > 0 && (
+                    <Alert variant={contentQuality.score < 60 ? "destructive" : "default"}>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Content Quality: {contentQuality.score}/100</AlertTitle>
+                      <AlertDescription>
+                        <ul className="list-disc list-inside space-y-1 mt-2">
+                          {contentQuality.warnings.map((warning, idx) => (
+                            <li key={idx} className="text-sm">{warning}</li>
+                          ))}
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {contentQuality.score >= 80 && formData.content && (
+                    <Alert>
+                      <CheckCircle2 className="h-4 w-4" />
+                      <AlertTitle>Excellent Content Structure!</AlertTitle>
+                      <AlertDescription>
+                        Your content follows the enhanced blog structure and is optimized for AI/voice search.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
                   <Textarea
                     value={formData.content}
                     onChange={(e) => handleInputChange('content', e.target.value)}

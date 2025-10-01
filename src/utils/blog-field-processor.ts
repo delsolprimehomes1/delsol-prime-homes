@@ -236,11 +236,20 @@ function generateFrontmatter(blogData: BlogFieldData, slug: string, schemas: obj
 }
 
 /**
- * Main processing function for blog fields
+ * Main processing function for blog fields with content enhancement
  */
 export async function processBlogFields(data: BlogFieldData): Promise<ProcessResult> {
   try {
     console.log('Processing blog fields:', data.title);
+
+    // Import content enhancer dynamically
+    const { enhanceBlogContent, formatForEnhancedDisplay } = await import('./blog-content-enhancer');
+
+    // Enhance content with missing sections
+    const enhanced = enhanceBlogContent(data.content, data.title, data.excerpt, data.funnelStage);
+    const finalContent = formatForEnhancedDisplay(enhanced.content, data.funnelStage);
+
+    console.log('Content enhanced - Score:', enhanced.score);
 
     // Generate slug
     const slug = generateSlug(data.title);
@@ -266,14 +275,14 @@ export async function processBlogFields(data: BlogFieldData): Promise<ProcessRes
     // Create frontmatter
     const frontmatter = generateFrontmatter(data, slug, schemas);
 
-    // Insert blog post
+    // Insert blog post with enhanced content
     const { data: blogPost, error: blogError } = await supabase
       .from('blog_posts')
       .insert({
         title: data.title,
         slug,
         excerpt: data.excerpt,
-        content: data.content,
+        content: finalContent,
         featured_image: data.images.length > 0 ? data.images[0].filename : '',
         image_alt: data.images.length > 0 ? data.images[0].alt : '',
         category_key: 'general',
