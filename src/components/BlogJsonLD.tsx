@@ -56,6 +56,30 @@ export const BlogJsonLD: React.FC<BlogJsonLDProps> = ({ post, category }) => {
       "url": post.featured_image.startsWith('http') ? post.featured_image : `${baseUrl}${post.featured_image}`,
       "width": 1600,
       "height": 900
+    },
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": [
+        "h1",
+        "h2",
+        "h3",
+        ".blog-summary",
+        ".key-takeaways",
+        ".voice-summary",
+        "[data-speakable='true']",
+        ".faq-section",
+        ".quick-answer"
+      ],
+      "xpath": [
+        "/html/head/title",
+        "/html/body//article//h1",
+        "/html/body//article//h2",
+        "/html/body//article//h3",
+        "/html/body//article//*[contains(@class, 'blog-summary')]",
+        "/html/body//article//*[contains(@class, 'key-takeaways')]",
+        "/html/body//article//*[contains(@class, 'voice-summary')]",
+        "/html/body//article//*[@data-speakable='true']"
+      ]
     }
   };
 
