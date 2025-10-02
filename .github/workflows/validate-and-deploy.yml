@@ -1,0 +1,94 @@
+name: Validate Content & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'src/**'
+      - 'public/**'
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate Frontmatter
+        run: node scripts/validate-frontmatter.js
+        
+      - name: Validate JSON-LD Schema
+        run: node scripts/validate-schema.js
+      
+      - name: Check Images
+        run: node scripts/validate-images.js
+      
+      - name: Validate External Links
+        run: node scripts/check-external-links.js
+      
+      - name: Heading Structure Lint
+        run: node scripts/lint-headings.js
+      
+      - name: AI Score Check
+        run: node scripts/check-ai-scores.js
+      
+      - name: Build Test
+        run: npm run build
+
+  sync-supabase:
+    needs: validate-content
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Sync to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node scripts/sync-content-to-supabase.js
+
+  deploy-cloudflare:
+    needs: sync-supabase
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: delsolprimehomes
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
