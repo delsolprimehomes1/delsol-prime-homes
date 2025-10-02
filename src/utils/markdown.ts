@@ -13,6 +13,9 @@ export function processMarkdownContent(content: string): string {
   // Fix malformed markdown at start of content (e.g., "Málaga**:" -> "**Málaga**:")
   processed = processed.replace(/^([^*]+)\*\*:/gm, '**$1**:');
 
+  // Convert markdown links [text](url) to HTML anchor tags
+  processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors">$1</a>');
+
   // Convert headers (order matters: longest patterns first)
   // Convert #### headers (h4)
   processed = processed.replace(/#### \*\*(.*?)\*\*/g, '<h4 class="text-lg font-semibold mb-3 mt-6 text-foreground">$1</h4>');
