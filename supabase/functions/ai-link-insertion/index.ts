@@ -7,6 +7,58 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Enhanced URL validator with retry logic
+async function validateUrlWithRetry(url: string, maxRetries = 2): Promise<{
+  valid: boolean;
+  status?: number;
+  reason?: string;
+}> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: AbortSignal.timeout(10000), // 10 seconds
+        headers: { 
+          'User-Agent': 'Mozilla/5.0 (compatible; DelSolLinkValidator/1.0)'
+        }
+      });
+
+      if (response.ok) {
+        const contentType = response.headers.get('content-type') || '';
+        const isValidPage = contentType.includes('text/html') || 
+                            contentType.includes('application/xhtml') ||
+                            contentType.includes('text/plain');
+        
+        if (isValidPage) {
+          return { valid: true, status: response.status };
+        }
+        return { valid: false, reason: `Invalid content-type: ${contentType}` };
+      }
+      
+      // Retry on server errors but not on 404s
+      if (attempt < maxRetries && response.status >= 500) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        continue;
+      }
+      
+      return { valid: false, reason: `HTTP ${response.status}` };
+      
+    } catch (e) {
+      const isTimeout = e.message.includes('AbortError') || e.message.includes('timeout');
+      
+      if (attempt < maxRetries && isTimeout) {
+        console.log(`Retry ${attempt}/${maxRetries} for ${url}: ${e.message}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        continue;
+      }
+      
+      return { valid: false, reason: e.message };
+    }
+  }
+  return { valid: false, reason: 'Max retries exceeded' };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -142,26 +194,35 @@ CRITICAL:
     // ===== STEP 2: VALIDATE EXTERNAL URLS =====
     
     const validatedExternal = [];
+    const rejectedLinks = [];
+    
+    console.log(`\n🔍 Validating ${externalSuggestions.externalLinks?.length || 0} external URLs...`);
+    
     for (const link of externalSuggestions.externalLinks || []) {
-      try {
-        const checkUrl = await fetch(link.url, { 
-          method: 'HEAD',
-          redirect: 'follow',
-          signal: AbortSignal.timeout(5000)
+      const validation = await validateUrlWithRetry(link.url);
+      
+      if (validation.valid) {
+        validatedExternal.push(link);
+        console.log(`✓ Validated: ${link.url} (${validation.status})`);
+      } else {
+        rejectedLinks.push({
+          url: link.url,
+          anchorText: link.anchorText,
+          reason: validation.reason,
+          domainType: link.domainType,
+          attemptedAt: new Date().toISOString()
         });
-        
-        if (checkUrl.ok) {
-          validatedExternal.push(link);
-          console.log(`✓ Validated: ${link.url}`);
-        } else {
-          console.log(`✗ Rejected ${link.url}: Status ${checkUrl.status}`);
-        }
-      } catch (e) {
-        console.log(`✗ Rejected ${link.url}: ${e.message}`);
+        console.log(`✗ Rejected ${link.url}: ${validation.reason}`);
       }
     }
 
-    console.log(`Validated ${validatedExternal.length} external URLs`);
+    console.log(`\n=== EXTERNAL LINK VALIDATION ===`);
+    console.log(`✓ Valid: ${validatedExternal.length}`);
+    console.log(`✗ Rejected: ${rejectedLinks.length}`);
+    if (rejectedLinks.length > 0) {
+      console.log(`\nRejected URLs:`);
+      rejectedLinks.forEach(r => console.log(`  - ${r.url}: ${r.reason}`));
+    }
 
     // ===== STEP 3: GENERATE INTERNAL LINKS =====
     
@@ -234,12 +295,31 @@ Return valid JSON only.`;
     const internalData = await internalResponse.json();
     const internalSuggestions = JSON.parse(internalData.choices[0].message.content);
     
-    const internalLinks = (internalSuggestions.internalLinks || []).map(link => ({
-      ...link,
-      url: `/qa/${link.targetSlug}`
-    }));
+    // Validate internal links exist in database
+    const validatedInternal = [];
+    const skippedInternal = [];
+    
+    for (const link of internalSuggestions.internalLinks || []) {
+      const exists = relatedArticles?.some(a => a.slug === link.targetSlug);
+      
+      if (exists) {
+        validatedInternal.push({
+          ...link,
+          url: `/${article.language || 'en'}/qa/${link.targetSlug}`
+        });
+      } else {
+        skippedInternal.push({
+          targetSlug: link.targetSlug,
+          anchorText: link.anchorText,
+          reason: 'Article not found in database'
+        });
+        console.log(`✗ Skipped internal link: ${link.targetSlug} (article not found)`);
+      }
+    }
 
-    console.log(`Generated ${internalLinks.length} internal link suggestions`);
+    console.log(`\n=== INTERNAL LINK VALIDATION ===`);
+    console.log(`✓ Valid: ${validatedInternal.length}`);
+    console.log(`✗ Skipped: ${skippedInternal.length}`);
 
     // ===== STEP 4: INSERT LINKS INTO CONTENT =====
     
@@ -250,7 +330,7 @@ Return valid JSON only.`;
 
     const allLinks = [
       ...validatedExternal.map(l => ({ text: l.anchorText, url: l.url, type: 'external' })),
-      ...internalLinks.map(l => ({ text: l.anchorText, url: l.url, type: 'internal' }))
+      ...validatedInternal.map(l => ({ text: l.anchorText, url: l.url, type: 'internal' }))
     ];
 
     // Sort by length (longest first to avoid partial matches)
@@ -333,15 +413,30 @@ Return valid JSON only.`;
 
     console.log('Successfully completed AI link insertion');
 
+    const validationRate = validatedExternal.length + rejectedLinks.length > 0 
+      ? Math.round((validatedExternal.length / (validatedExternal.length + rejectedLinks.length)) * 100)
+      : 100;
+
     return new Response(
       JSON.stringify({
         success: true,
         inserted: insertedCount,
         skipped: skippedCount,
         externalLinks: validatedExternal.length,
-        internalLinks: internalLinks.length,
+        internalLinks: validatedInternal.length,
+        rejectedLinks: rejectedLinks,
+        skippedInternalLinks: skippedInternal,
+        validationSummary: {
+          externalValidated: validatedExternal.length,
+          externalRejected: rejectedLinks.length,
+          validationRate: `${validationRate}%`,
+          internalValidated: validatedInternal.length,
+          internalSkipped: skippedInternal.length
+        },
         insertionLog: insertionLog,
-        message: `✅ Added ${insertedCount} inline links (${skippedCount} skipped)`
+        message: `✅ Added ${insertedCount} inline links (${skippedCount} skipped)\n` +
+                 `🔍 External: ${validatedExternal.length} validated, ${rejectedLinks.length} rejected (${validationRate}% success)\n` +
+                 `🔗 Internal: ${validatedInternal.length} validated, ${skippedInternal.length} skipped`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
