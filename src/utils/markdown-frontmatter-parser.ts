@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+// Browser-compatible hash function (no crypto dependency)
 
 export interface FrontmatterSEO {
   metaTitle: string;
@@ -328,21 +328,16 @@ function escapeYaml(str: string): string {
 
 /**
  * Generate content hash for change detection
+ * Browser-compatible implementation using simple hash algorithm
  */
 export function generateContentHash(content: string): string {
-  if (typeof window !== 'undefined') {
-    // Browser environment - use simple hash
-    let hash = 0;
-    for (let i = 0; i < content.length; i++) {
-      const char = content.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return Math.abs(hash).toString(36);
-  } else {
-    // Node environment - use crypto
-    return createHash('sha256').update(content).digest('hex').substring(0, 16);
+  let hash = 0;
+  for (let i = 0; i < content.length; i++) {
+    const char = content.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
   }
+  return Math.abs(hash).toString(36);
 }
 
 /**
