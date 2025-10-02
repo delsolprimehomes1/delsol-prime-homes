@@ -119,7 +119,7 @@ export const AuthorBio: React.FC<AuthorBioProps> = ({
         </div>
       </CardContent>
 
-      {/* Schema.org markup for E-E-A-T */}
+      {/* Enhanced Schema.org Person markup for E-E-A-T */}
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -129,11 +129,34 @@ export const AuthorBio: React.FC<AuthorBioProps> = ({
           "description": bio,
           "email": email,
           "url": profileUrl,
+          "image": avatarUrl,
+          "worksFor": {
+            "@type": "Organization",
+            "name": "DelSolPrimeHomes",
+            "url": "https://delsolprimehomes.com"
+          },
           "hasCredential": credentials.map(cred => ({
             "@type": "EducationalOccupationalCredential",
-            "credentialCategory": cred
+            "credentialCategory": "Professional Certification",
+            "name": cred,
+            "credentialStatus": "Active"
           })),
-          "knowsAbout": expertise
+          "knowsAbout": expertise.map(exp => ({
+            "@type": "Thing",
+            "name": exp
+          })),
+          "memberOf": {
+            "@type": "Organization",
+            "name": "Spanish Real Estate Professionals Association"
+          },
+          "award": [
+            "Top Real Estate Agent Costa del Sol",
+            "Customer Excellence Award"
+          ],
+          "alumniOf": {
+            "@type": "EducationalOrganization",
+            "name": "Real Estate Professional Training"
+          }
         })}
       </script>
     </Card>

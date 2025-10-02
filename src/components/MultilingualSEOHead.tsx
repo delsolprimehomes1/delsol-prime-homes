@@ -15,8 +15,16 @@ export const MultilingualSEOHead: React.FC<MultilingualSEOHeadProps> = ({
   availableLanguages,
   alternateUrls
 }) => {
-  // Generate hreflang links
-  const hreflangData = generateHreflangLinks(article.slug, availableLanguages, currentLanguage);
+  // Generate canonical URL from frontmatter or default
+  const canonicalUrl = article.seo?.canonical || 
+    article.canonical_url ||
+    `https://delsolprimehomes.com/qa/${article.slug}`;
+  
+  // Generate hreflang links from frontmatter or default
+  const customHreflangLinks = article.seo?.hreflang || [];
+  const hreflangData = customHreflangLinks.length > 0
+    ? { canonical: canonicalUrl, links: customHreflangLinks, defaultLang: currentLanguage }
+    : generateHreflangLinks(article.slug, availableLanguages, currentLanguage);
   
   // Generate sameAs URLs for JSON-LD
   const sameAsURLs = generateSameAsURLs(article.slug, availableLanguages);
@@ -73,7 +81,7 @@ export const MultilingualSEOHead: React.FC<MultilingualSEOHeadProps> = ({
       <title>{content.title} - {content.siteName}</title>
       <meta name="description" content={content.description} />
       <meta name="keywords" content={content.keywords} />
-      <link rel="canonical" href={hreflangData.canonical} />
+      <link rel="canonical" href={canonicalUrl} />
       
       {/* Language and Content Meta */}
       <meta httpEquiv="content-language" content={currentLanguage} />
