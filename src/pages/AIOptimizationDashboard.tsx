@@ -6,6 +6,7 @@ import Phase2ContentEnhancer from '@/components/Phase2ContentEnhancer';
 import Phase3MultilingualDashboard from '@/components/Phase3MultilingualDashboard';
 import ComprehensiveAIActivator from '@/components/ComprehensiveAIActivator';
 import AIScoreFixDashboard from '@/components/AIScoreFixDashboard';
+import { Badge } from '@/components/ui/badge';
 
 const AIOptimizationPage: React.FC = () => {
   return (

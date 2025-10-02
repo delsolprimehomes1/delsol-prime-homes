@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.humanize-content]
 verify_jwt = false
+
+[functions.calculate-ai-score]
+verify_jwt = false
