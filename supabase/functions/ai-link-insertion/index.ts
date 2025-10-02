@@ -26,6 +26,12 @@ async function validateUrlWithRetry(url: string, maxRetries = 2): Promise<{
 
       if (response.ok) {
         const contentType = response.headers.get('content-type') || '';
+        
+        // Explicitly reject PDFs
+        if (contentType.includes('application/pdf')) {
+          return { valid: false, reason: 'PDF files not allowed - prefer HTML pages' };
+        }
+        
         const isValidPage = contentType.includes('text/html') || 
                             contentType.includes('application/xhtml') ||
                             contentType.includes('text/plain');
@@ -96,65 +102,143 @@ serve(async (req) => {
 
     // ===== STEP 1: GENERATE EXTERNAL LINKS =====
     
+    // Detect topic category for context-aware linking
+    const articleTopic = (article.topic || '').toLowerCase();
+    const titleLower = (article.title || '').toLowerCase();
+    const contentSample = (article.content || '').substring(0, 500).toLowerCase();
+    
+    const isFinanceTopic = articleTopic.includes('finance') || 
+                          articleTopic.includes('mortgage') ||
+                          titleLower.includes('mortgage') ||
+                          titleLower.includes('finance') ||
+                          contentSample.includes('mortgage') ||
+                          contentSample.includes('loan-to-value');
+    
+    const isLegalTopic = articleTopic.includes('legal') ||
+                        titleLower.includes('legal') ||
+                        titleLower.includes('notary') ||
+                        titleLower.includes('contract');
+    
+    const isLocationTopic = articleTopic.includes('lifestyle') ||
+                           articleTopic.includes('location') ||
+                           titleLower.includes('where to') ||
+                           titleLower.includes('area');
+    
+    // Build topic-specific priority sources
+    let prioritySources = '';
+    let topicGuidelines = '';
+    let badExamples = '';
+    
+    if (isFinanceTopic) {
+      prioritySources = `
+   - Spanish Bank: bde.es (Banco de España)
+   - Mortgage authorities: age.es (Spanish Mortgage Association)
+   - Tax authorities: agenciatributaria.es
+   - Financial guides: expatica.com/es/finance, kyero.com/guides/mortgage
+   - Banking institutions: santander.es, bbva.com (mortgage pages only)
+   - Government finance: tesoro.es`;
+      
+      topicGuidelines = `
+⚠️ FINANCE TOPIC DETECTED - STRICT RULES:
+- NEVER link to tourism boards (NO andalucia.org, NO spain.info for finance content)
+- NEVER link to generic location pages
+- ONLY link to financial authorities, banks, government tax sites, or finance-specific guides
+- Avoid PDFs - prefer HTML pages with interactive content`;
+      
+      badExamples = `
+❌ BAD EXAMPLES FOR FINANCE ARTICLES:
+- "Costa del Sol" → andalucia.org (WRONG: tourism site for finance topic)
+- "Spanish mortgages" → PDF document (WRONG: prefer HTML pages)
+- "Marbella property" → marbella.es/tourism (WRONG: not finance-related)
+
+✅ GOOD EXAMPLES FOR FINANCE ARTICLES:
+- "Mortgages for non-residents" → bde.es or expatica.com/es/finance/mortgages
+- "loan-to-value ratios" → age.es or bank mortgage pages
+- "tax obligations" → agenciatributaria.es`;
+    } else if (isLegalTopic) {
+      prioritySources = `
+   - Notaries: notaries.es, notariado.org
+   - Property registry: registradores.org
+   - Legal databases: boe.es (official state bulletin)
+   - Government: mjusticia.gob.es
+   - EU legal: eur-lex.europa.eu`;
+      
+      topicGuidelines = `
+⚠️ LEGAL TOPIC DETECTED:
+- Prioritize official legal sources and government sites
+- Link to actual legal texts and official registries
+- Avoid commercial legal services unless official bodies`;
+    } else if (isLocationTopic) {
+      prioritySources = `
+   - Tourism boards: andalucia.org, spain.info
+   - City websites: malaga.eu, marbella.es, estepona.es
+   - Cultural sites: museums, UNESCO sites
+   - Regional government: juntadeandalucia.es`;
+      
+      topicGuidelines = `
+⚠️ LOCATION/LIFESTYLE TOPIC DETECTED:
+- Tourism and location sites are appropriate here
+- Focus on cultural, lifestyle, and regional information`;
+    } else {
+      // Default for property market, investment, etc.
+      prioritySources = `
+   - Government: .gov, .gov.es, .gob.es sites
+   - Statistics: ine.es, eurostat.ec.europa.eu
+   - EU institutions: europa.eu, ec.europa.eu
+   - Established publications: Financial Times, Bloomberg, Reuters
+   - Industry bodies: official real estate associations`;
+      
+      topicGuidelines = `
+- Match link topic to article topic strictly
+- Prefer official statistics and government data`;
+    }
+    
     const externalLinkPrompt = `You are an expert content editor adding authoritative external links to real estate content.
 
 Article Title: ${article.title}
+Article Topic: ${article.topic || 'Costa del Sol real estate'}
+
 Article Content:
 ${article.content}
 
-Topic: ${article.topic || 'Costa del Sol real estate'}
-
 TASK: Find 4-8 phrases in this article that would benefit from external links to authoritative sources.
 
-RULES:
+${topicGuidelines}
+
+PRIORITY SOURCES FOR THIS TOPIC:
+${prioritySources}
+
+UNIVERSAL RULES:
 1. Use EXACT text already in the article (2-6 words)
 2. Find REAL, authoritative URLs for each phrase
-3. Prioritize these sources:
-   - Government: .gov, .gov.es, .gob.es sites
-   - Official organizations: .org sites
-   - EU institutions: europa.eu, ec.europa.eu
-   - Statistics: ine.es, eurostat
-   - Established publications: Financial Times, Bloomberg, Reuters
-   - Official tourism: spain.info, andalucia.org
-   - Industry bodies: notaries.es, registradores.org
-
-4. For Spanish real estate, prefer:
-   - Spanish government sites for legal/tax info
-   - EU sites for statistics/regulations
-   - Official tourism boards for location info
-   - Telecoms: telefonica.com, vodafone.es for connectivity
-   - Smart city initiatives for tech info
-
-5. Each link must:
+3. Each link must:
+   - Be an HTML page (NOT PDF, NOT download)
+   - Be accessible and load within 10 seconds
+   - Match the TOPIC of the article (not just the location)
    - Point to a REAL, accessible URL (HTTPS only)
    - Add genuine value to readers
    - Be from a domain with high authority (DA 60+)
-   - Match the context of the phrase
+
+${badExamples}
 
 EXAMPLE OUTPUT FORMAT:
 {
   "externalLinks": [
     {
-      "anchorText": "fiber optic infrastructure",
-      "url": "https://www.red.es/en/",
-      "reason": "Official Spanish telecom authority explaining fiber networks",
-      "domainType": "government",
-      "context": "Developers now prioritize advanced fiber optic infrastructure"
-    },
-    {
-      "anchorText": "European Commission Digital Economy Index",
-      "url": "https://digital-strategy.ec.europa.eu/en/policies/desi",
-      "reason": "Official EU digital economy statistics",
-      "domainType": "eu-institution",
-      "context": "Spain ranks among the best-connected countries"
+      "anchorText": "exact phrase from article",
+      "url": "https://authoritative-source.com/relevant-page",
+      "reason": "Why this source is authoritative and relevant",
+      "domainType": "government|financial|legal|tourism|statistics",
+      "context": "Surrounding sentence for context"
     }
   ]
 }
 
 CRITICAL: 
 - anchorText must be EXACT text from the article
-- URLs must be REAL and currently accessible
-- Focus on official, authoritative sources only
+- URLs must be REAL and currently accessible HTML pages
+- NO PDFs, NO downloads
+- Match source type to article topic strictly
 - Return valid JSON only`;
 
     console.log('Calling OpenAI for external links...');
