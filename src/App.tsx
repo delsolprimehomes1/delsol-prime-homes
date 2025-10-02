@@ -20,6 +20,7 @@ import QACategoryMigration from "./pages/QACategoryMigration";
 import ClusterReorganization from "./pages/ClusterReorganization";
 import AIOptimizationDashboard from "./pages/AIOptimizationDashboard";
 import LinkReviewDashboard from "./pages/LinkReviewDashboard";
+import PreLaunchValidation from "./pages/PreLaunchValidation";
 import BlogBuilderPage from "./pages/BlogBuilder";
 import MarkdownManagerPage from "./pages/MarkdownManager";
 import NotFound from "./pages/NotFound";
@@ -55,6 +56,7 @@ const App = () => (
           <Route path="/admin/cluster-reorganization" element={<ClusterReorganization />} />
           <Route path="/admin/cluster-tracker" element={<ClusterTracker />} />
           <Route path="/admin/link-review" element={<LinkReviewDashboard />} />
+          <Route path="/admin/pre-launch" element={<PreLaunchValidation />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />
