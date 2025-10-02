@@ -11,12 +11,13 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Image, Wand2, Eye, Save, FileText } from 'lucide-react';
+import { Loader2, Image, Wand2, Eye, Save, FileText, Sparkles, AlertTriangle } from 'lucide-react';
 import { BlogPreview } from './BlogPreview';
 import { getTemplateForStage, generateGuidedContent, type FunnelStage } from '@/utils/blog-content-templates';
 import { validateContentQuality } from '@/utils/blog-content-enhancer';
 import { AlertCircle, CheckCircle2, Lightbulb } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { syncToGitHub, prepareForPublishing } from '@/utils/githubSync';
 
 interface BlogFormData {
   title: string;
@@ -34,6 +35,19 @@ interface BlogFormData {
   custom_cta_url: string;
   image_alt: string;
   custom_image_prompt: string;
+  key_takeaways: string[];
+  faqs: Array<{ question: string; answer: string }>;
+}
+
+interface AIAnalysisResult {
+  suggestedTitle: string;
+  metaDescription: string;
+  keyTakeaways: string[];
+  faqs: Array<{ question: string; answer: string }>;
+  speakableSummary: string;
+  topic: string;
+  funnelStage: 'TOFU' | 'MOFU' | 'BOFU';
+  internalLinks: Array<{ anchor: string; suggestedSlug: string }>;
 }
 
 const INITIAL_FORM_DATA: BlogFormData = {
@@ -51,7 +65,9 @@ const INITIAL_FORM_DATA: BlogFormData = {
   custom_cta_text: '',
   custom_cta_url: '',
   image_alt: '',
-  custom_image_prompt: ''
+  custom_image_prompt: '',
+  key_takeaways: [],
+  faqs: []
 };
 
 export const BlogBuilder: React.FC = () => {
@@ -62,14 +78,18 @@ export const BlogBuilder: React.FC = () => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isHumanizing, setIsHumanizing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>('');
   const [humanizeToggle, setHumanizeToggle] = useState(false);
   const [activeTab, setActiveTab] = useState('editor');
   const [tagInput, setTagInput] = useState('');
   const [contentQuality, setContentQuality] = useState({ isValid: true, warnings: [] as string[], score: 100 });
   const [showTemplateGuide, setShowTemplateGuide] = useState(false);
+  const [draftContent, setDraftContent] = useState('');
+  const [aiScore, setAiScore] = useState<number | null>(null);
+  const [publishWarnings, setPublishWarnings] = useState<string[]>([]);
 
-  const handleInputChange = (field: keyof BlogFormData, value: string | string[]) => {
+  const handleInputChange = (field: keyof BlogFormData, value: string | string[] | Array<{ question: string; answer: string }>) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // Auto-generate slug from title
@@ -168,6 +188,61 @@ export const BlogBuilder: React.FC = () => {
     }
   };
 
+  const analyzeWithAI = async () => {
+    if (!draftContent.trim()) {
+      toast({
+        title: "Error",
+        description: "Please paste your draft content first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-blog-content', {
+        body: {
+          content: draftContent,
+          title: formData.title || undefined
+        }
+      });
+
+      if (error) throw error;
+
+      const analysis: AIAnalysisResult = data;
+
+      // Auto-populate form fields from AI analysis
+      handleInputChange('title', analysis.suggestedTitle);
+      handleInputChange('meta_description', analysis.metaDescription);
+      handleInputChange('excerpt', analysis.speakableSummary);
+      handleInputChange('category_key', analysis.topic);
+      handleInputChange('funnel_stage', analysis.funnelStage);
+      handleInputChange('key_takeaways', analysis.keyTakeaways);
+      handleInputChange('faqs', analysis.faqs);
+      
+      // Add content with suggested internal links highlighted
+      let enhancedContent = draftContent;
+      analysis.internalLinks.forEach(link => {
+        enhancedContent += `\n\n[${link.anchor}](/qa/${link.suggestedSlug})`;
+      });
+      handleInputChange('content', enhancedContent);
+
+      toast({
+        title: "AI Analysis Complete",
+        description: "Form fields populated with AI suggestions. Review and edit as needed.",
+      });
+    } catch (error) {
+      console.error('Error analyzing content:', error);
+      toast({
+        title: "Error",
+        description: "Failed to analyze content. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const humanizeContent = async () => {
     if (!formData.content) {
       toast({
@@ -236,6 +311,22 @@ export const BlogBuilder: React.FC = () => {
     }
   };
 
+  const calculateAIScore = async (blogId: string) => {
+    try {
+      const { data } = await supabase.functions.invoke('calculate-ai-score', {
+        body: { articleId: blogId, articleType: 'blog' }
+      });
+      
+      if (data?.score) {
+        setAiScore(data.percentage);
+        return data.percentage;
+      }
+    } catch (error) {
+      console.error('Error calculating AI score:', error);
+    }
+    return null;
+  };
+
   const saveBlog = async (status: 'draft' | 'published' = 'draft') => {
     if (!formData.title || !formData.content || !formData.slug) {
       toast({
@@ -244,6 +335,27 @@ export const BlogBuilder: React.FC = () => {
         variant: "destructive"
       });
       return;
+    }
+
+    // Validate publishing readiness
+    if (status === 'published') {
+      const publishCheck = await prepareForPublishing({
+        ...formData,
+        featured_image: generatedImageUrl,
+      });
+
+      if (!publishCheck.ready) {
+        toast({
+          title: "Cannot Publish",
+          description: publishCheck.errors.join(', '),
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (publishCheck.warnings.length > 0) {
+        setPublishWarnings(publishCheck.warnings);
+      }
     }
 
     setIsSaving(true);
@@ -265,20 +377,44 @@ export const BlogBuilder: React.FC = () => {
         published_at: status === 'published' ? new Date().toISOString() : null
       };
 
-      const { error } = await supabase
+      const { data: savedBlog, error } = await supabase
         .from('blog_posts')
-        .insert([blogData]);
+        .insert([blogData])
+        .select('id')
+        .single();
 
       if (error) throw error;
 
+      // Calculate AI score for published posts
+      if (status === 'published' && savedBlog) {
+        const score = await calculateAIScore(savedBlog.id);
+        
+        if (score && score < 98) {
+          toast({
+            title: "Published with Warnings",
+            description: `Blog published but AI score is ${score.toFixed(1)}/100. Consider improvements.`,
+            variant: "default"
+          });
+        }
+
+        // Sync to GitHub
+        await syncToGitHub({
+          ...formData,
+          featured_image: generatedImageUrl,
+        });
+      }
+
       toast({
         title: "Success",
-        description: `Blog ${status === 'published' ? 'published' : 'saved as draft'} successfully!`
+        description: `Blog ${status === 'published' ? 'published' : 'saved as draft'} successfully!${aiScore ? ` AI Score: ${aiScore.toFixed(1)}/100` : ''}`
       });
 
       // Reset form
       setFormData(INITIAL_FORM_DATA);
       setGeneratedImageUrl('');
+      setDraftContent('');
+      setAiScore(null);
+      setPublishWarnings([]);
     } catch (error) {
       console.error('Error saving blog:', error);
       toast({
@@ -314,10 +450,60 @@ export const BlogBuilder: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
+              {/* AI Content Analysis */}
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        AI Content Analyzer
+                      </CardTitle>
+                      <CardDescription>Paste your draft content and let AI extract structured data</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="draft-content">Draft Content (Markdown or Plain Text)</Label>
+                    <Textarea
+                      id="draft-content"
+                      value={draftContent}
+                      onChange={(e) => setDraftContent(e.target.value)}
+                      placeholder="Paste your draft blog content here... AI will extract title, keywords, FAQs, and suggest internal links."
+                      rows={8}
+                      className="font-mono"
+                    />
+                  </div>
+                  <Button
+                    onClick={analyzeWithAI}
+                    disabled={isAnalyzing || !draftContent.trim()}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {isAnalyzing ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Sparkles className="h-4 w-4 mr-2" />
+                    )}
+                    Analyze with AI
+                  </Button>
+                  {formData.title && (
+                    <Alert>
+                      <CheckCircle2 className="h-4 w-4" />
+                      <AlertTitle>Analysis Complete</AlertTitle>
+                      <AlertDescription>
+                        AI has populated the form fields. Review and edit as needed below.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>Core blog post details</CardDescription>
+                  <CardDescription>Core blog post details (auto-populated by AI)</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>

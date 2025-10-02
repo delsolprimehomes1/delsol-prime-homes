@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.ai-content-optimizer]
 verify_jwt = false
 
+[functions.analyze-blog-content]
+verify_jwt = false
+
 [functions.analyze-visual-content]
 verify_jwt = false
 
