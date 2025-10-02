@@ -131,13 +131,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         prose-h2:text-3xl prose-h2:leading-tight prose-h2:mt-12 prose-h2:mb-4
         prose-h3:text-2xl prose-h3:leading-snug prose-h3:mt-8 prose-h3:mb-3
         prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4
-        prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-a:transition-colors
+        prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-700 prose-a:transition-colors
         prose-strong:text-foreground prose-strong:font-semibold
         prose-li:text-muted-foreground prose-li:leading-relaxed
         prose-ul:space-y-2 prose-ol:space-y-2
         prose-img:rounded-lg prose-img:shadow-md prose-img:w-full
         prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic
         prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:rounded
+        [&_.external-link]:text-blue-600 [&_.external-link]:underline
         ${isIntersecting ? 'animate-in fade-in duration-500' : 'opacity-0'}
         ${className}
       `}
