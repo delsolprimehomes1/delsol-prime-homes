@@ -6,41 +6,49 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Trusted authority sources for link validation
-const TRUSTED_SOURCES = {
-  government: [
-    'spain.info', 'exteriores.gob.es', 'madrid.org', 'cat.gencat.cat',
-    'juntadeandalucia.es', 'gob.es'
-  ],
-  legal: [
-    'notaries.es', 'registradores.org', 'colegiodeabogados.es',
-    'cgae.es', 'notariado.org'
-  ],
-  financial: [
-    'bde.es', 'cnmv.es', 'aeat.es', 'mineco.gob.es', 'bancodeespana.es'
-  ],
-  news: [
-    'elpais.com', 'ft.com', 'reuters.com', 'bbc.co.uk', 'theguardian.com',
-    'elmundo.es', 'abc.es', 'lavanguardia.com'
-  ],
-  industry: [
-    'apce.es', 'colegioapi.es', 'rics.org', 'propertymark.co.uk',
-    'fiabci.org', 'aipp.org.uk'
-  ]
-};
-
+// Intelligent domain authority validation (no hardcoded lists)
 function calculateAuthorityScore(url: string): number {
-  const domain = new URL(url).hostname.replace('www.', '');
-  
-  if (TRUSTED_SOURCES.government.some(d => domain.includes(d))) return 100;
-  if (domain.endsWith('.gov') || domain.endsWith('.gov.es')) return 100;
-  if (domain.endsWith('.edu') || domain.endsWith('.edu.es')) return 90;
-  if (TRUSTED_SOURCES.legal.some(d => domain.includes(d))) return 95;
-  if (TRUSTED_SOURCES.financial.some(d => domain.includes(d))) return 95;
-  if (TRUSTED_SOURCES.news.some(d => domain.includes(d))) return 80;
-  if (TRUSTED_SOURCES.industry.some(d => domain.includes(d))) return 75;
-  
-  return 0; // Reject unknown sources
+  try {
+    const domain = new URL(url).hostname.replace('www.', '').toLowerCase();
+    
+    // Government domains (highest authority)
+    if (domain.endsWith('.gov') || domain.endsWith('.gov.es') || domain.endsWith('.gob.es')) return 100;
+    if (domain.endsWith('.gc.ca') || domain.endsWith('.gov.uk')) return 100;
+    
+    // Educational institutions
+    if (domain.endsWith('.edu') || domain.endsWith('.edu.es') || domain.endsWith('.ac.uk')) return 90;
+    
+    // Official organizations and non-profits
+    if (domain.endsWith('.org') || domain.endsWith('.org.es')) {
+      // Spanish tourism/regional sites
+      if (domain.includes('andalucia') || domain.includes('turismo') || domain.includes('spain')) return 95;
+      return 85;
+    }
+    
+    // Established news publications and media
+    const newsOutlets = ['ft.com', 'bloomberg.com', 'reuters.com', 'bbc.co.uk', 'theguardian.com',
+                         'elpais.com', 'elmundo.es', 'abc.es', 'lavanguardia.com'];
+    if (newsOutlets.some(outlet => domain.includes(outlet))) return 80;
+    
+    // Professional associations
+    if (domain.includes('notari') || domain.includes('registra') || domain.includes('colegio')) return 90;
+    if (domain.endsWith('rics.org') || domain.endsWith('fiabci.org')) return 85;
+    
+    // Spanish official sites
+    if (domain.includes('junta') || domain.includes('gencat') || domain.includes('madrid.org')) return 95;
+    if (domain.endsWith('.es') && (domain.includes('agencia') || domain.includes('instituto'))) return 85;
+    
+    // Established commercial sites with good reputation (.com with recognizable patterns)
+    if (domain.endsWith('.com')) {
+      if (domain.includes('malaga') || domain.includes('marbella') || domain.includes('costadelsol')) return 70;
+      return 50; // Generic .com sites need manual review
+    }
+    
+    // Default: allow with moderate score for manual review
+    return 60;
+  } catch {
+    return 0;
+  }
 }
 
 function countWords(text: string): number {
@@ -97,10 +105,15 @@ TOPIC: ${topic}
 CONTENT:
 ${content}
 
-TRUSTED SOURCES BY CATEGORY:
-${JSON.stringify(TRUSTED_SOURCES, null, 2)}
-
 TASK: Identify ${targetLinks} exact phrases from the content above that should become external links.
+
+PRIORITY SOURCES (but not limited to):
+- Spanish government: .gov.es, .gob.es domains
+- Tourism boards: spain.info, andalucia.org, malagaturismo.com
+- Official stats: ine.es (National Statistics)
+- Legal/notary: notaries.es, registradores.org
+- News: Financial Times, Reuters, El País
+- BUT ALSO search for other authoritative .gov, .edu, .org sites relevant to the content
 
 Return JSON in this exact format:
 {
@@ -178,21 +191,28 @@ REQUIREMENTS:
 
         // Calculate authority score
         const authorityScore = calculateAuthorityScore(link.url);
-        if (authorityScore === 0) {
-          console.log(`Rejected ${link.url}: Not in trusted sources`);
+        if (authorityScore < 60) {
+          console.log(`Rejected ${link.url}: Authority score too low (${authorityScore})`);
           continue;
         }
 
-        // Find position in text
-        const anchorPosition = content.indexOf(link.anchorText);
+        // Find position in text (case-insensitive)
+        const contentLower = content.toLowerCase();
+        const anchorLower = link.anchorText.toLowerCase();
+        const anchorPosition = contentLower.indexOf(anchorLower);
+        
         if (anchorPosition === -1) {
-          console.log(`Rejected ${link.url}: Anchor text not found in content`);
+          console.log(`Rejected "${link.anchorText}": Not found in content (case-insensitive search)`);
           continue;
         }
 
+        // Extract actual text with original casing from content
+        const exactText = content.substring(anchorPosition, anchorPosition + link.anchorText.length);
+        
         // Format for preview (don't store in DB yet - will be stored after approval)
         validatedLinks.push({
-          anchorText: link.anchorText,
+          exactText: exactText, // Use exact casing from content
+          anchorText: exactText, // Keep for backward compatibility
           url: link.url,
           reason: link.reason,
           authorityScore: authorityScore,

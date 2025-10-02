@@ -146,23 +146,30 @@ REQUIREMENTS:
     const validatedLinks = [];
     for (const link of linkSuggestions) {
       try {
-        // Find position in text
-        const anchorPosition = content.indexOf(link.anchorText);
+        // Find position in text (case-insensitive)
+        const contentLower = content.toLowerCase();
+        const anchorLower = link.anchorText.toLowerCase();
+        const anchorPosition = contentLower.indexOf(anchorLower);
+        
         if (anchorPosition === -1) {
-          console.log(`Rejected internal link: Anchor text "${link.anchorText}" not found in content`);
+          console.log(`Rejected internal link: "${link.anchorText}" not found in content (case-insensitive)`);
           continue;
         }
 
+        // Extract actual text with original casing from content
+        const exactText = content.substring(anchorPosition, anchorPosition + link.anchorText.length);
+
         // Format for preview (don't store in DB yet - will be stored after approval)
         validatedLinks.push({
-          anchorText: link.anchorText,
+          exactText: exactText, // Use exact casing from content
+          anchorText: exactText, // Keep for backward compatibility
           targetArticleId: link.targetArticleId,
           targetSlug: link.targetSlug,
           targetTitle: link.targetTitle,
-          targetType: link.targetArticleType,
+          targetType: link.targetType || link.targetArticleType,
           reason: link.reason,
           relevanceScore: link.relevanceScore || 75,
-          sentenceContext: link.context,
+          sentenceContext: link.contextSentence || link.context,
           position: anchorPosition
         });
       } catch (e) {

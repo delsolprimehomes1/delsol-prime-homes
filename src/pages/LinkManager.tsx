@@ -205,11 +205,14 @@ export default function LinkManager() {
 
       if (!currentArticle) throw new Error('Article not found');
 
-      // Prepare links for insertion
+      // Prepare links for insertion (use exactText or anchorText)
       const allLinks = [
-        ...approvedExternal.map(l => ({ exactText: l.anchorText, url: l.url })),
+        ...approvedExternal.map(l => ({ 
+          exactText: l.exactText || l.anchorText, 
+          url: l.url 
+        })),
         ...approvedInternal.map(l => ({ 
-          exactText: l.anchorText, 
+          exactText: l.exactText || l.anchorText, 
           url: `/${l.targetType === 'qa' ? 'qa' : 'blog'}/${l.targetSlug}` 
         }))
       ];

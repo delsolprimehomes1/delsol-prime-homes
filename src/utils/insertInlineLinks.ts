@@ -51,41 +51,47 @@ function insertSingleLink(
   exactText: string,
   url: string
 ): { content: string; inserted: boolean } {
-  // Escape special regex characters in the exact text
-  const escapedText = exactText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Case-insensitive search for the exact text
+  const contentLower = content.toLowerCase();
+  const textLower = exactText.toLowerCase();
+  const position = contentLower.indexOf(textLower);
   
-  // Create regex that:
-  // 1. Matches the exact text
-  // 2. Is NOT already inside a link: [text] or (url)
-  // 3. Is NOT inside code blocks: ` or ```
-  const regex = new RegExp(
-    `(?<!\\[)(?<!\\]\\()(?<!\`)\b${escapedText}\b(?!\`)(?!\\])(?!\\)\\()`,
-    'i'
-  );
+  if (position === -1) {
+    console.log(`Cannot find "${exactText}" in content (case-insensitive search)`);
+    return { content, inserted: false };
+  }
 
-  // Check if the text exists and is not already linked
-  const match = content.match(regex);
+  // Get the actual text with original casing from content
+  const actualText = content.substring(position, position + exactText.length);
   
-  if (!match) {
+  // Check if it's already inside a markdown link
+  const beforeContext = content.substring(Math.max(0, position - 3), position);
+  const afterContext = content.substring(position + exactText.length, Math.min(content.length, position + exactText.length + 3));
+  
+  // Skip if already linked: [text](url) or ![alt](url)
+  if (beforeContext.includes('[') || beforeContext.includes('![') || 
+      afterContext.startsWith(']') || afterContext.startsWith('](')) {
+    console.log(`"${exactText}" is already in a markdown link`);
     return { content, inserted: false };
   }
 
   // Find all existing markdown links to avoid conflicts
   const existingLinks = findExistingLinks(content);
-  const matchIndex = match.index!;
-  
-  // Check if this position conflicts with an existing link
   const hasConflict = existingLinks.some(link => 
-    matchIndex >= link.start && matchIndex <= link.end
+    position >= link.start && position <= link.end
   );
 
   if (hasConflict) {
+    console.log(`"${exactText}" conflicts with existing link`);
     return { content, inserted: false };
   }
 
-  // Insert the link (only first occurrence)
-  const updatedContent = content.replace(regex, `[${exactText}](${url})`);
+  // Insert the link using exact position
+  const before = content.substring(0, position);
+  const after = content.substring(position + exactText.length);
+  const updatedContent = `${before}[${actualText}](${url})${after}`;
   
+  console.log(`✓ Inserted link: "${actualText}" → ${url}`);
   return { content: updatedContent, inserted: true };
 }
 
@@ -111,20 +117,16 @@ function findExistingLinks(content: string): Array<{ start: number; end: number 
  * Validates if a text can be linked in the content
  */
 export function canTextBeLinked(content: string, exactText: string): boolean {
-  const escapedText = exactText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(
-    `(?<!\\[)(?<!\\]\\()(?<!\`)\b${escapedText}\b(?!\`)(?!\\])(?!\\)\\()`,
-    'i'
-  );
+  const contentLower = content.toLowerCase();
+  const textLower = exactText.toLowerCase();
+  const position = contentLower.indexOf(textLower);
   
-  const match = content.match(regex);
-  if (!match) return false;
+  if (position === -1) return false;
 
   const existingLinks = findExistingLinks(content);
-  const matchIndex = match.index!;
   
   return !existingLinks.some(link => 
-    matchIndex >= link.start && matchIndex <= link.end
+    position >= link.start && position <= link.end
   );
 }
 
