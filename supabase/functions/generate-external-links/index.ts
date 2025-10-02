@@ -74,44 +74,52 @@ serve(async (req) => {
 
     console.log(`Generating ${targetLinks} external links for ${wordCount} words`);
 
-    // Prepare AI prompt
-    const systemPrompt = `You are an expert at identifying opportunities to insert authoritative external links into real estate content.
+    // Enhanced prompt for finding naturally linkable phrases inline
+    const systemPrompt = `You are an expert content editor finding opportunities to add helpful external links that flow naturally within the text.
 
-TRUSTED SOURCES (prioritize these):
-- Government: spain.info, exteriores.gob.es, madrid.org, gob.es
-- Legal: notaries.es, registradores.org, colegiodeabogados.es
-- Financial: bde.es, cnmv.es, aeat.es, bancodeespana.es
-- News: elpais.com, ft.com, reuters.com, bbc.co.uk, theguardian.com
-- Industry: apce.es, colegioapi.es, rics.org
+Your task: Find ${targetLinks} phrases already in the content that would benefit from external links to authoritative sources.
 
-RULES:
-1. Only suggest links to the trusted sources above
-2. Link to HTTPS URLs only
-3. Choose anchor text that naturally exists in the article (2-5 words)
-4. Provide the full sentence containing the anchor text as context
-5. Each link must be highly relevant to the surrounding content
-6. Avoid linking in headings, first paragraph, or last paragraph
-7. Space links at least 100 words apart
+CRITICAL RULES:
+1. ONLY use exact text that already exists in the article (2-5 words)
+2. Find phrases that are naturally linkable: proper nouns, locations, statistics, concepts
+3. Each link must point to high-authority sources (.gov, .edu, major publications, official organizations)
+4. The anchor text should make sense as a clickable link in context
+5. Avoid over-linking - space links naturally throughout the article
+6. Authority score must be 80+
 
-Return JSON array only, no other text.`;
+Return valid JSON only with your suggestions.`;
 
-    const userPrompt = `Article topic: ${topic || 'Spanish property market'}
+    const userPrompt = `Find ${targetLinks} opportunities to add external links in this article:
 
-Article content:
+TITLE: ${topic || 'Spanish Real Estate'}
+TOPIC: ${topic}
+
+CONTENT:
 ${content}
 
-Task: Identify exactly ${targetLinks} opportunities to insert external links to authoritative sources.
+TRUSTED SOURCES BY CATEGORY:
+${JSON.stringify(TRUSTED_SOURCES, null, 2)}
 
-For each link provide:
+TASK: Identify ${targetLinks} exact phrases from the content above that should become external links.
+
+Return JSON in this exact format:
 {
-  "anchorText": "exact phrase from article (2-5 words)",
-  "url": "https://full-url-to-trusted-source",
-  "context": "full sentence containing the anchor text",
-  "relevanceScore": 1-100,
-  "positionHint": "approximate character position or paragraph number"
+  "links": [
+    {
+      "anchorText": "exact phrase from content",
+      "url": "https://authoritative-source.com",
+      "reason": "Brief explanation of why this link adds value",
+      "contextSentence": "The complete sentence where this phrase appears",
+      "authorityScore": 85
+    }
+  ]
 }
 
-Return array of ${targetLinks} link suggestions as JSON.`;
+REQUIREMENTS:
+- Anchor text must exist EXACTLY as written in the content
+- URLs must be from trusted sources with authority score 80+
+- Each link should feel natural and helpful to readers
+- Spread links throughout the article (avoid clustering)`;
 
     // Call Lovable AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -142,11 +150,15 @@ Return array of ${targetLinks} link suggestions as JSON.`;
     // Parse AI response
     let linkSuggestions;
     try {
-      // Extract JSON from markdown code blocks if present
-      const jsonMatch = aiContent.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/) || 
-                        aiContent.match(/(\[[\s\S]*?\])/);
+      // Extract JSON from markdown code blocks or object
+      const jsonMatch = aiContent.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || 
+                        aiContent.match(/(\{[\s\S]*?\})/);
       const jsonStr = jsonMatch ? jsonMatch[1] : aiContent;
-      linkSuggestions = JSON.parse(jsonStr);
+      const parsed = JSON.parse(jsonStr);
+      linkSuggestions = parsed.links || parsed;
+      if (!Array.isArray(linkSuggestions)) {
+        linkSuggestions = [linkSuggestions];
+      }
     } catch (e) {
       console.error('Failed to parse AI response:', aiContent);
       throw new Error('Invalid AI response format');
@@ -178,30 +190,15 @@ Return array of ${targetLinks} link suggestions as JSON.`;
           continue;
         }
 
-        // Store in database
-        const { data: insertedLink, error } = await supabase
-          .from('external_links')
-          .insert({
-            article_id: articleId,
-            article_type: articleType,
-            url: link.url,
-            anchor_text: link.anchorText,
-            context_snippet: link.context,
-            authority_score: authorityScore,
-            relevance_score: link.relevanceScore || 75,
-            ai_confidence: 0.85,
-            position_in_text: anchorPosition,
-            verified: false,
-          })
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Database insert error:', error);
-          continue;
-        }
-
-        validatedLinks.push(insertedLink);
+        // Format for preview (don't store in DB yet - will be stored after approval)
+        validatedLinks.push({
+          anchorText: link.anchorText,
+          url: link.url,
+          reason: link.reason,
+          authorityScore: authorityScore,
+          sentenceContext: link.contextSentence,
+          position: anchorPosition
+        });
       } catch (e) {
         console.error(`Error processing link ${link.url}:`, e);
         continue;

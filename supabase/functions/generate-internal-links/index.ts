@@ -58,46 +58,51 @@ serve(async (req) => {
 
     console.log(`Found ${relatedArticles.length} related articles for internal linking`);
 
-    // Prepare AI prompt for internal link suggestions
-    const systemPrompt = `You are an expert at creating contextual internal links for SEO optimization.
+    // Enhanced prompt for finding naturally linkable internal phrases
+    const systemPrompt = `You are an expert editor finding opportunities to add helpful internal links within article content.
 
 LINKING STRATEGY:
 1. Link to articles at different funnel stages (TOFU → MOFU → BOFU progression)
-2. Create natural anchor text from existing content (3-8 words)
-3. Prioritize high-relevance matches
-4. Distribute links evenly throughout the content
-5. Avoid linking in first or last paragraph
+2. Use ONLY exact text that appears in the article (3-8 words)
+3. The anchor text should clearly relate to the target article's topic
+4. Links should add genuine value and help reader navigation
+5. Avoid linking generic phrases - be specific
+6. Space links naturally throughout the content
 
-Return JSON array only, no other text.`;
+Return valid JSON only.`;
 
-    const userPrompt = `Current Article Content:
-${content.substring(0, 3000)}
+    const userPrompt = `CURRENT ARTICLE CONTENT:
+${content.substring(0, 2500)}
 
-Available Related Articles:
-${JSON.stringify(relatedArticles.map(a => ({
-  id: a.id,
-  title: a.title,
-  type: a.type,
-  slug: a.slug,
-  funnel_stage: a.funnel_stage,
-  excerpt: a.excerpt?.substring(0, 150)
-})), null, 2)}
+AVAILABLE RELATED CONTENT:
+${relatedArticles.map((a: any, i: number) => `
+${i + 1}. ${a.title}
+   Type: ${a.type?.toUpperCase() || 'BLOG'}
+   URL Slug: ${a.slug}
+   Topic: ${a.topic || 'General'}
+   Summary: ${a.excerpt?.substring(0, 150) || 'Related content'}
+`).join('\n')}
 
-Task: Find 2-4 natural opportunities to link to these related articles.
+TASK: Find 2-4 exact phrases in the current article that would naturally link to the related content above.
 
-For each link provide:
-{
-  "anchorText": "exact phrase from current article (3-8 words)",
-  "targetArticleId": "uuid-of-target-article",
-  "targetArticleType": "qa" or "blog",
-  "targetTitle": "title of target article",
-  "targetSlug": "slug-of-target-article",
-  "context": "full sentence containing the anchor text",
-  "relevanceScore": 1-100,
-  "positionHint": "approximate paragraph number"
-}
+Return JSON array in this exact format:
+[
+  {
+    "anchorText": "exact phrase from current article",
+    "targetArticleId": "${relatedArticles[0]?.id}",
+    "targetSlug": "target-article-slug",
+    "targetTitle": "Target Article Title",
+    "targetType": "qa",
+    "reason": "How this link helps the reader",
+    "relevanceScore": 88,
+    "contextSentence": "Full sentence containing the anchor text"
+  }
+]
 
-Return array of 2-4 internal link suggestions as JSON.`;
+REQUIREMENTS:
+- Anchor text must exist EXACTLY in the current article
+- Only suggest links with relevance score 80+
+- Each link should feel natural and helpful`;
 
     // Call Lovable AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -148,32 +153,17 @@ Return array of 2-4 internal link suggestions as JSON.`;
           continue;
         }
 
-        // Store in database
-        const { data: insertedLink, error } = await supabase
-          .from('internal_links')
-          .insert({
-            source_article_id: articleId,
-            source_article_type: articleType,
-            target_article_id: link.targetArticleId,
-            target_article_type: link.targetArticleType,
-            anchor_text: link.anchorText,
-            context_snippet: link.context,
-            relevance_score: link.relevanceScore || 75,
-            position_in_text: anchorPosition,
-            verified: false,
-          })
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Database insert error:', error);
-          continue;
-        }
-
+        // Format for preview (don't store in DB yet - will be stored after approval)
         validatedLinks.push({
-          ...insertedLink,
+          anchorText: link.anchorText,
+          targetArticleId: link.targetArticleId,
+          targetSlug: link.targetSlug,
           targetTitle: link.targetTitle,
-          targetSlug: link.targetSlug
+          targetType: link.targetArticleType,
+          reason: link.reason,
+          relevanceScore: link.relevanceScore || 75,
+          sentenceContext: link.context,
+          position: anchorPosition
         });
       } catch (e) {
         console.error(`Error processing internal link:`, e);
