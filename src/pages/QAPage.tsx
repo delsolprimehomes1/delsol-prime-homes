@@ -123,7 +123,7 @@ const QAPage = () => {
       </Helmet>
 
       {/* Structured Data */}
-      <SchemaMarkup article={article} type="QAPage" />
+      <SchemaMarkup article={article} type="qa" />
 
       {/* Reading Progress */}
       <ReadingProgressBar articleSlug={article.slug} />

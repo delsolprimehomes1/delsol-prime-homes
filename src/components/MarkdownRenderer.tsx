@@ -18,7 +18,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     freezeOnceVisible: true
   });
 
-  // Process markdown and add heading IDs
+  // Process markdown and add heading IDs + speakable classes
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -38,6 +38,24 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       
       // Add smooth scroll behavior
       heading.classList.add('scroll-mt-24');
+      
+      // Add speakable class to questions (headings ending with ?)
+      if (heading.textContent?.endsWith('?')) {
+        heading.classList.add('speakable-content');
+        heading.setAttribute('data-speakable', 'true');
+      }
+    });
+
+    // Add speakable classes to paragraphs with 40-60 words
+    const paragraphs = containerRef.current.querySelectorAll('p');
+    paragraphs.forEach((p) => {
+      const text = p.textContent || '';
+      const wordCount = text.trim().split(/\s+/).length;
+      
+      if (wordCount >= 40 && wordCount <= 60) {
+        p.classList.add('speakable-content');
+        p.setAttribute('data-speakable', 'true');
+      }
     });
 
     // Add external link icons

@@ -3,6 +3,7 @@
 
 /* Import contextual links styling */
 @import './styles/contextual-links.css';
+@import './styles/speakable.css';
 
 @tailwind base;
 @tailwind components;

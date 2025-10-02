@@ -1,0 +1,71 @@
+/**
+ * Speakable Content Styles
+ * For voice search and AI/LLM optimization
+ */
+
+/* Base speakable content styling */
+.speakable-content,
+.speakable-summary,
+.speakable-answer,
+.speakable-takeaway {
+  position: relative;
+}
+
+/* Optional: Visual indicator for development/testing */
+.speakable-content[data-speakable="true"]::before,
+.speakable-summary[data-speakable="true"]::before,
+.speakable-answer[data-speakable="true"]::before {
+  /* Hidden by default, can be shown in dev mode */
+  content: '';
+  display: none;
+}
+
+/* Voice-optimized text formatting */
+.voice-optimized {
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+}
+
+/* Key takeaways with speakable content */
+.key-takeaways {
+  padding: 1.5rem;
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 0.75rem;
+  border-left: 4px solid hsl(var(--primary));
+}
+
+/* External link styling */
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.external-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.external-link:hover .external-icon {
+  opacity: 1;
+}
+
+/* Lazy image loading states */
+.lazy-image {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.lazy-image.loaded {
+  opacity: 1;
+}
+
+/* Development/Testing: Show speakable indicators */
+body[data-dev-mode="true"] .speakable-content[data-speakable="true"]::after {
+  content: '🎤';
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 0.75rem;
+  opacity: 0.5;
+}

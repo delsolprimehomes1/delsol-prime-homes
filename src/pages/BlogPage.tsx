@@ -45,6 +45,13 @@ const BlogPage = () => {
     ? Math.ceil(post.content.split(' ').length / 200) 
     : 0;
 
+  // Prepare breadcrumbs for schema
+  const breadcrumbItems = post ? [
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: post.category_key }
+  ] : [];
+
   // Track page view
   React.useEffect(() => {
     if (post) {
@@ -107,7 +114,16 @@ const BlogPage = () => {
       </Helmet>
 
       {/* Structured Data */}
-      <SchemaMarkup article={post} type="BlogPosting" />
+      <SchemaMarkup 
+        article={{
+          ...post,
+          speakable_questions: Array.isArray(post.speakable_questions) 
+            ? post.speakable_questions 
+            : []
+        }} 
+        type="blog"
+        breadcrumbs={breadcrumbItems}
+      />
 
       <BlogReadingProgress />
       <Navbar />
