@@ -46,7 +46,7 @@ i18n
       escapeValue: false,
     },
 
-    ns: ['common'],
+    ns: ['common', 'seo'],
     defaultNS: 'common',
     preload: supportedLanguages, // Preload all supported languages
     
