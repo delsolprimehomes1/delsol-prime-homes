@@ -612,6 +612,63 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_links: {
+        Row: {
+          anchor_text: string
+          approved_at: string | null
+          approved_by: string | null
+          context_snippet: string | null
+          created_at: string | null
+          id: string
+          position_in_text: number | null
+          rejected: boolean | null
+          rejected_reason: string | null
+          relevance_score: number | null
+          source_article_id: string
+          source_article_type: string
+          target_article_id: string
+          target_article_type: string
+          updated_at: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          anchor_text: string
+          approved_at?: string | null
+          approved_by?: string | null
+          context_snippet?: string | null
+          created_at?: string | null
+          id?: string
+          position_in_text?: number | null
+          rejected?: boolean | null
+          rejected_reason?: string | null
+          relevance_score?: number | null
+          source_article_id: string
+          source_article_type: string
+          target_article_id: string
+          target_article_type: string
+          updated_at?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          anchor_text?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          context_snippet?: string | null
+          created_at?: string | null
+          id?: string
+          position_in_text?: number | null
+          rejected?: boolean | null
+          rejected_reason?: string | null
+          relevance_score?: number | null
+          source_article_id?: string
+          source_article_type?: string
+          target_article_id?: string
+          target_article_type?: string
+          updated_at?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       keyword_rankings: {
         Row: {
           clicks: number | null
@@ -692,6 +749,51 @@ export type Database = {
           source?: string
           stage?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      link_generation_batches: {
+        Row: {
+          batch_name: string
+          completed_at: string | null
+          created_at: string | null
+          error_log: Json | null
+          failed_articles: number | null
+          id: string
+          link_type: string
+          processed_articles: number | null
+          started_at: string | null
+          status: string | null
+          successful_links: number | null
+          total_articles: number | null
+        }
+        Insert: {
+          batch_name: string
+          completed_at?: string | null
+          created_at?: string | null
+          error_log?: Json | null
+          failed_articles?: number | null
+          id?: string
+          link_type: string
+          processed_articles?: number | null
+          started_at?: string | null
+          status?: string | null
+          successful_links?: number | null
+          total_articles?: number | null
+        }
+        Update: {
+          batch_name?: string
+          completed_at?: string | null
+          created_at?: string | null
+          error_log?: Json | null
+          failed_articles?: number | null
+          id?: string
+          link_type?: string
+          processed_articles?: number | null
+          started_at?: string | null
+          status?: string | null
+          successful_links?: number | null
+          total_articles?: number | null
         }
         Relationships: []
       }
