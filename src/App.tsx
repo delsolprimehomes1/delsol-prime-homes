@@ -24,6 +24,7 @@ import PreLaunchValidation from "./pages/PreLaunchValidation";
 import AIOptimizationTest from "./pages/AIOptimizationTest";
 import BlogBuilderPage from "./pages/BlogBuilder";
 import MarkdownManagerPage from "./pages/MarkdownManager";
+import Phase1TestDashboard from "./pages/Phase1TestDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/admin/link-review" element={<LinkReviewDashboard />} />
           <Route path="/admin/pre-launch" element={<PreLaunchValidation />} />
           <Route path="/admin/ai-test" element={<AIOptimizationTest />} />
+          <Route path="/admin/phase1-test" element={<Phase1TestDashboard />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />

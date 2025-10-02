@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.calculate-ai-score]
 verify_jwt = false
+
+[functions.generate-speakable-answer]
+verify_jwt = false
