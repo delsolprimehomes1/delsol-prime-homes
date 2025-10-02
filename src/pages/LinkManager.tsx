@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Link2, Search, Filter, RefreshCw, Loader2, Sparkles } from 'lucide-react';
+import { ExternalLink, Link2, Search, Filter, RefreshCw, Loader2, Sparkles, Plus } from 'lucide-react';
 import { LinkPreviewModal } from '@/components/LinkPreviewModal';
 import { insertInlineLinks } from '@/utils/insertInlineLinks';
 
@@ -141,6 +141,46 @@ export default function LinkManager() {
     }
 
     setFilteredArticles(filtered);
+  };
+
+  const generateInlineLinks = async (article: Article) => {
+    setGeneratingLinks(true);
+
+    try {
+      toast({
+        title: "Generating Links...",
+        description: `AI is analyzing "${article.title}" and inserting inline links`,
+      });
+
+      const { data, error } = await supabase.functions.invoke('ai-link-insertion', {
+        body: { 
+          articleId: article.id, 
+          articleType: article.type 
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast({
+          title: "Links Inserted Successfully",
+          description: data.message || `✅ Added ${data.inserted} inline links (${data.skipped} skipped)`,
+        });
+        await fetchArticles();
+      } else {
+        throw new Error(data.error || 'Failed to generate links');
+      }
+    } catch (err: any) {
+      console.error('Error generating inline links:', err);
+      const errorMsg = err.message || 'Failed to generate inline links';
+      toast({
+        title: "Generation Failed",
+        description: errorMsg,
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingLinks(false);
+    }
   };
 
   const generateAndPreviewLinks = async (article: Article) => {
@@ -452,17 +492,33 @@ export default function LinkManager() {
                       )}
                     </div>
                   </div>
-                  <Button
-                    onClick={() => generateAndPreviewLinks(article)}
-                    disabled={generatingLinks}
-                  >
-                    {generatingLinks ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-4 w-4" />
-                    )}
-                    Generate & Preview Links
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => generateInlineLinks(article)}
+                      disabled={generatingLinks}
+                      variant="default"
+                    >
+                      {generatingLinks ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          AI Insert Links
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => generateAndPreviewLinks(article)}
+                      disabled={generatingLinks}
+                      variant="outline"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Preview Links
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}

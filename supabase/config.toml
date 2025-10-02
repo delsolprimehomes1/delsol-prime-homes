@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.generate-speakable-answer]
 verify_jwt = false
+
+[functions.ai-link-insertion]
+verify_jwt = false
