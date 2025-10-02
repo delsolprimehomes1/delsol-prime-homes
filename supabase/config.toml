@@ -15,5 +15,8 @@ verify_jwt = false
 [functions.generate-blog-image]
 verify_jwt = false
 
+[functions.generate-external-links]
+verify_jwt = false
+
 [functions.humanize-content]
 verify_jwt = false

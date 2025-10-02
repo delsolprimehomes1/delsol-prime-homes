@@ -486,6 +486,69 @@ export type Database = {
         }
         Relationships: []
       }
+      external_links: {
+        Row: {
+          ai_confidence: number | null
+          anchor_text: string
+          approved_at: string | null
+          approved_by: string | null
+          article_id: string
+          article_type: string
+          authority_score: number | null
+          context_snippet: string | null
+          created_at: string | null
+          id: string
+          insertion_method: string | null
+          position_in_text: number | null
+          rejected: boolean | null
+          rejected_reason: string | null
+          relevance_score: number | null
+          updated_at: string | null
+          url: string
+          verified: boolean | null
+        }
+        Insert: {
+          ai_confidence?: number | null
+          anchor_text: string
+          approved_at?: string | null
+          approved_by?: string | null
+          article_id: string
+          article_type: string
+          authority_score?: number | null
+          context_snippet?: string | null
+          created_at?: string | null
+          id?: string
+          insertion_method?: string | null
+          position_in_text?: number | null
+          rejected?: boolean | null
+          rejected_reason?: string | null
+          relevance_score?: number | null
+          updated_at?: string | null
+          url: string
+          verified?: boolean | null
+        }
+        Update: {
+          ai_confidence?: number | null
+          anchor_text?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          article_id?: string
+          article_type?: string
+          authority_score?: number | null
+          context_snippet?: string | null
+          created_at?: string | null
+          id?: string
+          insertion_method?: string | null
+          position_in_text?: number | null
+          rejected?: boolean | null
+          rejected_reason?: string | null
+          relevance_score?: number | null
+          updated_at?: string | null
+          url?: string
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       image_metadata: {
         Row: {
           alt_text: Json
