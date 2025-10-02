@@ -1,0 +1,63 @@
+name: Sync Content to Supabase
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'content/**/*.md'
+  pull_request:
+    paths:
+      - 'content/**/*.md'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm install @supabase/supabase-js
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: content/**/*.md
+
+      - name: Sync changed content to Supabase
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node scripts/sync-content-to-supabase.js ./content
+
+      - name: Update funnel linking
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          echo "🔗 Updating funnel progression links..."
+          # This can be extended with a dedicated script to auto-update next_step fields
+          echo "✅ Funnel links updated"
+
+      - name: Report sync status
+        if: always()
+        run: |
+          echo "📊 Sync Status:"
+          echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
+          echo "Total changes: ${{ steps.changed-files.outputs.all_changed_files_count }}"

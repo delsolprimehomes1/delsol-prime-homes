@@ -28,6 +28,75 @@ export function generateGitHubPath(
 }
 
 /**
+ * Transform frontmatter to database JSONB format
+ */
+function transformFrontmatterToJSON(frontmatter: ParsedFrontmatter) {
+  const result: any = {};
+
+  // SEO
+  if (frontmatter.seo) {
+    result.seo = {
+      metaTitle: frontmatter.seo.metaTitle,
+      metaDescription: frontmatter.seo.metaDescription,
+      canonical: frontmatter.seo.canonical,
+      hreflang: frontmatter.seo.hreflang || [],
+    };
+  }
+
+  // Author
+  if (frontmatter.author) {
+    result.author = {
+      name: frontmatter.author.name,
+      credentials: frontmatter.author.credentials,
+      bio: frontmatter.author.bio,
+      profileUrl: frontmatter.author.profileUrl,
+    };
+  }
+
+  // Reviewer
+  if (frontmatter.reviewer) {
+    result.reviewer = {
+      name: frontmatter.reviewer.name,
+      credentials: frontmatter.reviewer.credentials,
+      reviewDate: frontmatter.reviewer.reviewDate,
+    };
+  }
+
+  // Hero image
+  if (frontmatter.heroImage) {
+    result.hero_image = {
+      src: frontmatter.heroImage.src,
+      alt: frontmatter.heroImage.alt,
+      caption: frontmatter.heroImage.caption,
+      geoCoordinates: frontmatter.heroImage.geoCoordinates,
+    };
+  }
+
+  // Next step
+  if (frontmatter.nextStep) {
+    result.next_step = {
+      title: frontmatter.nextStep.title,
+      slug: frontmatter.nextStep.slug,
+      url: frontmatter.nextStep.url,
+      cta: frontmatter.nextStep.cta,
+      preview: frontmatter.nextStep.preview,
+      funnelStage: frontmatter.nextStep.funnelStage,
+    };
+  }
+
+  // Internal links
+  if (frontmatter.internalLinks && frontmatter.internalLinks.length > 0) {
+    result.internal_links = frontmatter.internalLinks.map(link => ({
+      slug: link.slug,
+      anchorText: link.anchorText,
+      context: link.context,
+    }));
+  }
+
+  return result;
+}
+
+/**
  * Sync markdown content from GitHub to Supabase
  */
 export async function syncMarkdownToSupabase(
@@ -101,6 +170,9 @@ export async function syncMarkdownToSupabase(
       if (reviewer) reviewerId = reviewer?.id;
     }
 
+    // Transform frontmatter to JSONB fields
+    const jsonbFields = transformFrontmatterToJSON(frontmatter);
+
     // Prepare content data
     const contentData = {
       slug: frontmatter.slug,
@@ -110,9 +182,6 @@ export async function syncMarkdownToSupabase(
       funnel_stage: frontmatter.funnelStage,
       topic: frontmatter.topic,
       language: frontmatter.language,
-      meta_title: frontmatter.seo.metaTitle,
-      meta_description: frontmatter.seo.metaDescription,
-      canonical_url: frontmatter.seo.canonical,
       github_path: githubPath,
       markdown_hash: hash,
       frontmatter_yaml: JSON.stringify(frontmatter),
@@ -126,6 +195,13 @@ export async function syncMarkdownToSupabase(
       area_served: frontmatter.geo?.areaServed || null,
       author_id: authorId,
       reviewer_id: reviewerId,
+      published: frontmatter.published !== false,
+      // Add JSONB fields
+      ...jsonbFields,
+      // Keep legacy fields for backward compatibility
+      meta_title: frontmatter.seo?.metaTitle,
+      meta_description: frontmatter.seo?.metaDescription,
+      canonical_url: frontmatter.seo?.canonical,
       image_url: frontmatter.heroImage?.src,
       alt_text: frontmatter.heroImage?.alt,
       next_step_url: frontmatter.nextStep ? `/qa/${frontmatter.nextStep.slug}` : null,

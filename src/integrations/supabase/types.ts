@@ -249,6 +249,7 @@ export type Database = {
       blog_posts: {
         Row: {
           ai_generated_image: boolean | null
+          ai_score: number | null
           area_served: string[] | null
           author: string | null
           author_id: string | null
@@ -260,21 +261,28 @@ export type Database = {
           custom_cta_text: string | null
           custom_cta_url: string | null
           excerpt: string
+          external_links_ai: Json[] | null
           featured_image: string
           frontmatter_yaml: string | null
           funnel_stage: string | null
           geo_coordinates: Json | null
           github_path: string | null
+          hero_image: Json | null
           id: string
           image_alt: string
+          internal_links: Json[] | null
           keywords: string[] | null
           language: string
           markdown_hash: string | null
           meta_description: string | null
           meta_title: string | null
+          next_step: Json | null
+          published: boolean | null
           published_at: string | null
           reading_time_minutes: number | null
+          reviewer: Json | null
           reviewer_id: string | null
+          seo: Json | null
           slug: string
           speakable_answer: string | null
           speakable_questions: Json | null
@@ -286,6 +294,7 @@ export type Database = {
         }
         Insert: {
           ai_generated_image?: boolean | null
+          ai_score?: number | null
           area_served?: string[] | null
           author?: string | null
           author_id?: string | null
@@ -297,21 +306,28 @@ export type Database = {
           custom_cta_text?: string | null
           custom_cta_url?: string | null
           excerpt: string
+          external_links_ai?: Json[] | null
           featured_image: string
           frontmatter_yaml?: string | null
           funnel_stage?: string | null
           geo_coordinates?: Json | null
           github_path?: string | null
+          hero_image?: Json | null
           id?: string
           image_alt: string
+          internal_links?: Json[] | null
           keywords?: string[] | null
           language?: string
           markdown_hash?: string | null
           meta_description?: string | null
           meta_title?: string | null
+          next_step?: Json | null
+          published?: boolean | null
           published_at?: string | null
           reading_time_minutes?: number | null
+          reviewer?: Json | null
           reviewer_id?: string | null
+          seo?: Json | null
           slug: string
           speakable_answer?: string | null
           speakable_questions?: Json | null
@@ -323,6 +339,7 @@ export type Database = {
         }
         Update: {
           ai_generated_image?: boolean | null
+          ai_score?: number | null
           area_served?: string[] | null
           author?: string | null
           author_id?: string | null
@@ -334,21 +351,28 @@ export type Database = {
           custom_cta_text?: string | null
           custom_cta_url?: string | null
           excerpt?: string
+          external_links_ai?: Json[] | null
           featured_image?: string
           frontmatter_yaml?: string | null
           funnel_stage?: string | null
           geo_coordinates?: Json | null
           github_path?: string | null
+          hero_image?: Json | null
           id?: string
           image_alt?: string
+          internal_links?: Json[] | null
           keywords?: string[] | null
           language?: string
           markdown_hash?: string | null
           meta_description?: string | null
           meta_title?: string | null
+          next_step?: Json | null
+          published?: boolean | null
           published_at?: string | null
           reading_time_minutes?: number | null
+          reviewer?: Json | null
           reviewer_id?: string | null
+          seo?: Json | null
           slug?: string
           speakable_answer?: string | null
           speakable_questions?: Json | null
@@ -622,9 +646,11 @@ export type Database = {
       qa_articles: {
         Row: {
           ai_optimization_score: number | null
+          ai_score: number | null
           alt_text: string | null
           appointment_booking_enabled: boolean | null
           area_served: string[] | null
+          author: Json | null
           author_id: string | null
           citation_ready: boolean | null
           city: string
@@ -634,6 +660,7 @@ export type Database = {
           content: string
           created_at: string
           excerpt: string
+          external_links_ai: Json[] | null
           final_cta_type: Database["public"]["Enums"]["cta_type"] | null
           final_cta_url: string | null
           frontmatter_yaml: string | null
@@ -643,9 +670,11 @@ export type Database = {
           h1_title: string | null
           h2_title: string | null
           h3_title: string | null
+          hero_image: Json | null
           id: string
           image_url: string | null
           intent: string | null
+          internal_links: Json[] | null
           language: string
           last_linked_at: string | null
           last_linked_by: string | null
@@ -655,12 +684,16 @@ export type Database = {
           markdown_frontmatter: Json | null
           markdown_hash: string | null
           multilingual_parent_id: string | null
+          next_step: Json | null
           next_step_text: string | null
           next_step_url: string | null
           parent_id: string | null
           points_to_bofu_id: string | null
           points_to_mofu_id: string | null
+          published: boolean | null
+          reviewer: Json | null
           reviewer_id: string | null
+          seo: Json | null
           slug: string
           speakable_answer: string | null
           speakable_questions: Json | null
@@ -674,9 +707,11 @@ export type Database = {
         }
         Insert: {
           ai_optimization_score?: number | null
+          ai_score?: number | null
           alt_text?: string | null
           appointment_booking_enabled?: boolean | null
           area_served?: string[] | null
+          author?: Json | null
           author_id?: string | null
           citation_ready?: boolean | null
           city?: string
@@ -686,6 +721,7 @@ export type Database = {
           content: string
           created_at?: string
           excerpt: string
+          external_links_ai?: Json[] | null
           final_cta_type?: Database["public"]["Enums"]["cta_type"] | null
           final_cta_url?: string | null
           frontmatter_yaml?: string | null
@@ -695,9 +731,11 @@ export type Database = {
           h1_title?: string | null
           h2_title?: string | null
           h3_title?: string | null
+          hero_image?: Json | null
           id?: string
           image_url?: string | null
           intent?: string | null
+          internal_links?: Json[] | null
           language?: string
           last_linked_at?: string | null
           last_linked_by?: string | null
@@ -707,12 +745,16 @@ export type Database = {
           markdown_frontmatter?: Json | null
           markdown_hash?: string | null
           multilingual_parent_id?: string | null
+          next_step?: Json | null
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
           points_to_bofu_id?: string | null
           points_to_mofu_id?: string | null
+          published?: boolean | null
+          reviewer?: Json | null
           reviewer_id?: string | null
+          seo?: Json | null
           slug: string
           speakable_answer?: string | null
           speakable_questions?: Json | null
@@ -726,9 +768,11 @@ export type Database = {
         }
         Update: {
           ai_optimization_score?: number | null
+          ai_score?: number | null
           alt_text?: string | null
           appointment_booking_enabled?: boolean | null
           area_served?: string[] | null
+          author?: Json | null
           author_id?: string | null
           citation_ready?: boolean | null
           city?: string
@@ -738,6 +782,7 @@ export type Database = {
           content?: string
           created_at?: string
           excerpt?: string
+          external_links_ai?: Json[] | null
           final_cta_type?: Database["public"]["Enums"]["cta_type"] | null
           final_cta_url?: string | null
           frontmatter_yaml?: string | null
@@ -747,9 +792,11 @@ export type Database = {
           h1_title?: string | null
           h2_title?: string | null
           h3_title?: string | null
+          hero_image?: Json | null
           id?: string
           image_url?: string | null
           intent?: string | null
+          internal_links?: Json[] | null
           language?: string
           last_linked_at?: string | null
           last_linked_by?: string | null
@@ -759,12 +806,16 @@ export type Database = {
           markdown_frontmatter?: Json | null
           markdown_hash?: string | null
           multilingual_parent_id?: string | null
+          next_step?: Json | null
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
           points_to_bofu_id?: string | null
           points_to_mofu_id?: string | null
+          published?: boolean | null
+          reviewer?: Json | null
           reviewer_id?: string | null
+          seo?: Json | null
           slug?: string
           speakable_answer?: string | null
           speakable_questions?: Json | null

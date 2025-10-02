@@ -11,6 +11,7 @@ export interface FrontmatterAuthor {
   name: string;
   credentials?: string;
   bio?: string;
+  profileUrl?: string;
 }
 
 export interface FrontmatterReviewer {
@@ -35,13 +36,18 @@ export interface FrontmatterHeroImage {
 
 export interface FrontmatterInternalLink {
   slug: string;
-  anchor: string;
+  anchor?: string;
+  anchorText?: string;
+  context?: string;
 }
 
 export interface FrontmatterNextStep {
   title: string;
-  slug: string;
-  cta: string;
+  slug?: string;
+  url?: string;
+  cta?: string;
+  preview?: string;
+  funnelStage?: 'TOFU' | 'MOFU' | 'BOFU';
 }
 
 export interface ParsedFrontmatter {
@@ -60,6 +66,7 @@ export interface ParsedFrontmatter {
   heroImage?: FrontmatterHeroImage;
   internalLinks?: FrontmatterInternalLink[];
   nextStep?: FrontmatterNextStep;
+  published?: boolean;
 }
 
 export interface ParsedMarkdownContent {
