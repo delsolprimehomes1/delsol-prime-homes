@@ -249,7 +249,9 @@ export type Database = {
       blog_posts: {
         Row: {
           ai_generated_image: boolean | null
+          area_served: string[] | null
           author: string | null
+          author_id: string | null
           canonical_url: string | null
           category_key: string
           city_tags: string[] | null
@@ -259,16 +261,23 @@ export type Database = {
           custom_cta_url: string | null
           excerpt: string
           featured_image: string
+          frontmatter_yaml: string | null
           funnel_stage: string | null
+          geo_coordinates: Json | null
+          github_path: string | null
           id: string
           image_alt: string
           keywords: string[] | null
           language: string
+          markdown_hash: string | null
           meta_description: string | null
           meta_title: string | null
           published_at: string | null
           reading_time_minutes: number | null
+          reviewer_id: string | null
           slug: string
+          speakable_answer: string | null
+          speakable_questions: Json | null
           status: string | null
           tags: string[] | null
           title: string
@@ -277,7 +286,9 @@ export type Database = {
         }
         Insert: {
           ai_generated_image?: boolean | null
+          area_served?: string[] | null
           author?: string | null
+          author_id?: string | null
           canonical_url?: string | null
           category_key: string
           city_tags?: string[] | null
@@ -287,16 +298,23 @@ export type Database = {
           custom_cta_url?: string | null
           excerpt: string
           featured_image: string
+          frontmatter_yaml?: string | null
           funnel_stage?: string | null
+          geo_coordinates?: Json | null
+          github_path?: string | null
           id?: string
           image_alt: string
           keywords?: string[] | null
           language?: string
+          markdown_hash?: string | null
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
+          reviewer_id?: string | null
           slug: string
+          speakable_answer?: string | null
+          speakable_questions?: Json | null
           status?: string | null
           tags?: string[] | null
           title: string
@@ -305,7 +323,9 @@ export type Database = {
         }
         Update: {
           ai_generated_image?: boolean | null
+          area_served?: string[] | null
           author?: string | null
+          author_id?: string | null
           canonical_url?: string | null
           category_key?: string
           city_tags?: string[] | null
@@ -315,20 +335,72 @@ export type Database = {
           custom_cta_url?: string | null
           excerpt?: string
           featured_image?: string
+          frontmatter_yaml?: string | null
           funnel_stage?: string | null
+          geo_coordinates?: Json | null
+          github_path?: string | null
           id?: string
           image_alt?: string
           keywords?: string[] | null
           language?: string
+          markdown_hash?: string | null
           meta_description?: string | null
           meta_title?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
+          reviewer_id?: string | null
           slug?: string
+          speakable_answer?: string | null
+          speakable_questions?: Json | null
           status?: string | null
           tags?: string[] | null
           title?: string
           toc_data?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "content_authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blog_posts_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "content_reviewers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_authors: {
+        Row: {
+          bio: string | null
+          created_at: string
+          credentials: string | null
+          id: string
+          name: string
+          profile_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          credentials?: string | null
+          id?: string
+          name: string
+          profile_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          credentials?: string | null
+          id?: string
+          name?: string
+          profile_url?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -360,6 +432,33 @@ export type Database = {
           processed_questions?: number | null
           status?: string | null
           total_questions?: number | null
+        }
+        Relationships: []
+      }
+      content_reviewers: {
+        Row: {
+          created_at: string
+          credentials: string | null
+          id: string
+          name: string
+          review_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credentials?: string | null
+          id?: string
+          name: string
+          review_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credentials?: string | null
+          id?: string
+          name?: string
+          review_date?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -525,6 +624,8 @@ export type Database = {
           ai_optimization_score: number | null
           alt_text: string | null
           appointment_booking_enabled: boolean | null
+          area_served: string[] | null
+          author_id: string | null
           citation_ready: boolean | null
           city: string
           cluster_id: string | null
@@ -535,7 +636,10 @@ export type Database = {
           excerpt: string
           final_cta_type: Database["public"]["Enums"]["cta_type"] | null
           final_cta_url: string | null
+          frontmatter_yaml: string | null
           funnel_stage: string
+          geo_coordinates: Json | null
+          github_path: string | null
           h1_title: string | null
           h2_title: string | null
           h3_title: string | null
@@ -549,13 +653,17 @@ export type Database = {
           linking_notes: string | null
           location_focus: string | null
           markdown_frontmatter: Json | null
+          markdown_hash: string | null
           multilingual_parent_id: string | null
           next_step_text: string | null
           next_step_url: string | null
           parent_id: string | null
           points_to_bofu_id: string | null
           points_to_mofu_id: string | null
+          reviewer_id: string | null
           slug: string
+          speakable_answer: string | null
+          speakable_questions: Json | null
           tags: string[] | null
           target_audience: string | null
           title: string
@@ -568,6 +676,8 @@ export type Database = {
           ai_optimization_score?: number | null
           alt_text?: string | null
           appointment_booking_enabled?: boolean | null
+          area_served?: string[] | null
+          author_id?: string | null
           citation_ready?: boolean | null
           city?: string
           cluster_id?: string | null
@@ -578,7 +688,10 @@ export type Database = {
           excerpt: string
           final_cta_type?: Database["public"]["Enums"]["cta_type"] | null
           final_cta_url?: string | null
+          frontmatter_yaml?: string | null
           funnel_stage: string
+          geo_coordinates?: Json | null
+          github_path?: string | null
           h1_title?: string | null
           h2_title?: string | null
           h3_title?: string | null
@@ -592,13 +705,17 @@ export type Database = {
           linking_notes?: string | null
           location_focus?: string | null
           markdown_frontmatter?: Json | null
+          markdown_hash?: string | null
           multilingual_parent_id?: string | null
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
           points_to_bofu_id?: string | null
           points_to_mofu_id?: string | null
+          reviewer_id?: string | null
           slug: string
+          speakable_answer?: string | null
+          speakable_questions?: Json | null
           tags?: string[] | null
           target_audience?: string | null
           title: string
@@ -611,6 +728,8 @@ export type Database = {
           ai_optimization_score?: number | null
           alt_text?: string | null
           appointment_booking_enabled?: boolean | null
+          area_served?: string[] | null
+          author_id?: string | null
           citation_ready?: boolean | null
           city?: string
           cluster_id?: string | null
@@ -621,7 +740,10 @@ export type Database = {
           excerpt?: string
           final_cta_type?: Database["public"]["Enums"]["cta_type"] | null
           final_cta_url?: string | null
+          frontmatter_yaml?: string | null
           funnel_stage?: string
+          geo_coordinates?: Json | null
+          github_path?: string | null
           h1_title?: string | null
           h2_title?: string | null
           h3_title?: string | null
@@ -635,13 +757,17 @@ export type Database = {
           linking_notes?: string | null
           location_focus?: string | null
           markdown_frontmatter?: Json | null
+          markdown_hash?: string | null
           multilingual_parent_id?: string | null
           next_step_text?: string | null
           next_step_url?: string | null
           parent_id?: string | null
           points_to_bofu_id?: string | null
           points_to_mofu_id?: string | null
+          reviewer_id?: string | null
           slug?: string
+          speakable_answer?: string | null
+          speakable_questions?: Json | null
           tags?: string[] | null
           target_audience?: string | null
           title?: string
@@ -673,6 +799,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "qa_articles_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "content_authors"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "qa_articles_multilingual_parent_id_fkey"
             columns: ["multilingual_parent_id"]
             isOneToOne: false
@@ -684,6 +817,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "qa_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qa_articles_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "content_reviewers"
             referencedColumns: ["id"]
           },
         ]

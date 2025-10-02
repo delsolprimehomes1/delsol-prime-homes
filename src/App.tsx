@@ -20,6 +20,7 @@ import QACategoryMigration from "./pages/QACategoryMigration";
 import ClusterReorganization from "./pages/ClusterReorganization";
 import AIOptimizationDashboard from "./pages/AIOptimizationDashboard";
 import BlogBuilderPage from "./pages/BlogBuilder";
+import MarkdownManagerPage from "./pages/MarkdownManager";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/content-manager" element={<ContentManager />} />
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />
               <Route path="/blog-builder" element={<BlogBuilderPage />} />
+              <Route path="/markdown-manager" element={<MarkdownManagerPage />} />
               <Route path="/book-viewing" element={<BookViewing />} />
           <Route path="/admin/qa-migration" element={<QACategoryMigration />} />
           <Route path="/admin/cluster-reorganization" element={<ClusterReorganization />} />
