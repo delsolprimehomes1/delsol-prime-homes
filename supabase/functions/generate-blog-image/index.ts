@@ -23,7 +23,11 @@ serve(async (req) => {
       content,
       visualType = 'image',
       funnelStage,
-      tags = []
+      tags = [],
+      articleType = 'blog',
+      articleSlug = 'unknown',
+      language = 'en',
+      geoCoordinates
     } = await req.json();
     
     // Support both old (blog) and new (article) parameter names
@@ -53,20 +57,14 @@ serve(async (req) => {
     console.log('Generated prompt:', imagePrompt);
     console.log('Visual type:', visualType);
 
-    // Use nano-banana/edit for image generation with base template editing
+    // Use nano-banana/edit for image generation
     const endpoint = 'https://fal.run/fal-ai/nano-banana/edit';
     const aspectRatio = visualType === 'diagram' ? '1:1' : '16:9';
     
-    // Use a neutral white canvas as base image (1x1 white pixel data URL)
+    // Use a neutral white canvas as base image
     const baseImageUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
     
-    console.log('Calling FAL.ai:', {
-      endpoint,
-      visualType,
-      aspectRatio,
-      apiKeyConfigured: !!falApiKey,
-      apiKeyLength: falApiKey.length
-    });
+    console.log('Calling FAL.ai...');
 
     const imageResponse = await fetch(endpoint, {
       method: 'POST',
@@ -86,15 +84,8 @@ serve(async (req) => {
 
     if (!imageResponse.ok) {
       const errorText = await imageResponse.text();
-      console.error('FAL.ai API error:', {
-        status: imageResponse.status,
-        statusText: imageResponse.statusText,
-        errorBody: errorText,
-        apiKeyLength: falApiKey.length,
-        apiKeyPrefix: falApiKey.substring(0, 8) + '...',
-        endpoint
-      });
-      throw new Error(`FAL.ai API error: ${imageResponse.status} - ${errorText.substring(0, 200)}`);
+      console.error('FAL.ai API error:', imageResponse.status, errorText);
+      throw new Error(`FAL.ai API error: ${imageResponse.status}`);
     }
 
     const imageData = await imageResponse.json();
@@ -114,16 +105,19 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Generate filename based on visual type
+    // Generate filename with structured path: {type}/{language}/{slug}/{filename}
     const timestamp = Date.now();
-    const bucketName = visualType === 'diagram' || visualType === 'image' ? 'article-visuals' : 'blog-images';
-    const filename = `${visualType || 'blog'}-${timestamp}.jpg`;
-    const filePath = `${filename}`;
+    const randomStr = Math.random().toString(36).substring(2, 8);
+    const filename = `${timestamp}-${randomStr}.jpg`;
+    const storagePath = `${articleType}/${language}/${articleSlug}/${filename}`;
+
+    console.log('Uploading to Supabase Storage:', storagePath);
 
     // Upload to Supabase Storage
+    const bucketName = 'article-visuals';
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(bucketName)
-      .upload(filePath, imageBlob, {
+      .upload(storagePath, imageBlob, {
         contentType: 'image/jpeg',
         upsert: false
       });
@@ -136,14 +130,40 @@ serve(async (req) => {
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
       .from(bucketName)
-      .getPublicUrl(filePath);
+      .getPublicUrl(storagePath);
 
     console.log('Image uploaded successfully:', publicUrl);
+
+    // Create metadata record with EXIF geolocation
+    const metadataPayload = {
+      storage_path: `${bucketName}/${storagePath}`,
+      article_type: articleType,
+      alt_text: {
+        en: generateAltText(finalTitle, visualType)
+      },
+      title: finalTitle,
+      description: imagePrompt,
+      exif_latitude: geoCoordinates?.latitude || 36.5100, // Costa del Sol default
+      exif_longitude: geoCoordinates?.longitude || -4.8826,
+      exif_location_name: geoCoordinates?.locationName || 'Costa del Sol, Málaga, Spain',
+      mime_type: 'image/jpeg'
+    };
+
+    const { error: metadataError } = await supabase
+      .from('image_metadata')
+      .insert(metadataPayload);
+
+    if (metadataError) {
+      console.error('Failed to create metadata:', metadataError);
+      // Don't fail the request, just log the error
+    }
 
     return new Response(JSON.stringify({ 
       success: true,
       imageUrl: publicUrl,
-      prompt: imagePrompt
+      storagePath: `${bucketName}/${storagePath}`,
+      prompt: imagePrompt,
+      metadata: metadataPayload
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -151,7 +171,6 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error generating image:', error);
     
-    // Provide more specific error messages
     let errorMessage = 'Unknown error occurred';
     let errorDetails = '';
     
@@ -190,15 +209,11 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   const lowerTitle = title.toLowerCase();
   const lowerContent = content.toLowerCase();
   
-  // Brand colors and styling with explicit 2025 date context (no company name for cleaner visuals)
-  const brandStyle = "luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, use 2025 for any dates (NEVER 2024 or any other year)";
+  const brandStyle = "luxury real estate aesthetic, Costa del Sol Mediterranean style, professional, modern, clean, use 2025 for any dates";
   const currentYear = "2025";
-  
-  // Explicit negative prompt to exclude all branding, logos, domains, and websites
   const negativePrompt = "no logos, no website URLs, no domains, no company names, no branded content, no contact information, no text overlays, no watermarks, no signs with text";
   
   if (visualType === 'diagram') {
-    // Generate diagram-specific prompts with explicit 2025 date instructions
     let diagramType = "professional infographic";
     
     if (lowerTitle.includes('process') || lowerTitle.includes('steps')) {
@@ -213,7 +228,6 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
       diagramType = "pricing breakdown chart";
     }
     
-    // Add explicit 2025 instructions for diagrams - generic report branding
     const yearInstructions = "IMPORTANT: Use year 2025 for all dates. If showing a report or data, display 'Property Market Analysis 2025' or 'Real Estate Data 2025'. Never use 2024 or any other year.";
     
     return `${diagramType} about ${title}, ${brandStyle}, ${yearInstructions}, clean minimal layout, easy to read, charts and icons, white background, blue and gold accents, high quality infographic design, show "${currentYear}" clearly if dates are visible, clean design without any branding elements, ${negativePrompt}`;
@@ -223,7 +237,6 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   let basePrompt = "Professional real estate photography";
   
   if (funnelStage === 'TOFU') {
-    // Top of funnel: broad, aspirational imagery
     if (lowerTitle.includes('costa del sol') || tags.includes('costa-del-sol')) {
       basePrompt = `Stunning aerial view of Costa del Sol coastline, luxury villas, Mediterranean Sea, Spanish architecture, modern ${currentYear} aesthetic, clean architecture without signage`;
     } else if (lowerTitle.includes('property') || lowerTitle.includes('home')) {
@@ -232,7 +245,6 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
       basePrompt = "Elegant workspace with property documents and laptop, professional real estate planning concept, clean desk without branded materials";
     }
   } else if (funnelStage === 'MOFU') {
-    // Middle of funnel: more specific, showing details
     if (lowerTitle.includes('inspection') || lowerTitle.includes('viewing')) {
       basePrompt = "Professional real estate agent showing property details to clients, modern villa interior, clean professional setting";
     } else if (lowerTitle.includes('investment') || lowerTitle.includes('market')) {
@@ -241,7 +253,6 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
       basePrompt = "Beautiful neighborhood street with luxury homes, Costa del Sol architecture, palm trees, clean street without signage";
     }
   } else if (funnelStage === 'BOFU') {
-    // Bottom of funnel: action-oriented, trust-building
     if (lowerTitle.includes('contact') || lowerTitle.includes('schedule')) {
       basePrompt = "Professional real estate agent in modern office, welcoming consultation setup, clean office without branded materials";
     } else if (lowerTitle.includes('service') || lowerTitle.includes('team')) {
@@ -251,7 +262,6 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
     }
   }
   
-  // Add real estate specific themes - sanitized to avoid text/branding
   if (lowerTitle.includes('fsbo') || lowerContent.includes('for sale by owner')) {
     basePrompt = "Beautiful modern home exterior with minimal generic for sale post (no text visible), professional real estate listing photography, clean exterior";
   } else if (lowerTitle.includes('realtor') || lowerTitle.includes('agent')) {
@@ -261,4 +271,11 @@ function generatePrompt({ title, content, visualType, funnelStage, tags = [] }: 
   }
   
   return `${basePrompt}, ${brandStyle}, high quality, professional photography, bright natural lighting, 16:9 composition, suitable for blog header, ${currentYear} context, clean visuals without text overlays or branding, ${negativePrompt}`;
+}
+
+function generateAltText(title?: string, visualType?: string): string {
+  if (visualType === 'diagram') {
+    return `Diagram illustrating ${title || 'process'}`;
+  }
+  return `${title || 'Costa del Sol real estate'} - Professional property image`;
 }

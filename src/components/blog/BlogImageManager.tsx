@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -7,13 +8,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Wand2, Upload, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { uploadImage, generateMultilingualAltText, deleteImage, updateImageMetadata } from '@/utils/uploadImage';
+import { Wand2, Upload, Trash2, Image as ImageIcon, Loader2, Globe } from 'lucide-react';
+import type { SupportedLanguage } from '@/i18n';
 
 interface BlogImage {
   filename: string;
   alt: string;
   caption?: string;
   description?: string;
+  storagePath?: string;
+  altTextMultilingual?: Record<string, string>;
+  captionMultilingual?: Record<string, string>;
 }
 
 interface BlogImageManagerProps {
@@ -21,10 +27,25 @@ interface BlogImageManagerProps {
   onChange: (images: BlogImage[]) => void;
   funnelStage: 'TOFU' | 'MOFU' | 'BOFU';
   blogTitle: string;
+  blogSlug?: string;
+  geoCoordinates?: {
+    latitude: number;
+    longitude: number;
+    locationName?: string;
+  };
 }
 
-export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: BlogImageManagerProps) {
+export function BlogImageManager({ 
+  images, 
+  onChange, 
+  funnelStage, 
+  blogTitle,
+  blogSlug = 'untitled',
+  geoCoordinates
+}: BlogImageManagerProps) {
   const { toast } = useToast();
+  const { i18n } = useTranslation();
+  const currentLanguage = (i18n.language || 'en') as SupportedLanguage;
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -50,31 +71,30 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
           blogContent: aiPrompt || '',
           funnelStage: funnelStage,
           visualType: 'image',
-          customPrompt: aiPrompt || undefined
+          customPrompt: aiPrompt || undefined,
+          articleType: 'blog',
+          articleSlug: blogSlug,
+          language: currentLanguage,
+          geoCoordinates
         }
       });
 
       if (error) throw error;
 
-      // Generate EXIF metadata
-      const exifData = {
-        Camera: 'AI Generated - Lovable Platform',
-        Software: 'LovableAI Content Generator',
-        Copyright: 'DelSolPrimeHomes © ' + new Date().getFullYear(),
-        DateTimeOriginal: new Date().toISOString(),
-        GPSLatitude: '36.7201',
-        GPSLongitude: '-4.4203',
-        GPSLatitudeRef: 'N',
-        GPSLongitudeRef: 'W',
-        ImageDescription: aiPrompt || blogTitle,
-        Artist: 'Hans Beeckman - DelSolPrimeHomes'
-      };
+      // Generate multilingual alt text
+      const altTextMultilingual = generateMultilingualAltText(
+        aiPrompt || `${blogTitle} - Costa del Sol Real Estate`,
+        ['en', 'es', 'de', 'fr', 'nl', 'pl', 'sv', 'da', 'hu'] as SupportedLanguage[]
+      );
 
       const newImage: BlogImage = {
         filename: data.imageUrl || data.url,
-        alt: aiPrompt || `${blogTitle} - Costa del Sol Real Estate`,
+        alt: altTextMultilingual[currentLanguage] || altTextMultilingual['en'],
         caption: aiPrompt,
-        description: `AI-generated image for ${funnelStage} blog post: ${blogTitle}`
+        description: `AI-generated image for ${funnelStage} blog post: ${blogTitle}`,
+        storagePath: data.storagePath,
+        altTextMultilingual,
+        captionMultilingual: {}
       };
 
       onChange([...images, newImage]);
@@ -82,7 +102,7 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
       
       toast({
         title: 'Image Generated',
-        description: 'AI image created with EXIF metadata'
+        description: 'AI image created with EXIF geolocation metadata'
       });
     } catch (error) {
       console.error('AI generation error:', error);
@@ -110,33 +130,44 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
     }
 
     try {
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `blog-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // Generate multilingual alt text
+      const baseAltText = file.name.replace(/\.[^/.]+$/, '').replace(/-/g, ' ');
+      const altTextMultilingual = generateMultilingualAltText(
+        baseAltText,
+        ['en', 'es', 'de', 'fr', 'nl', 'pl', 'sv', 'da', 'hu'] as SupportedLanguage[]
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from('article-visuals')
-        .upload(filePath, file);
+      // Upload with structured path and metadata
+      const result = await uploadImage({
+        file,
+        articleType: 'blog',
+        articleSlug: blogSlug,
+        language: currentLanguage,
+        altText: altTextMultilingual,
+        caption: {},
+        title: blogTitle,
+        geoCoordinates
+      });
 
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('article-visuals')
-        .getPublicUrl(filePath);
+      if (!result.success || !result.storagePath) {
+        throw new Error(result.error || 'Upload failed');
+      }
 
       const newImage: BlogImage = {
-        filename: publicUrl,
-        alt: file.name.replace(/\.[^/.]+$/, ''),
+        filename: result.publicUrl || '',
+        alt: altTextMultilingual[currentLanguage] || altTextMultilingual['en'],
         caption: '',
-        description: ''
+        description: '',
+        storagePath: result.storagePath,
+        altTextMultilingual,
+        captionMultilingual: {}
       };
 
       onChange([...images, newImage]);
       
       toast({
         title: 'Image Uploaded',
-        description: 'Image uploaded successfully'
+        description: 'Image uploaded with metadata and geolocation'
       });
     } catch (error) {
       console.error('Upload error:', error);
@@ -148,7 +179,14 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
     }
   };
 
-  const removeImage = (index: number) => {
+  const removeImage = async (index: number) => {
+    const image = images[index];
+    
+    // Delete from storage if storagePath exists
+    if (image.storagePath) {
+      await deleteImage(image.storagePath);
+    }
+    
     const newImages = images.filter((_, i) => i !== index);
     onChange(newImages);
     toast({
@@ -162,14 +200,39 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
     setEditData(images[index]);
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (editingIndex === null) return;
+    
+    const image = images[editingIndex];
+    
+    // Update multilingual fields
+    const updatedAltTextMultilingual = {
+      ...image.altTextMultilingual,
+      [currentLanguage]: editData.alt || image.alt
+    };
+    
+    const updatedCaptionMultilingual = {
+      ...image.captionMultilingual,
+      [currentLanguage]: editData.caption || ''
+    };
     
     const newImages = [...images];
     newImages[editingIndex] = {
       ...images[editingIndex],
-      ...editData
+      ...editData,
+      altTextMultilingual: updatedAltTextMultilingual,
+      captionMultilingual: updatedCaptionMultilingual
     };
+
+    // Update in database if storagePath exists
+    if (image.storagePath) {
+      await updateImageMetadata(image.storagePath, {
+        alt_text: updatedAltTextMultilingual,
+        caption: updatedCaptionMultilingual,
+        description: editData.description
+      });
+    }
+
     onChange(newImages);
     setEditingIndex(null);
     setEditData({});
@@ -190,7 +253,7 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
             AI Image Generation
           </CardTitle>
           <CardDescription>
-            Generate professional real estate images with automatic EXIF metadata
+            Generate professional real estate images with automatic EXIF geolocation metadata
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -274,15 +337,27 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
                     {editingIndex === idx ? (
                       <div className="flex-1 space-y-3">
                         <div className="space-y-2">
-                          <Label className="text-xs">Alt Text</Label>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs">Alt Text</Label>
+                            <Globe className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              ({currentLanguage.toUpperCase()})
+                            </span>
+                          </div>
                           <Input
                             value={editData.alt || ''}
                             onChange={(e) => setEditData({ ...editData, alt: e.target.value })}
                             placeholder="Descriptive alt text..."
                           />
+                          <p className="text-xs text-muted-foreground">
+                            Editing {currentLanguage} version. Other languages preserved.
+                          </p>
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-xs">Caption</Label>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs">Caption</Label>
+                            <Globe className="h-3 w-3 text-muted-foreground" />
+                          </div>
                           <Input
                             value={editData.caption || ''}
                             onChange={(e) => setEditData({ ...editData, caption: e.target.value })}
@@ -313,6 +388,12 @@ export function BlogImageManager({ images, onChange, funnelStage, blogTitle }: B
                         )}
                         {image.description && (
                           <p className="text-xs text-muted-foreground">{image.description}</p>
+                        )}
+                        {image.storagePath && (
+                          <Badge variant="outline" className="text-xs">
+                            <Globe className="h-3 w-3 mr-1" />
+                            Multilingual + EXIF Geo
+                          </Badge>
                         )}
                         <div className="flex gap-2 pt-2">
                           <Button 

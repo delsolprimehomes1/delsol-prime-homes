@@ -486,6 +486,69 @@ export type Database = {
         }
         Relationships: []
       }
+      image_metadata: {
+        Row: {
+          alt_text: Json
+          article_id: string | null
+          article_type: string | null
+          caption: Json | null
+          created_at: string | null
+          description: string | null
+          exif_latitude: number | null
+          exif_location_name: string | null
+          exif_longitude: number | null
+          file_size: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          storage_path: string
+          title: string | null
+          updated_at: string | null
+          uploaded_at: string | null
+          width: number | null
+        }
+        Insert: {
+          alt_text?: Json
+          article_id?: string | null
+          article_type?: string | null
+          caption?: Json | null
+          created_at?: string | null
+          description?: string | null
+          exif_latitude?: number | null
+          exif_location_name?: string | null
+          exif_longitude?: number | null
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          storage_path: string
+          title?: string | null
+          updated_at?: string | null
+          uploaded_at?: string | null
+          width?: number | null
+        }
+        Update: {
+          alt_text?: Json
+          article_id?: string | null
+          article_type?: string | null
+          caption?: Json | null
+          created_at?: string | null
+          description?: string | null
+          exif_latitude?: number | null
+          exif_location_name?: string | null
+          exif_longitude?: number | null
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          storage_path?: string
+          title?: string | null
+          updated_at?: string | null
+          uploaded_at?: string | null
+          width?: number | null
+        }
+        Relationships: []
+      }
       keyword_rankings: {
         Row: {
           clicks: number | null
