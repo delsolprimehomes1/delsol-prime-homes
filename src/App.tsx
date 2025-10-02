@@ -21,6 +21,7 @@ import ClusterReorganization from "./pages/ClusterReorganization";
 import AIOptimizationDashboard from "./pages/AIOptimizationDashboard";
 import LinkReviewDashboard from "./pages/LinkReviewDashboard";
 import PreLaunchValidation from "./pages/PreLaunchValidation";
+import AIOptimizationTest from "./pages/AIOptimizationTest";
 import BlogBuilderPage from "./pages/BlogBuilder";
 import MarkdownManagerPage from "./pages/MarkdownManager";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ const App = () => (
           <Route path="/admin/cluster-tracker" element={<ClusterTracker />} />
           <Route path="/admin/link-review" element={<LinkReviewDashboard />} />
           <Route path="/admin/pre-launch" element={<PreLaunchValidation />} />
+          <Route path="/admin/ai-test" element={<AIOptimizationTest />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />
