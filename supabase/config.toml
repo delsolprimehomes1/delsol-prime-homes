@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.ai-link-insertion]
 verify_jwt = false
+
+[functions.validate-and-fix-links]
+verify_jwt = false

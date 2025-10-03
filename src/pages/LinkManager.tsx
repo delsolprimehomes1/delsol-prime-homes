@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Link2, Search, Filter, RefreshCw, Loader2, Sparkles, Plus } from 'lucide-react';
+import { ExternalLink, Link2, Search, Filter, RefreshCw, Loader2, Sparkles, Plus, AlertTriangle, CheckCircle, Activity } from 'lucide-react';
 import { LinkPreviewModal } from '@/components/LinkPreviewModal';
+import { BrokenLinkRepairModal } from '@/components/BrokenLinkRepairModal';
 import { insertInlineLinks } from '@/utils/insertInlineLinks';
 
 interface Article {
@@ -29,7 +30,7 @@ export default function LinkManager() {
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'blog' | 'qa'>('all');
-  const [linkStatus, setLinkStatus] = useState<'all' | 'missing-external' | 'missing-internal' | 'missing-both'>('all');
+  const [linkStatus, setLinkStatus] = useState<'all' | 'missing-external' | 'missing-internal' | 'missing-both' | 'broken'>('all');
   const [loading, setLoading] = useState(true);
   const [generatingLinks, setGeneratingLinks] = useState(false);
   const [bulkGenerating, setBulkGenerating] = useState(false);
@@ -42,15 +43,23 @@ export default function LinkManager() {
     article: Article;
   } | null>(null);
 
+  // Broken link repair modal state
+  const [repairModalOpen, setRepairModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [brokenLinkReports, setBrokenLinkReports] = useState<any[]>([]);
+  const [brokenLinkStats, setBrokenLinkStats] = useState<any>(null);
+  const [scanningLinks, setScanningLinks] = useState(false);
+
   const { toast } = useToast();
 
   useEffect(() => {
     fetchArticles();
+    fetchBrokenLinkStats();
   }, []);
 
   useEffect(() => {
     filterArticlesList();
-  }, [articles, searchTerm, typeFilter, linkStatus]);
+  }, [articles, searchTerm, typeFilter, linkStatus, brokenLinkReports]);
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -118,6 +127,56 @@ export default function LinkManager() {
     }
   };
 
+  const fetchBrokenLinkStats = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('validate-and-fix-links', {
+        body: { action: 'scan' }
+      });
+
+      if (error) throw error;
+
+      setBrokenLinkStats(data.summary);
+      setBrokenLinkReports(data.reports || []);
+    } catch (error) {
+      console.error('Error fetching broken link stats:', error);
+    }
+  };
+
+  const handleScanBrokenLinks = async () => {
+    setScanningLinks(true);
+    toast({
+      title: "Scanning Links",
+      description: "Analyzing all articles for broken links...",
+    });
+    
+    try {
+      await fetchBrokenLinkStats();
+      toast({
+        title: "Scan Complete",
+        description: "Check the results in the dashboard",
+      });
+    } catch (error) {
+      console.error('Error scanning links:', error);
+      toast({
+        title: "Scan Failed",
+        description: "Failed to scan for broken links",
+        variant: "destructive",
+      });
+    } finally {
+      setScanningLinks(false);
+    }
+  };
+
+  const handleOpenRepairModal = (report: any) => {
+    setSelectedReport(report);
+    setRepairModalOpen(true);
+  };
+
+  const handleRepairComplete = () => {
+    fetchBrokenLinkStats();
+    fetchArticles();
+  };
+
   const filterArticlesList = () => {
     let filtered = articles;
 
@@ -131,6 +190,9 @@ export default function LinkManager() {
       filtered = filtered.filter(a => a.internal_link_count === 0);
     } else if (linkStatus === 'missing-both') {
       filtered = filtered.filter(a => a.external_link_count === 0 && a.internal_link_count === 0);
+    } else if (linkStatus === 'broken') {
+      const articlesWithBrokenLinks = new Set(brokenLinkReports.map(r => r.articleId));
+      filtered = filtered.filter(a => articlesWithBrokenLinks.has(a.id));
     }
 
     if (searchTerm) {
@@ -358,6 +420,10 @@ export default function LinkManager() {
     });
   };
 
+  const healthScore = brokenLinkStats 
+    ? Math.round(((brokenLinkStats.totalArticlesScanned - brokenLinkStats.articlesWithBrokenLinks) / brokenLinkStats.totalArticlesScanned) * 100)
+    : 100;
+
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
@@ -374,47 +440,84 @@ export default function LinkManager() {
                 Generate and insert inline hyperlinks automatically
               </p>
             </div>
-            <Button
-              onClick={generateBulkLinks}
-              disabled={bulkGenerating}
-              size="lg"
-            >
-              {bulkGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Bulk Generate
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleScanBrokenLinks}
+                disabled={scanningLinks}
+                variant="outline"
+              >
+                {scanningLinks ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Scanning...
+                  </>
+                ) : (
+                  <>
+                    <Activity className="h-4 w-4 mr-2" />
+                    Scan Broken Links
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={generateBulkLinks}
+                disabled={bulkGenerating}
+                size="default"
+              >
+                {bulkGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Bulk Generate
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
             <Card className="p-4">
               <div className="text-sm text-muted-foreground">Total Articles</div>
               <div className="text-2xl font-bold mt-2">{articles.length}</div>
             </Card>
+            <Card className="p-4 border-destructive/50">
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+                Broken Links
+              </div>
+              <div className="text-2xl font-bold mt-2 text-destructive">
+                {brokenLinkStats?.totalBrokenLinks || 0}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                in {brokenLinkStats?.articlesWithBrokenLinks || 0} articles
+              </div>
+            </Card>
+            <Card className="p-4 border-green-500/50">
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                Health Score
+              </div>
+              <div className="text-2xl font-bold mt-2 text-green-500">
+                {healthScore}%
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                no broken links
+              </div>
+            </Card>
             <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Missing External Links</div>
+              <div className="text-sm text-muted-foreground">Missing External</div>
               <div className="text-2xl font-bold mt-2 text-destructive">
                 {articles.filter(a => a.external_link_count === 0).length}
               </div>
             </Card>
             <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Missing Internal Links</div>
+              <div className="text-sm text-muted-foreground">Missing Internal</div>
               <div className="text-2xl font-bold mt-2 text-destructive">
                 {articles.filter(a => a.internal_link_count === 0).length}
-              </div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Fully Optimized</div>
-              <div className="text-2xl font-bold mt-2 text-green-600">
-                {articles.filter(a => a.external_link_count > 0 && a.internal_link_count > 0).length}
               </div>
             </Card>
           </div>
@@ -453,6 +556,7 @@ export default function LinkManager() {
                 <SelectItem value="missing-external">Missing External</SelectItem>
                 <SelectItem value="missing-internal">Missing Internal</SelectItem>
                 <SelectItem value="missing-both">Missing Both</SelectItem>
+                <SelectItem value="broken">Broken Links Only</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -465,74 +569,83 @@ export default function LinkManager() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredArticles.map(article => (
-              <Card key={article.id} className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">{article.title}</h3>
-                      <Badge variant="outline" className="shrink-0">
-                        {article.type.toUpperCase()}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>Topic: {article.topic || 'N/A'}</span>
-                      <span className="flex items-center gap-1">
-                        <ExternalLink className="h-3 w-3" />
-                        {article.external_link_count} external
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Link2 className="h-3 w-3" />
-                        {article.internal_link_count} internal
-                      </span>
-                      {article.ai_score && (
-                        <Badge variant="secondary">
-                          AI Score: {Math.round(article.ai_score)}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => generateInlineLinks(article)}
-                      disabled={generatingLinks}
-                      variant="default"
-                    >
-                      {generatingLinks ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          AI Insert Links
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={() => generateAndPreviewLinks(article)}
-                      disabled={generatingLinks}
-                      variant="outline"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Preview Links
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
+            {filteredArticles.map(article => {
+              const articleReport = brokenLinkReports.find(r => r.articleId === article.id);
+              const hasBrokenLinks = !!articleReport;
 
-            {filteredArticles.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                No articles found matching your filters
-              </div>
-            )}
+              return (
+                <Card key={article.id} className={`p-4 ${hasBrokenLinks ? 'border-destructive' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold">{article.title}</h3>
+                        <Badge variant="outline" className="shrink-0">
+                          {article.type.toUpperCase()}
+                        </Badge>
+                        {hasBrokenLinks && (
+                          <Badge variant="destructive" className="flex items-center gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {articleReport.brokenLinks.length} broken
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>Topic: {article.topic || 'N/A'}</span>
+                        <span className="flex items-center gap-1">
+                          <ExternalLink className="h-3 w-3" />
+                          {article.external_link_count} external
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Link2 className="h-3 w-3" />
+                          {article.internal_link_count} internal
+                        </span>
+                        {article.ai_score && (
+                          <Badge variant="secondary">
+                            AI Score: {Math.round(article.ai_score)}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasBrokenLinks && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleOpenRepairModal(articleReport)}
+                        >
+                          <AlertTriangle className="h-4 w-4 mr-2" />
+                          Repair Links
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => generateAndPreviewLinks(article)}
+                        disabled={generatingLinks}
+                      >
+                        {generatingLinks ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4 mr-2" />
+                            Preview Links
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
 
-      {previewData && (
+      {/* Modals */}
+      {previewModalOpen && previewData && (
         <LinkPreviewModal
           isOpen={previewModalOpen}
           onClose={() => {
@@ -545,6 +658,16 @@ export default function LinkManager() {
           onApprove={handleApproveLinks}
         />
       )}
+
+      <BrokenLinkRepairModal
+        open={repairModalOpen}
+        onClose={() => {
+          setRepairModalOpen(false);
+          setSelectedReport(null);
+        }}
+        report={selectedReport}
+        onRepairComplete={handleRepairComplete}
+      />
     </div>
   );
 }
