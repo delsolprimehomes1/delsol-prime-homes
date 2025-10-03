@@ -592,6 +592,25 @@ const QAPost = () => {
                   </div>
                 </div>
               </Card>
+
+              {/* Reviewer Badge - E-E-A-T Enhancement */}
+              {article.reviewer && (
+                <Card className="p-4 bg-green-50/50 border-green-200">
+                  <div className="flex items-center justify-center gap-3 text-sm">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <div className="text-center">
+                      <span className="font-medium text-green-900">
+                        ✓ Independently reviewed by {article.reviewer.name}, {article.reviewer.credentials?.[0] || 'CFP'}
+                      </span>
+                      {article.reviewer.reviewDate && (
+                        <span className="text-green-700 ml-2">
+                          | Last checked: {new Date(article.reviewer.reviewDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
               
               {/* Enhanced Funnel Flow Components */}
               <div className="space-y-6 mb-8">
