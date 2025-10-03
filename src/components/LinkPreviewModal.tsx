@@ -15,6 +15,9 @@ interface LinkSuggestion {
   sentenceContext?: string;
   targetTitle?: string;
   targetType?: string;
+  citationTitle?: string;
+  verifiedBySearch?: boolean;
+  domainType?: string;
 }
 
 interface LinkPreviewModalProps {
@@ -116,19 +119,44 @@ export function LinkPreviewModal({
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <code className="bg-muted px-2 py-1 rounded text-sm font-medium">
                             {link.exactText}
                           </code>
+                          {link.verifiedBySearch && (
+                            <Badge variant="default" className="bg-green-500">
+                              ✓ Verified by Web Search
+                            </Badge>
+                          )}
                           {link.authorityScore && (
                             <Badge variant={link.authorityScore >= 90 ? 'default' : 'secondary'}>
                               Authority: {link.authorityScore}
                             </Badge>
                           )}
+                          {link.relevanceScore && (
+                            <Badge variant={link.relevanceScore >= 80 ? 'default' : 'secondary'}>
+                              Relevance: {link.relevanceScore}/100
+                            </Badge>
+                          )}
+                          {link.domainType && (
+                            <Badge variant="outline" className="text-xs">
+                              {link.domainType}
+                            </Badge>
+                          )}
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <a 
+                          href={link.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline mb-2 block break-all"
+                        >
                           {link.url}
-                        </p>
+                        </a>
+                        {link.citationTitle && (
+                          <p className="text-xs text-muted-foreground mb-2 italic">
+                            📖 Source: {link.citationTitle}
+                          </p>
+                        )}
                         {link.reason && (
                           <p className="text-sm mb-2">{link.reason}</p>
                         )}
@@ -188,13 +216,16 @@ export function LinkPreviewModal({
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <code className="bg-muted px-2 py-1 rounded text-sm font-medium">
                             {link.exactText}
                           </code>
                           {link.relevanceScore && (
-                            <Badge variant={link.relevanceScore >= 85 ? 'default' : 'secondary'}>
-                              Relevance: {link.relevanceScore}
+                            <Badge 
+                              variant={link.relevanceScore >= 80 ? 'default' : 'secondary'}
+                              className={link.relevanceScore >= 80 ? 'bg-green-500' : ''}
+                            >
+                              Relevance: {link.relevanceScore}/100
                             </Badge>
                           )}
                           {link.targetType && (
@@ -202,7 +233,7 @@ export function LinkPreviewModal({
                           )}
                         </div>
                         {link.targetTitle && (
-                          <p className="text-sm text-muted-foreground mb-2">
+                          <p className="text-sm font-medium text-foreground mb-2">
                             → {link.targetTitle}
                           </p>
                         )}

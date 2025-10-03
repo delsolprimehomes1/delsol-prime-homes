@@ -78,8 +78,13 @@ serve(async (req) => {
     }
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY not configured');
+    const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
+    
+    if (!PERPLEXITY_API_KEY) {
+      console.warn('PERPLEXITY_API_KEY not configured, falling back to OpenAI');
+    }
+    if (!OPENAI_API_KEY && !PERPLEXITY_API_KEY) {
+      throw new Error('Neither PERPLEXITY_API_KEY nor OPENAI_API_KEY configured');
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -241,39 +246,187 @@ CRITICAL:
 - Match source type to article topic strictly
 - Return valid JSON only`;
 
-    console.log('Calling OpenAI for external links...');
-    const externalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a research assistant. Find REAL authoritative URLs. Return valid JSON only.'
-          },
-          {
-            role: 'user',
-            content: externalLinkPrompt
-          }
-        ],
-        temperature: 0.2,
-        response_format: { type: 'json_object' }
-      })
-    });
+    // Use Perplexity for external links (real-time web search) with OpenAI fallback
+    let externalSuggestions;
+    let externalCitations = [];
+    
+    if (PERPLEXITY_API_KEY) {
+      try {
+        console.log('Using Perplexity for external link discovery...');
+        const perplexityPrompt = `Analyze this Costa del Sol real estate article and find 4-6 authoritative external sources.
 
-    if (!externalResponse.ok) {
-      const errorText = await externalResponse.text();
-      console.error('OpenAI external links error:', externalResponse.status, errorText);
-      throw new Error(`OpenAI request failed: ${externalResponse.status}`);
+Title: ${article.title}
+Content: ${article.content.substring(0, 3000)}
+Topic: ${article.topic}
+
+${topicGuidelines}
+
+Search the web for REAL, currently accessible URLs from:
+${prioritySources}
+
+For each source:
+1. Identify exact phrase in article (2-6 words)
+2. Find the BEST authoritative URL
+3. Verify URL exists and is relevant
+4. Explain why it adds value
+
+Return JSON format:
+{
+  "externalLinks": [
+    {
+      "anchorText": "exact phrase from article",
+      "url": "https://real-authoritative-source.com",
+      "reason": "Why this source is authoritative",
+      "domainType": "government|financial|legal|statistics",
+      "context": "Surrounding sentence"
     }
+  ]
+}
 
-    const externalData = await externalResponse.json();
-    const externalSuggestions = JSON.parse(externalData.choices[0].message.content);
-    console.log(`Generated ${externalSuggestions.externalLinks?.length || 0} external link suggestions`);
+CRITICAL:
+- Only return REAL URLs found via web search
+- Anchor text must be EXACT text from article
+- NO PDFs, only HTML pages
+- Match source type to article topic strictly`;
+
+        const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a research assistant with real-time web access. Find and verify actual URLs. Return valid JSON with citations.'
+              },
+              {
+                role: 'user',
+                content: perplexityPrompt
+              }
+            ],
+            temperature: 0.2,
+            return_citations: true,
+            search_recency_filter: 'month'
+          })
+        });
+
+        if (!perplexityResponse.ok) {
+          throw new Error(`Perplexity failed: ${perplexityResponse.status}`);
+        }
+
+        const perplexityData = await perplexityResponse.json();
+        externalCitations = perplexityData.citations || [];
+        console.log(`Perplexity found ${externalCitations.length} citation sources`);
+        
+        const responseText = perplexityData.choices[0].message.content;
+        
+        // Parse JSON response
+        try {
+          externalSuggestions = JSON.parse(responseText);
+        } catch {
+          // If not JSON, try to extract structured data
+          console.warn('Failed to parse Perplexity JSON, using fallback');
+          externalSuggestions = { externalLinks: [] };
+        }
+
+        // Validate each suggestion against Perplexity's citations
+        const validatedByPerplexity = [];
+        for (const link of externalSuggestions.externalLinks || []) {
+          const citation = externalCitations.find(c => c.url === link.url);
+          
+          if (citation) {
+            validatedByPerplexity.push({
+              ...link,
+              citationTitle: citation.title,
+              verifiedBySearch: true
+            });
+            console.log(`✓ Perplexity verified: ${link.url}`);
+          } else {
+            console.log(`⚠ URL not in citations: ${link.url}`);
+            validatedByPerplexity.push(link);
+          }
+        }
+        
+        externalSuggestions.externalLinks = validatedByPerplexity;
+        console.log(`Generated ${externalSuggestions.externalLinks?.length || 0} Perplexity-backed links`);
+        
+      } catch (perplexityError) {
+        console.error('Perplexity failed, falling back to OpenAI:', perplexityError.message);
+        
+        // Fallback to OpenAI
+        console.log('Using OpenAI fallback for external links...');
+        const externalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a research assistant. Find REAL authoritative URLs. Return valid JSON only.'
+              },
+              {
+                role: 'user',
+                content: externalLinkPrompt
+              }
+            ],
+            temperature: 0.2,
+            response_format: { type: 'json_object' }
+          })
+        });
+
+        if (!externalResponse.ok) {
+          const errorText = await externalResponse.text();
+          console.error('OpenAI external links error:', externalResponse.status, errorText);
+          throw new Error(`Both Perplexity and OpenAI failed`);
+        }
+
+        const externalData = await externalResponse.json();
+        externalSuggestions = JSON.parse(externalData.choices[0].message.content);
+        console.log(`Generated ${externalSuggestions.externalLinks?.length || 0} OpenAI link suggestions`);
+      }
+    } else {
+      // OpenAI only
+      console.log('Using OpenAI for external links (Perplexity not configured)...');
+      const externalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a research assistant. Find REAL authoritative URLs. Return valid JSON only.'
+            },
+            {
+              role: 'user',
+              content: externalLinkPrompt
+            }
+          ],
+          temperature: 0.2,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      if (!externalResponse.ok) {
+        const errorText = await externalResponse.text();
+        console.error('OpenAI external links error:', externalResponse.status, errorText);
+        throw new Error(`OpenAI request failed: ${externalResponse.status}`);
+      }
+
+      const externalData = await externalResponse.json();
+      externalSuggestions = JSON.parse(externalData.choices[0].message.content);
+      console.log(`Generated ${externalSuggestions.externalLinks?.length || 0} OpenAI link suggestions`);
+    }
 
     // ===== STEP 2: VALIDATE EXTERNAL URLS =====
     
@@ -310,95 +463,189 @@ CRITICAL:
 
     // ===== STEP 3: GENERATE INTERNAL LINKS =====
     
-    const { data: relatedArticles } = await supabase
+    // Fetch MORE articles with better topic filtering
+    const { data: allArticles } = await supabase
       .from('qa_articles')
-      .select('id, title, slug, topic, excerpt')
+      .select('id, title, slug, topic, excerpt, summary, content')
       .eq('language', article.language || 'en')
       .neq('id', articleId)
       .eq('published', true)
-      .limit(15);
+      .limit(50);
+    
+    // Filter by topic similarity
+    const relatedArticles = (allArticles || []).filter(a => {
+      const topicMatch = a.topic?.toLowerCase() === article.topic?.toLowerCase();
+      const titleMatch = a.title?.toLowerCase().includes(article.topic?.toLowerCase() || '');
+      return topicMatch || titleMatch;
+    }).slice(0, 30);
 
-    const internalLinkPrompt = `You are finding opportunities to link to related internal content.
+    const internalLinkPrompt = `Find natural internal linking opportunities.
 
-Current Article Content:
-${article.content.substring(0, 2000)}
+Current Article: "${article.title}"
+Content: ${article.content.substring(0, 2000)}
 
-Available Related Articles:
-${JSON.stringify((relatedArticles || []).map(a => ({
-  title: a.title,
-  slug: a.slug,
-  topic: a.topic,
-  excerpt: a.excerpt?.substring(0, 100)
-})), null, 2)}
+Available Internal Articles:
+${relatedArticles.slice(0, 30).map(a => 
+  `- [${a.slug}] ${a.title} (${a.topic})\n  Summary: ${a.summary || a.excerpt?.substring(0, 100) || ''}`
+).join('\n')}
 
-TASK: Find 2-4 phrases in the current article that naturally link to related articles.
+TASK: Find 3-5 phrases in the current article where linking to these internal articles would help readers.
 
 RULES:
-1. Use EXACT text from the current article (3-8 words)
-2. Link should add value (not forced)
-3. Prefer linking to QA articles that answer questions
-4. Don't over-link - only where genuinely helpful
+1. Anchor text must be EXACT text from current article (3-8 words)
+2. Link must genuinely add value (not forced)
+3. Prefer QA articles that answer specific questions
+4. Topic relevance is critical
+5. Don't over-link - only where natural
 
-EXAMPLE OUTPUT:
+Return JSON:
 {
   "internalLinks": [
     {
-      "anchorText": "remote work in 2025",
-      "targetSlug": "working-remotely-spain-guide",
-      "targetTitle": "Complete Guide to Working Remotely in Spain",
-      "reason": "Provides detailed remote work visa and legal requirements",
-      "context": "properties are ideal for remote work in 2025"
+      "anchorText": "NIE number application",
+      "targetSlug": "nie-number-guide-spain",
+      "targetTitle": "Complete NIE Number Guide",
+      "relevanceScore": 95,
+      "reason": "Answers the specific question about NIE process",
+      "context": "You'll need to complete the NIE number application before purchasing"
     }
   ]
-}
+}`;
 
-Return valid JSON only.`;
-
-    console.log('Calling OpenAI for internal links...');
-    const internalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: 'Find internal linking opportunities. Return valid JSON.' },
-          { role: 'user', content: internalLinkPrompt }
-        ],
-        temperature: 0.2,
-        response_format: { type: 'json_object' }
-      })
-    });
-
-    if (!internalResponse.ok) {
-      console.error('OpenAI internal links error:', internalResponse.status);
-    }
-
-    const internalData = await internalResponse.json();
-    const internalSuggestions = JSON.parse(internalData.choices[0].message.content);
+    // Use Perplexity for semantic matching if available, otherwise OpenAI
+    let internalSuggestions;
     
-    // Validate internal links exist in database
+    if (PERPLEXITY_API_KEY) {
+      try {
+        console.log('Using Perplexity for internal link discovery...');
+        const internalResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [
+              { role: 'system', content: 'Find internal linking opportunities. Return valid JSON.' },
+              { role: 'user', content: internalLinkPrompt }
+            ],
+            temperature: 0.2
+          })
+        });
+
+        if (!internalResponse.ok) {
+          throw new Error(`Perplexity internal links failed: ${internalResponse.status}`);
+        }
+
+        const internalData = await internalResponse.json();
+        internalSuggestions = JSON.parse(internalData.choices[0].message.content);
+        console.log(`Perplexity found ${internalSuggestions.internalLinks?.length || 0} internal links`);
+        
+      } catch (perplexityError) {
+        console.error('Perplexity internal links failed, using OpenAI:', perplexityError.message);
+        
+        const internalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+              { role: 'system', content: 'Find internal linking opportunities. Return valid JSON.' },
+              { role: 'user', content: internalLinkPrompt }
+            ],
+            temperature: 0.2,
+            response_format: { type: 'json_object' }
+          })
+        });
+
+        if (!internalResponse.ok) {
+          console.error('OpenAI internal links error:', internalResponse.status);
+        }
+
+        const internalData = await internalResponse.json();
+        internalSuggestions = JSON.parse(internalData.choices[0].message.content);
+      }
+    } else {
+      console.log('Using OpenAI for internal links...');
+      const internalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            { role: 'system', content: 'Find internal linking opportunities. Return valid JSON.' },
+            { role: 'user', content: internalLinkPrompt }
+          ],
+          temperature: 0.2,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      if (!internalResponse.ok) {
+        console.error('OpenAI internal links error:', internalResponse.status);
+      }
+
+      const internalData = await internalResponse.json();
+      internalSuggestions = JSON.parse(internalData.choices[0].message.content);
+    }
+    
+    // Validate internal links with stricter checks
     const validatedInternal = [];
     const skippedInternal = [];
     
     for (const link of internalSuggestions.internalLinks || []) {
-      const exists = relatedArticles?.some(a => a.slug === link.targetSlug);
+      // Verify target article exists
+      const targetArticle = relatedArticles?.find(a => a.slug === link.targetSlug);
       
-      if (exists) {
-        validatedInternal.push({
-          ...link,
-          url: `/${article.language || 'en'}/qa/${link.targetSlug}`
-        });
-      } else {
+      if (!targetArticle) {
         skippedInternal.push({
           targetSlug: link.targetSlug,
           anchorText: link.anchorText,
           reason: 'Article not found in database'
         });
-        console.log(`✗ Skipped internal link: ${link.targetSlug} (article not found)`);
+        console.log(`✗ Skipped internal link: ${link.targetSlug} (not found)`);
+        continue;
       }
+      
+      // Verify anchor text exists in source article
+      const anchorLower = link.anchorText.toLowerCase();
+      const contentLower = article.content.toLowerCase();
+      
+      if (!contentLower.includes(anchorLower)) {
+        skippedInternal.push({
+          targetSlug: link.targetSlug,
+          anchorText: link.anchorText,
+          reason: 'Anchor text not found in article'
+        });
+        console.log(`✗ Skipped internal link: "${link.anchorText}" not in content`);
+        continue;
+      }
+      
+      // Check relevance score (only accept 80+)
+      const relevanceScore = link.relevanceScore || 0;
+      if (relevanceScore < 80 && relevanceScore > 0) {
+        skippedInternal.push({
+          targetSlug: link.targetSlug,
+          anchorText: link.anchorText,
+          reason: `Low relevance score: ${relevanceScore}`
+        });
+        console.log(`✗ Skipped internal link: Low relevance (${relevanceScore}/100)`);
+        continue;
+      }
+      
+      validatedInternal.push({
+        ...link,
+        url: `/${article.language || 'en'}/qa/${link.targetSlug}`,
+        targetId: targetArticle.id
+      });
+      console.log(`✓ Validated internal link: [${link.anchorText}] → ${link.targetSlug} (${relevanceScore}/100)`);
     }
 
     console.log(`\n=== INTERNAL LINK VALIDATION ===`);
