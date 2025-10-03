@@ -80,11 +80,37 @@ serve(async (req) => {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
     
-    if (!PERPLEXITY_API_KEY) {
-      console.warn('PERPLEXITY_API_KEY not configured, falling back to OpenAI');
-    }
+    // Enhanced API key validation
+    console.log(`=== API KEY VALIDATION ===`);
+    console.log(`PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY ? 'Present' : 'Missing'}`);
+    console.log(`PERPLEXITY Format: ${PERPLEXITY_API_KEY ? (PERPLEXITY_API_KEY.startsWith('pplx-') ? '✓ Valid (pplx-)' : '✗ Invalid format') : 'N/A'}`);
+    console.log(`PERPLEXITY Length: ${PERPLEXITY_API_KEY?.length || 0} chars`);
+    console.log(`OPENAI_API_KEY: ${OPENAI_API_KEY ? 'Present' : 'Missing'}`);
+    console.log(`OPENAI Format: ${OPENAI_API_KEY ? (OPENAI_API_KEY.startsWith('sk-') ? '✓ Valid (sk-)' : '✗ Invalid format') : 'N/A'}`);
+    console.log(`OPENAI Length: ${OPENAI_API_KEY?.length || 0} chars`);
+    
     if (!OPENAI_API_KEY && !PERPLEXITY_API_KEY) {
-      throw new Error('Neither PERPLEXITY_API_KEY nor OPENAI_API_KEY configured');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Missing API Keys',
+          details: {
+            message: 'Both PERPLEXITY_API_KEY and OPENAI_API_KEY are missing',
+            fix: 'Set at least one API key in Supabase Edge Function Secrets'
+          }
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+    
+    if (!PERPLEXITY_API_KEY) {
+      console.warn('⚠️ PERPLEXITY_API_KEY not configured, will use OpenAI only');
+    }
+    if (!OPENAI_API_KEY) {
+      console.warn('⚠️ OPENAI_API_KEY not configured, will use Perplexity only');
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -314,7 +340,27 @@ CRITICAL:
         });
 
         if (!perplexityResponse.ok) {
-          throw new Error(`Perplexity failed: ${perplexityResponse.status}`);
+          const errorBody = await perplexityResponse.text();
+          console.error(`\n=== PERPLEXITY API ERROR ===`);
+          console.error(`Status: ${perplexityResponse.status} ${perplexityResponse.statusText}`);
+          console.error(`Response Body: ${errorBody}`);
+          console.error(`API Key Present: ${!!PERPLEXITY_API_KEY}`);
+          console.error(`API Key Format: ${PERPLEXITY_API_KEY?.substring(0, 8)}... (${PERPLEXITY_API_KEY?.length} chars)`);
+          console.error(`Model: llama-3.1-sonar-large-128k-online`);
+          
+          // Provide specific error guidance
+          let errorMessage = `Perplexity API failed with status ${perplexityResponse.status}`;
+          if (perplexityResponse.status === 401) {
+            errorMessage = 'Perplexity API key is invalid or expired. Check PERPLEXITY_API_KEY in Supabase secrets.';
+          } else if (perplexityResponse.status === 429) {
+            errorMessage = 'Perplexity API rate limit exceeded. Wait a few minutes or upgrade your plan.';
+          } else if (perplexityResponse.status === 402) {
+            errorMessage = 'Perplexity API credits exhausted. Add credits to your account.';
+          } else if (perplexityResponse.status === 403) {
+            errorMessage = 'Perplexity API access forbidden. Check model access permissions for your tier.';
+          }
+          
+          throw new Error(errorMessage);
         }
 
         const perplexityData = await perplexityResponse.json();
@@ -382,9 +428,45 @@ CRITICAL:
         });
 
         if (!externalResponse.ok) {
-          const errorText = await externalResponse.text();
-          console.error('OpenAI external links error:', externalResponse.status, errorText);
-          throw new Error(`Both Perplexity and OpenAI failed`);
+          const errorBody = await externalResponse.text();
+          console.error(`\n=== OPENAI API ERROR (FALLBACK) ===`);
+          console.error(`Status: ${externalResponse.status} ${externalResponse.statusText}`);
+          console.error(`Response Body: ${errorBody}`);
+          console.error(`API Key Present: ${!!OPENAI_API_KEY}`);
+          console.error(`API Key Format: ${OPENAI_API_KEY?.substring(0, 8)}... (${OPENAI_API_KEY?.length} chars)`);
+          console.error(`Model: gpt-4o`);
+          console.error(`Previous Perplexity Error: ${perplexityError.message}`);
+          
+          // Provide specific error guidance
+          let openaiErrorMessage = `OpenAI API failed with status ${externalResponse.status}`;
+          if (externalResponse.status === 401) {
+            openaiErrorMessage = 'OpenAI API key is invalid or expired. Check OPENAI_API_KEY in Supabase secrets.';
+          } else if (externalResponse.status === 429) {
+            openaiErrorMessage = 'OpenAI API rate limit exceeded. Wait a few minutes or check your usage.';
+          } else if (externalResponse.status === 402) {
+            openaiErrorMessage = 'OpenAI API credits exhausted. Add credits to your account.';
+          } else if (externalResponse.status === 403) {
+            openaiErrorMessage = 'OpenAI API access forbidden. Check model access for your tier (gpt-4o requires paid plan).';
+          }
+          
+          // Return detailed error for both failures
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: 'Both Perplexity and OpenAI Failed',
+              details: {
+                perplexityError: perplexityError.message,
+                perplexityKeyPresent: !!PERPLEXITY_API_KEY,
+                openaiError: openaiErrorMessage,
+                openaiKeyPresent: !!OPENAI_API_KEY,
+                recommendation: 'Verify both API keys are valid and have sufficient credits. Check function logs for details.'
+              }
+            }),
+            { 
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            }
+          );
         }
 
         const externalData = await externalResponse.json();
@@ -418,9 +500,41 @@ CRITICAL:
       });
 
       if (!externalResponse.ok) {
-        const errorText = await externalResponse.text();
-        console.error('OpenAI external links error:', externalResponse.status, errorText);
-        throw new Error(`OpenAI request failed: ${externalResponse.status}`);
+        const errorBody = await externalResponse.text();
+        console.error(`\n=== OPENAI API ERROR (PRIMARY) ===`);
+        console.error(`Status: ${externalResponse.status} ${externalResponse.statusText}`);
+        console.error(`Response Body: ${errorBody}`);
+        console.error(`API Key Present: ${!!OPENAI_API_KEY}`);
+        console.error(`API Key Format: ${OPENAI_API_KEY?.substring(0, 8)}... (${OPENAI_API_KEY?.length} chars)`);
+        console.error(`Model: gpt-4o`);
+        
+        let errorMessage = `OpenAI API failed with status ${externalResponse.status}`;
+        if (externalResponse.status === 401) {
+          errorMessage = 'OpenAI API key is invalid or expired. Check OPENAI_API_KEY in Supabase secrets.';
+        } else if (externalResponse.status === 429) {
+          errorMessage = 'OpenAI API rate limit exceeded. Wait a few minutes or check your usage.';
+        } else if (externalResponse.status === 402) {
+          errorMessage = 'OpenAI API credits exhausted. Add credits to your account.';
+        } else if (externalResponse.status === 403) {
+          errorMessage = 'OpenAI API access forbidden. Check model access for your tier (gpt-4o requires paid plan).';
+        }
+        
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: errorMessage,
+            details: {
+              status: externalResponse.status,
+              apiKeyPresent: !!OPENAI_API_KEY,
+              model: 'gpt-4o',
+              body: errorBody.substring(0, 500)
+            }
+          }),
+          { 
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
       }
 
       const externalData = await externalResponse.json();
