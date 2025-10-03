@@ -322,7 +322,7 @@ CRITICAL:
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'llama-3.1-sonar-small-128k-online',
             messages: [
               {
                 role: 'system',
@@ -346,7 +346,7 @@ CRITICAL:
           console.error(`Response Body: ${errorBody}`);
           console.error(`API Key Present: ${!!PERPLEXITY_API_KEY}`);
           console.error(`API Key Format: ${PERPLEXITY_API_KEY?.substring(0, 8)}... (${PERPLEXITY_API_KEY?.length} chars)`);
-          console.error(`Model: llama-3.1-sonar-large-128k-online`);
+          console.error(`Model: llama-3.1-sonar-small-128k-online`);
           
           // Provide specific error guidance
           let errorMessage = `Perplexity API failed with status ${perplexityResponse.status}`;
@@ -411,7 +411,7 @@ CRITICAL:
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             messages: [
               {
                 role: 'system',
@@ -434,7 +434,7 @@ CRITICAL:
           console.error(`Response Body: ${errorBody}`);
           console.error(`API Key Present: ${!!OPENAI_API_KEY}`);
           console.error(`API Key Format: ${OPENAI_API_KEY?.substring(0, 8)}... (${OPENAI_API_KEY?.length} chars)`);
-          console.error(`Model: gpt-4o`);
+          console.error(`Model: gpt-4o-mini`);
           console.error(`Previous Perplexity Error: ${perplexityError.message}`);
           
           // Provide specific error guidance
@@ -483,7 +483,7 @@ CRITICAL:
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4o-mini',
           messages: [
             {
               role: 'system',
@@ -506,7 +506,7 @@ CRITICAL:
         console.error(`Response Body: ${errorBody}`);
         console.error(`API Key Present: ${!!OPENAI_API_KEY}`);
         console.error(`API Key Format: ${OPENAI_API_KEY?.substring(0, 8)}... (${OPENAI_API_KEY?.length} chars)`);
-        console.error(`Model: gpt-4o`);
+        console.error(`Model: gpt-4o-mini`);
         
         let errorMessage = `OpenAI API failed with status ${externalResponse.status}`;
         if (externalResponse.status === 401) {
@@ -526,7 +526,7 @@ CRITICAL:
             details: {
               status: externalResponse.status,
               apiKeyPresent: !!OPENAI_API_KEY,
-              model: 'gpt-4o',
+              model: 'gpt-4o-mini',
               body: errorBody.substring(0, 500)
             }
           }),
@@ -666,7 +666,7 @@ Return JSON:
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             messages: [
               { role: 'system', content: 'Find internal linking opportunities. Return valid JSON.' },
               { role: 'user', content: internalLinkPrompt }
@@ -692,7 +692,7 @@ Return JSON:
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4o-mini',
           messages: [
             { role: 'system', content: 'Find internal linking opportunities. Return valid JSON.' },
             { role: 'user', content: internalLinkPrompt }
