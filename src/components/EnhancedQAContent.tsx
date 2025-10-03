@@ -172,6 +172,23 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
               citationReady={qualityCheck.isValid}
             />
 
+            {/* Speakable Answer for Voice Search */}
+            {article.speakable_answer && (
+              <div className="speakable mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl" data-speakable="true">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-blue-900 uppercase tracking-wide mb-2">Voice Search Answer</p>
+                    <p className="text-base leading-relaxed text-blue-900">{article.speakable_answer}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Key Takeaways Box with Related Questions */}
             <KeyTakeawaysBox
               takeaways={formattedBullets}
@@ -215,6 +232,24 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
               relatedArticles={relatedArticles.slice(3, 6)}
               className="mb-8"
             />
+
+            {/* Financial Disclaimer (for finance-related articles) */}
+            {(article.topic === 'Finance' || article.topic === 'Mortgage' || article.title.toLowerCase().includes('mortgage') || article.title.toLowerCase().includes('finance')) && (
+              <div className="mb-8 p-5 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-amber-900 mb-2">Financial Information Disclaimer</p>
+                    <p className="text-sm text-amber-800 leading-relaxed">
+                      This content provides general information about mortgage calculators and financial tools for educational purposes only. 
+                      It does not constitute financial advice. Mortgage rates, terms, and eligibility criteria vary by lender and individual circumstances. 
+                      Always consult with licensed mortgage advisors and financial professionals before making property financing decisions. 
+                      DelSolPrimeHomes is not a financial institution and does not provide mortgage services directly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Comparison Table (if applicable) */}
             {(article.topic === 'Legal' || article.topic === 'Finance' || article.topic === 'Investment') && (
