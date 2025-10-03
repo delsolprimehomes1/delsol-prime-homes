@@ -192,6 +192,38 @@ export const generateEnhancedQAArticleSchema = (
           "@type": "Organization", 
           "@id": `${baseUrl}/#organization`
         },
+        "reviewedBy": {
+          "@type": "Person",
+          "name": "Carlos Mendez",
+          "jobTitle": "Financial Compliance Auditor",
+          "credential": "Certified Financial Planner (CFP)"
+        },
+        "areaServed": [
+          {
+            "@type": "City",
+            "name": "Marbella",
+            "containedInPlace": {
+              "@type": "AdministrativeArea",
+              "name": "Málaga"
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Estepona",
+            "containedInPlace": {
+              "@type": "AdministrativeArea",
+              "name": "Málaga"
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Fuengirola",
+            "containedInPlace": {
+              "@type": "AdministrativeArea",
+              "name": "Málaga"
+            }
+          }
+        ],
         "isPartOf": {
           "@type": "WebSite",
           "@id": `${baseUrl}/#website`
