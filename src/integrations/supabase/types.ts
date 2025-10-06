@@ -495,14 +495,21 @@ export type Database = {
           article_id: string
           article_type: string
           authority_score: number | null
+          check_count: number | null
           context_snippet: string | null
           created_at: string | null
+          domain: string | null
+          health_status: string | null
           id: string
           insertion_method: string | null
+          last_health_check: string | null
+          last_modified_date: string | null
           position_in_text: number | null
+          redirect_url: string | null
           rejected: boolean | null
           rejected_reason: string | null
           relevance_score: number | null
+          status_code: number | null
           updated_at: string | null
           url: string
           verified: boolean | null
@@ -515,14 +522,21 @@ export type Database = {
           article_id: string
           article_type: string
           authority_score?: number | null
+          check_count?: number | null
           context_snippet?: string | null
           created_at?: string | null
+          domain?: string | null
+          health_status?: string | null
           id?: string
           insertion_method?: string | null
+          last_health_check?: string | null
+          last_modified_date?: string | null
           position_in_text?: number | null
+          redirect_url?: string | null
           rejected?: boolean | null
           rejected_reason?: string | null
           relevance_score?: number | null
+          status_code?: number | null
           updated_at?: string | null
           url: string
           verified?: boolean | null
@@ -535,14 +549,21 @@ export type Database = {
           article_id?: string
           article_type?: string
           authority_score?: number | null
+          check_count?: number | null
           context_snippet?: string | null
           created_at?: string | null
+          domain?: string | null
+          health_status?: string | null
           id?: string
           insertion_method?: string | null
+          last_health_check?: string | null
+          last_modified_date?: string | null
           position_in_text?: number | null
+          redirect_url?: string | null
           rejected?: boolean | null
           rejected_reason?: string | null
           relevance_score?: number | null
+          status_code?: number | null
           updated_at?: string | null
           url?: string
           verified?: boolean | null

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Link2, Search, Filter, RefreshCw, Loader2, Sparkles, Plus, AlertTriangle, CheckCircle, Activity } from 'lucide-react';
+import { ExternalLink, Link2, Search, Filter, RefreshCw, Loader2, Sparkles, Plus, AlertTriangle, CheckCircle, Activity, Zap } from 'lucide-react';
 import { LinkPreviewModal } from '@/components/LinkPreviewModal';
 import { BrokenLinkRepairModal } from '@/components/BrokenLinkRepairModal';
 import { insertInlineLinks } from '@/utils/insertInlineLinks';
@@ -25,6 +25,13 @@ interface Article {
   ai_score?: number;
 }
 
+interface LinkHealth {
+  healthy: number;
+  broken: number;
+  needsOptimization: number;
+  avgAuthority: number;
+}
+
 export default function LinkManager() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
@@ -34,6 +41,15 @@ export default function LinkManager() {
   const [loading, setLoading] = useState(true);
   const [generatingLinks, setGeneratingLinks] = useState(false);
   const [bulkGenerating, setBulkGenerating] = useState(false);
+  const [healthCheckRunning, setHealthCheckRunning] = useState(false);
+  
+  // Link health stats
+  const [linkHealth, setLinkHealth] = useState<LinkHealth>({
+    healthy: 0,
+    broken: 0,
+    needsOptimization: 0,
+    avgAuthority: 0
+  });
   
   // Link preview modal state
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
@@ -55,16 +71,75 @@ export default function LinkManager() {
   useEffect(() => {
     fetchArticles();
     fetchBrokenLinkStats();
+    fetchLinkHealth();
   }, []);
 
   useEffect(() => {
     filterArticlesList();
   }, [articles, searchTerm, typeFilter, linkStatus, brokenLinkReports]);
 
+  const fetchLinkHealth = async () => {
+    try {
+      const { data: externalLinks } = await supabase
+        .from('external_links')
+        .select('health_status, authority_score');
+
+      if (externalLinks) {
+        const healthy = externalLinks.filter(l => l.health_status === 'healthy').length;
+        const broken = externalLinks.filter(l => l.health_status === 'broken').length;
+        const needsOpt = externalLinks.filter(l => 
+          l.health_status === 'unchecked' || (l.authority_score && l.authority_score < 70)
+        ).length;
+        const avgAuth = externalLinks.length > 0
+          ? Math.round(externalLinks.reduce((sum, l) => sum + (l.authority_score || 0), 0) / externalLinks.length)
+          : 0;
+
+        setLinkHealth({
+          healthy,
+          broken,
+          needsOptimization: needsOpt,
+          avgAuthority: avgAuth
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching link health:', error);
+    }
+  };
+
+  const handleHealthCheck = async () => {
+    setHealthCheckRunning(true);
+    toast({
+      title: "Running Health Check",
+      description: "Testing all external links...",
+    });
+
+    try {
+      const { data, error } = await supabase.functions.invoke('monitor-external-links');
+
+      if (error) throw error;
+
+      toast({
+        title: "Health Check Complete",
+        description: `${data.healthy} healthy, ${data.broken} broken, ${data.redirect} redirects`,
+      });
+
+      await fetchLinkHealth();
+      await fetchArticles();
+    } catch (error: any) {
+      console.error('Error running health check:', error);
+      toast({
+        title: "Health Check Failed",
+        description: error.message || "Failed to run health check",
+        variant: "destructive",
+      });
+    } finally {
+      setHealthCheckRunning(false);
+    }
+  };
+
   const fetchArticles = async () => {
     setLoading(true);
     try {
-      // Fetch blog posts
       const { data: blogs, error: blogsError } = await supabase
         .from('blog_posts')
         .select('id, title, slug, content, category_key, ai_score')
@@ -72,7 +147,6 @@ export default function LinkManager() {
 
       if (blogsError) throw blogsError;
 
-      // Fetch QA articles
       const { data: qaArticles, error: qaError } = await supabase
         .from('qa_articles')
         .select('id, title, slug, content, topic, funnel_stage, ai_score')
@@ -80,7 +154,6 @@ export default function LinkManager() {
 
       if (qaError) throw qaError;
 
-      // Count links for each article
       const { data: externalLinks } = await supabase
         .from('external_links')
         .select('article_id, article_type');
@@ -248,7 +321,6 @@ export default function LinkManager() {
   const generateAndPreviewLinks = async (article: Article) => {
     setGeneratingLinks(true);
     try {
-      // Generate both external and internal links
       const [externalResult, internalResult] = await Promise.all([
         supabase.functions.invoke('generate-external-links', {
           body: {
@@ -271,7 +343,6 @@ export default function LinkManager() {
       if (externalResult.error) throw externalResult.error;
       if (internalResult.error) throw internalResult.error;
 
-      // Show preview modal
       setPreviewData({
         external: externalResult.data?.links || [],
         internal: internalResult.data?.links || [],
@@ -298,7 +369,6 @@ export default function LinkManager() {
       const { article } = previewData;
       const table = article.type === 'blog' ? 'blog_posts' : 'qa_articles';
 
-      // Fetch current content
       const { data: currentArticle } = await supabase
         .from(table)
         .select('content')
@@ -307,7 +377,6 @@ export default function LinkManager() {
 
       if (!currentArticle) throw new Error('Article not found');
 
-      // Prepare links for insertion (use exactText or anchorText)
       const allLinks = [
         ...approvedExternal.map(l => ({ 
           exactText: l.exactText || l.anchorText, 
@@ -319,10 +388,8 @@ export default function LinkManager() {
         }))
       ];
 
-      // Insert links into content
       const result = insertInlineLinks(currentArticle.content, allLinks);
 
-      // Update article in database
       const { error: updateError } = await supabase
         .from(table)
         .update({
@@ -333,7 +400,6 @@ export default function LinkManager() {
 
       if (updateError) throw updateError;
 
-      // Store link metadata
       for (const link of approvedExternal) {
         await supabase.from('external_links').insert({
           article_id: article.id,
@@ -347,7 +413,6 @@ export default function LinkManager() {
       }
 
       for (const link of approvedInternal) {
-        // Find target article ID
         const targetTable = link.targetType === 'blog' ? 'blog_posts' : 'qa_articles';
         const { data: targetArticle } = await supabase
           .from(targetTable)
@@ -424,6 +489,10 @@ export default function LinkManager() {
     ? Math.round(((brokenLinkStats.totalArticlesScanned - brokenLinkStats.articlesWithBrokenLinks) / brokenLinkStats.totalArticlesScanned) * 100)
     : 100;
 
+  const linkHealthScore = linkHealth.healthy + linkHealth.broken > 0
+    ? Math.round((linkHealth.healthy / (linkHealth.healthy + linkHealth.broken)) * 100)
+    : 0;
+
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
@@ -437,10 +506,27 @@ export default function LinkManager() {
             <div>
               <h1 className="text-3xl font-bold">AI Link Manager</h1>
               <p className="text-muted-foreground mt-1">
-                Generate and insert inline hyperlinks automatically
+                Generate, monitor, and optimize inline hyperlinks
               </p>
             </div>
             <div className="flex gap-2">
+              <Button
+                onClick={handleHealthCheck}
+                disabled={healthCheckRunning}
+                variant="outline"
+              >
+                {healthCheckRunning ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  <>
+                    <Activity className="h-4 w-4 mr-2" />
+                    Health Check
+                  </>
+                )}
+              </Button>
               <Button
                 onClick={handleScanBrokenLinks}
                 disabled={scanningLinks}
@@ -453,7 +539,7 @@ export default function LinkManager() {
                   </>
                 ) : (
                   <>
-                    <Activity className="h-4 w-4 mr-2" />
+                    <Search className="h-4 w-4 mr-2" />
                     Scan Broken Links
                   </>
                 )}
@@ -470,7 +556,7 @@ export default function LinkManager() {
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <Zap className="h-4 w-4 mr-2" />
                     Bulk Generate
                   </>
                 )}
@@ -479,72 +565,67 @@ export default function LinkManager() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4 mt-6">
             <Card className="p-4">
               <div className="text-sm text-muted-foreground">Total Articles</div>
               <div className="text-2xl font-bold mt-2">{articles.length}</div>
+            </Card>
+            <Card className="p-4 border-green-500/50">
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                Healthy Links
+              </div>
+              <div className="text-2xl font-bold mt-2 text-green-600">{linkHealth.healthy}</div>
             </Card>
             <Card className="p-4 border-destructive/50">
               <div className="text-sm text-muted-foreground flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-destructive" />
                 Broken Links
               </div>
+              <div className="text-2xl font-bold mt-2 text-destructive">{linkHealth.broken}</div>
+            </Card>
+            <Card className="p-4 border-blue-500/50">
+              <div className="text-sm text-muted-foreground">Health Score</div>
+              <div className="text-2xl font-bold mt-2">{linkHealthScore}%</div>
+            </Card>
+            <Card className="p-4 border-yellow-500/50">
+              <div className="text-sm text-muted-foreground">Needs Optimization</div>
+              <div className="text-2xl font-bold mt-2 text-yellow-600">{linkHealth.needsOptimization}</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-sm text-muted-foreground">Avg Authority</div>
+              <div className="text-2xl font-bold mt-2">{linkHealth.avgAuthority}/100</div>
+            </Card>
+            <Card className="p-4 border-destructive/50">
+              <div className="text-sm text-muted-foreground">Broken Internal</div>
               <div className="text-2xl font-bold mt-2 text-destructive">
                 {brokenLinkStats?.totalBrokenLinks || 0}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                in {brokenLinkStats?.articlesWithBrokenLinks || 0} articles
-              </div>
-            </Card>
-            <Card className="p-4 border-green-500/50">
-              <div className="text-sm text-muted-foreground flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                Health Score
-              </div>
-              <div className="text-2xl font-bold mt-2 text-green-500">
-                {healthScore}%
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                no broken links
-              </div>
             </Card>
             <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Missing External</div>
-              <div className="text-2xl font-bold mt-2 text-destructive">
-                {articles.filter(a => a.external_link_count === 0).length}
-              </div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-sm text-muted-foreground">Missing Internal</div>
-              <div className="text-2xl font-bold mt-2 text-destructive">
-                {articles.filter(a => a.internal_link_count === 0).length}
-              </div>
+              <div className="text-sm text-muted-foreground">Internal Health</div>
+              <div className="text-2xl font-bold mt-2">{healthScore}%</div>
             </Card>
           </div>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-6">
-        {/* Filters */}
-        <Card className="p-4 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 mt-6">
+            <div className="flex-1 min-w-[200px]">
               <Input
                 placeholder="Search articles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="w-full"
               />
             </div>
             <Select value={typeFilter} onValueChange={(v: any) => setTypeFilter(v)}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[150px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="blog">Blog Posts</SelectItem>
-                <SelectItem value="qa">QA Articles</SelectItem>
+                <SelectItem value="blog">Blog</SelectItem>
+                <SelectItem value="qa">QA</SelectItem>
               </SelectContent>
             </Select>
             <Select value={linkStatus} onValueChange={(v: any) => setLinkStatus(v)}>
@@ -552,69 +633,72 @@ export default function LinkManager() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Articles</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="missing-external">Missing External</SelectItem>
                 <SelectItem value="missing-internal">Missing Internal</SelectItem>
                 <SelectItem value="missing-both">Missing Both</SelectItem>
-                <SelectItem value="broken">Broken Links Only</SelectItem>
+                <SelectItem value="broken">With Broken Links</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </Card>
+        </div>
+      </div>
 
-        {/* Articles Table */}
+      <div className="container mx-auto px-4 py-6">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredArticles.map(article => {
-              const articleReport = brokenLinkReports.find(r => r.articleId === article.id);
-              const hasBrokenLinks = !!articleReport;
+          <div className="space-y-4">
+            {filteredArticles.map((article) => {
+              const brokenReport = brokenLinkReports.find(r => r.articleId === article.id);
+              const hasBrokenLinks = brokenReport && brokenReport.broken_links.length > 0;
 
               return (
-                <Card key={article.id} className={`p-4 ${hasBrokenLinks ? 'border-destructive' : ''}`}>
-                  <div className="flex items-center justify-between">
+                <Card key={article.id} className="p-4">
+                  <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold">{article.title}</h3>
-                        <Badge variant="outline" className="shrink-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant={article.type === 'blog' ? 'default' : 'secondary'}>
                           {article.type.toUpperCase()}
                         </Badge>
                         {hasBrokenLinks && (
-                          <Badge variant="destructive" className="flex items-center gap-1">
-                            <AlertTriangle className="h-3 w-3" />
-                            {articleReport.brokenLinks.length} broken
+                          <Badge variant="destructive">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            {brokenReport.broken_links.length} Broken
+                          </Badge>
+                        )}
+                        {article.ai_score && (
+                          <Badge variant="outline">
+                            AI: {article.ai_score}
                           </Badge>
                         )}
                       </div>
+                      <h3 className="font-semibold text-lg mb-1">{article.title}</h3>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Topic: {article.topic || 'N/A'}</span>
                         <span className="flex items-center gap-1">
-                          <ExternalLink className="h-3 w-3" />
+                          <ExternalLink className="h-4 w-4" />
                           {article.external_link_count} external
                         </span>
                         <span className="flex items-center gap-1">
-                          <Link2 className="h-3 w-3" />
+                          <Link2 className="h-4 w-4" />
                           {article.internal_link_count} internal
                         </span>
-                        {article.ai_score && (
-                          <Badge variant="secondary">
-                            AI Score: {Math.round(article.ai_score)}
-                          </Badge>
+                        {article.topic && (
+                          <span>Topic: {article.topic}</span>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-2">
                       {hasBrokenLinks && (
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleOpenRepairModal(articleReport)}
+                          onClick={() => handleOpenRepairModal(brokenReport)}
                         >
                           <AlertTriangle className="h-4 w-4 mr-2" />
-                          Repair Links
+                          Repair
                         </Button>
                       )}
                       <Button
@@ -623,17 +707,16 @@ export default function LinkManager() {
                         onClick={() => generateAndPreviewLinks(article)}
                         disabled={generatingLinks}
                       >
-                        {generatingLinks ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="h-4 w-4 mr-2" />
-                            Preview Links
-                          </>
-                        )}
+                        <Plus className="h-4 w-4 mr-2" />
+                        Generate
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => generateInlineLinks(article)}
+                        disabled={generatingLinks}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Auto-Insert
                       </Button>
                     </div>
                   </div>
@@ -644,14 +727,10 @@ export default function LinkManager() {
         )}
       </div>
 
-      {/* Modals */}
-      {previewModalOpen && previewData && (
+      {previewData && (
         <LinkPreviewModal
           isOpen={previewModalOpen}
-          onClose={() => {
-            setPreviewModalOpen(false);
-            setPreviewData(null);
-          }}
+          onClose={() => setPreviewModalOpen(false)}
           externalLinks={previewData.external}
           internalLinks={previewData.internal}
           articleTitle={previewData.article.title}
@@ -659,15 +738,14 @@ export default function LinkManager() {
         />
       )}
 
-      <BrokenLinkRepairModal
-        open={repairModalOpen}
-        onClose={() => {
-          setRepairModalOpen(false);
-          setSelectedReport(null);
-        }}
-        report={selectedReport}
-        onRepairComplete={handleRepairComplete}
-      />
+      {selectedReport && (
+        <BrokenLinkRepairModal
+          open={repairModalOpen}
+          onClose={() => setRepairModalOpen(false)}
+          report={selectedReport}
+          onRepairComplete={handleRepairComplete}
+        />
+      )}
     </div>
   );
 }

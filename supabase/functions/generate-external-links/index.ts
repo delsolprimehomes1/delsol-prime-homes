@@ -6,49 +6,86 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Intelligent domain authority validation (no hardcoded lists)
+// Priority source categories with enhanced scoring
+const AUTHORITY_SOURCES = {
+  government: {
+    score: 100,
+    domains: ['agenciatributaria.es', 'registradores.org', '.gob.es', '.gov', 'europa.eu', '.gov.es', '.gc.ca', '.gov.uk']
+  },
+  tourism: {
+    score: 95,
+    domains: ['spain.info', 'andalucia.org', 'costadelsol', 'turismo', 'malagaturismo.com']
+  },
+  professional: {
+    score: 90,
+    domains: ['notari', 'registra', 'colegio', 'rics.org', 'fiabci.org', 'arquitectos.org', 'cgpe.es']
+  },
+  news: {
+    score: 85,
+    domains: ['elpais.com', 'ft.com', 'reuters.com', 'bbc.', 'economist.com', 'elmundo.es', 'theguardian.com']
+  },
+  educational: {
+    score: 88,
+    domains: ['.edu', '.ac.', '.edu.es']
+  },
+  industry: {
+    score: 80,
+    domains: ['forbes.com', 'bloomberg.com', 'propertyweek.com']
+  },
+  regional: {
+    score: 95,
+    domains: ['junta', 'gencat', 'madrid.org', 'agencia', 'instituto']
+  }
+};
+
+// Domain blacklist - avoid these
+const BLACKLISTED_DOMAINS = [
+  'wikipedia.org', 'facebook.com', 'twitter.com', 'instagram.com',
+  'medium.com', 'blogspot.com', 'pinterest.com', 'youtube.com'
+];
+
+// Calculate authority score with enhanced logic
 function calculateAuthorityScore(url: string): number {
   try {
     const domain = new URL(url).hostname.replace('www.', '').toLowerCase();
     
-    // Government domains (highest authority)
-    if (domain.endsWith('.gov') || domain.endsWith('.gov.es') || domain.endsWith('.gob.es')) return 100;
-    if (domain.endsWith('.gc.ca') || domain.endsWith('.gov.uk')) return 100;
-    
-    // Educational institutions
-    if (domain.endsWith('.edu') || domain.endsWith('.edu.es') || domain.endsWith('.ac.uk')) return 90;
-    
-    // Official organizations and non-profits
-    if (domain.endsWith('.org') || domain.endsWith('.org.es')) {
-      // Spanish tourism/regional sites
-      if (domain.includes('andalucia') || domain.includes('turismo') || domain.includes('spain')) return 95;
-      return 85;
+    // Check blacklist first
+    if (BLACKLISTED_DOMAINS.some(blocked => domain.includes(blocked))) {
+      return 0;
     }
     
-    // Established news publications and media
-    const newsOutlets = ['ft.com', 'bloomberg.com', 'reuters.com', 'bbc.co.uk', 'theguardian.com',
-                         'elpais.com', 'elmundo.es', 'abc.es', 'lavanguardia.com'];
-    if (newsOutlets.some(outlet => domain.includes(outlet))) return 80;
-    
-    // Professional associations
-    if (domain.includes('notari') || domain.includes('registra') || domain.includes('colegio')) return 90;
-    if (domain.endsWith('rics.org') || domain.endsWith('fiabci.org')) return 85;
-    
-    // Spanish official sites
-    if (domain.includes('junta') || domain.includes('gencat') || domain.includes('madrid.org')) return 95;
-    if (domain.endsWith('.es') && (domain.includes('agencia') || domain.includes('instituto'))) return 85;
-    
-    // Established commercial sites with good reputation (.com with recognizable patterns)
-    if (domain.endsWith('.com')) {
-      if (domain.includes('malaga') || domain.includes('marbella') || domain.includes('costadelsol')) return 70;
-      return 50; // Generic .com sites need manual review
+    // Check priority sources
+    for (const category of Object.values(AUTHORITY_SOURCES)) {
+      if (category.domains.some(d => domain.includes(d))) {
+        return category.score;
+      }
     }
     
-    // Default: allow with moderate score for manual review
-    return 60;
+    // Default for unknown domains
+    return 65;
   } catch {
     return 0;
   }
+}
+
+// Calculate freshness score (prefer recent content)
+function calculateFreshnessScore(url: string, content: string): number {
+  const currentYear = new Date().getFullYear();
+  const yearMatch = content.match(/20\d{2}/g);
+  
+  if (yearMatch) {
+    const years = yearMatch.map(y => parseInt(y));
+    const mostRecent = Math.max(...years);
+    const age = currentYear - mostRecent;
+    
+    if (age === 0) return 100;
+    if (age === 1) return 90;
+    if (age === 2) return 75;
+    if (age <= 5) return 50;
+    return 25;
+  }
+  
+  return 50;
 }
 
 function countWords(text: string): number {
@@ -177,11 +214,14 @@ REQUIREMENTS:
       throw new Error('Invalid AI response format');
     }
 
-    // Validate and store links
+    // Validate and filter links with enhanced logic
     const validatedLinks = [];
+    const domainCount = new Map<string, number>();
+    
     for (const link of linkSuggestions) {
       try {
         const url = new URL(link.url);
+        const domain = url.hostname;
         
         // Validate HTTPS
         if (url.protocol !== 'https:') {
@@ -189,12 +229,26 @@ REQUIREMENTS:
           continue;
         }
 
+        // Check domain diversity (max 2 links per domain)
+        const currentCount = domainCount.get(domain) || 0;
+        if (currentCount >= 2) {
+          console.log(`Rejected ${link.url}: Domain limit (already ${currentCount} links to ${domain})`);
+          continue;
+        }
+
         // Calculate authority score
         const authorityScore = calculateAuthorityScore(link.url);
-        if (authorityScore < 60) {
+        if (authorityScore === 0) {
+          console.log(`Rejected ${link.url}: Blacklisted domain`);
+          continue;
+        }
+        if (authorityScore < 70) {
           console.log(`Rejected ${link.url}: Authority score too low (${authorityScore})`);
           continue;
         }
+
+        // Calculate freshness score
+        const freshnessScore = calculateFreshnessScore(link.url, content);
 
         // Find position in text (case-insensitive)
         const contentLower = content.toLowerCase();
@@ -202,28 +256,44 @@ REQUIREMENTS:
         const anchorPosition = contentLower.indexOf(anchorLower);
         
         if (anchorPosition === -1) {
-          console.log(`Rejected "${link.anchorText}": Not found in content (case-insensitive search)`);
+          console.log(`Rejected "${link.anchorText}": Not found in content`);
           continue;
         }
 
         // Extract actual text with original casing from content
         const exactText = content.substring(anchorPosition, anchorPosition + link.anchorText.length);
         
-        // Format for preview (don't store in DB yet - will be stored after approval)
+        // Calculate combined score (authority 60%, freshness 30%, relevance 10%)
+        const combinedScore = Math.round(
+          (authorityScore * 0.6) + 
+          (freshnessScore * 0.3) + 
+          ((link.relevanceScore || 75) * 0.1)
+        );
+        
+        // Format for preview
         validatedLinks.push({
-          exactText: exactText, // Use exact casing from content
-          anchorText: exactText, // Keep for backward compatibility
+          exactText,
+          anchorText: exactText,
           url: link.url,
           reason: link.reason,
-          authorityScore: authorityScore,
+          authorityScore,
+          freshnessScore,
+          combinedScore,
+          domain,
           sentenceContext: link.contextSentence,
           position: anchorPosition
         });
+
+        // Track domain usage
+        domainCount.set(domain, currentCount + 1);
       } catch (e) {
         console.error(`Error processing link ${link.url}:`, e);
         continue;
       }
     }
+
+    // Sort by combined score and take top results
+    validatedLinks.sort((a, b) => b.combinedScore - a.combinedScore);
 
     console.log(`Successfully generated ${validatedLinks.length} external link suggestions`);
 

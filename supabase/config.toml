@@ -38,3 +38,9 @@ verify_jwt = false
 
 [functions.validate-and-fix-links]
 verify_jwt = false
+
+[functions.monitor-external-links]
+verify_jwt = false
+
+[functions.optimize-external-links]
+verify_jwt = false
