@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
 import { Info, Loader2, Image as ImageIcon, GitGraph, Code } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -47,6 +48,8 @@ export const DiagramPreview = ({
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showMetadata, setShowMetadata] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState<string>('');
+  const [useCustomPrompt, setUseCustomPrompt] = useState<boolean>(false);
 
   const generateAIVisual = async (type: 'image' | 'diagram') => {
     if (!articleTitle || !articleContent) {
@@ -58,17 +61,21 @@ export const DiagramPreview = ({
     setGeneratedImageUrl('');
     
     try {
+      const requestBody: any = {
+        title: articleTitle,
+        content: articleContent,
+        visualType: type,
+        funnelStage,
+        tags,
+      };
+
+      // Only include customPrompt if enabled and not empty
+      if (useCustomPrompt && customPrompt.trim().length >= 50) {
+        requestBody.customPrompt = customPrompt.trim();
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-blog-image', {
-        body: {
-          title: articleTitle,
-          content: articleContent,
-          visualType: type,
-          funnelStage,
-          tags,
-          customPrompt: type === 'diagram' 
-            ? `Create a professional infographic or diagram that visualizes the key concepts from this article. Style: modern, clean, real estate themed with Costa del Sol branding colors.`
-            : `Create a modern, professional hero image that represents this article about ${articleTitle}. Style: real estate luxury, Costa del Sol aesthetic, branded for DelSol Prime Homes.`
-        }
+        body: requestBody
       });
 
       if (error) {
@@ -190,6 +197,84 @@ export const DiagramPreview = ({
 
       {(visualType === 'ai-image' || visualType === 'ai-diagram') && (
         <div className="space-y-3">
+          {/* Custom Prompt Section */}
+          <Card className="p-4 bg-muted/30">
+            <div className="flex items-center justify-between mb-3">
+              <Label htmlFor="use-custom-prompt" className="text-sm font-semibold">
+                Use Custom Prompt
+              </Label>
+              <Switch
+                id="use-custom-prompt"
+                checked={useCustomPrompt}
+                onCheckedChange={setUseCustomPrompt}
+              />
+            </div>
+
+            {useCustomPrompt && (
+              <div className="space-y-3">
+                <div>
+                  <Textarea
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value.slice(0, 1000))}
+                    placeholder={
+                      visualType === 'ai-image'
+                        ? "Example: Professional real estate photography, luxury villa exterior, Costa del Sol Mediterranean style, sunset lighting, 16:9 composition"
+                        : "Example: Step-by-step process diagram with numbered stages, infographic style, clean minimal layout, blue and gold accents, 2025 data"
+                    }
+                    rows={4}
+                    className="text-sm resize-none"
+                  />
+                  <div className="flex items-center justify-between mt-1">
+                    <span className={`text-xs ${customPrompt.length < 50 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      {customPrompt.length}/1000 characters {customPrompt.length > 0 && customPrompt.length < 50 && '(minimum 50)'}
+                    </span>
+                  </div>
+                </div>
+
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription className="text-xs space-y-2">
+                    <p className="font-medium">Tips for great {visualType === 'ai-image' ? 'image' : 'diagram'} prompts:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-1">
+                      {visualType === 'ai-image' ? (
+                        <>
+                          <li>Describe the style: "luxury", "modern", "Mediterranean"</li>
+                          <li>Include lighting: "sunset", "golden hour", "bright daylight"</li>
+                          <li>Specify composition: "16:9", "aerial view", "exterior shot"</li>
+                          <li>Add brand elements: "Costa del Sol aesthetic", "upscale"</li>
+                        </>
+                      ) : (
+                        <>
+                          <li>Specify diagram type: "flowchart", "infographic", "process diagram"</li>
+                          <li>Include style notes: "minimal", "modern", "numbered stages"</li>
+                          <li>Mention colors: "blue and gold", "brand colors", "professional"</li>
+                          <li>Add data context: "2025 statistics", "step-by-step guide"</li>
+                        </>
+                      )}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+
+                {customPrompt.length > 0 && customPrompt.length < 50 && (
+                  <Alert variant="destructive">
+                    <AlertDescription className="text-xs">
+                      Prompt too short. Please write at least 50 characters for better results.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
+
+            {!useCustomPrompt && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  Smart auto-generation is enabled. AI will create a prompt based on your article title, content, funnel stage, and brand guidelines.
+                </AlertDescription>
+              </Alert>
+            )}
+          </Card>
+
           <Button
             onClick={() => generateAIVisual(visualType === 'ai-image' ? 'image' : 'diagram')}
             disabled={isGenerating || !articleTitle || !articleContent}
