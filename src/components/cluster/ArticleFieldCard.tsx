@@ -32,9 +32,10 @@ interface ArticleFieldCardProps {
   article: ArticleField;
   onChange: (article: ArticleField) => void;
   language?: string;
+  onImageGenerated?: (imageUrl: string, prompt: string) => void;
 }
 
-export const ArticleFieldCard = ({ index, stage, article, onChange, language = 'en' }: ArticleFieldCardProps) => {
+export const ArticleFieldCard = ({ index, stage, article, onChange, language = 'en', onImageGenerated }: ArticleFieldCardProps) => {
   const [isOpen, setIsOpen] = useState(index === 0);
   const [isEnhancing, setIsEnhancing] = useState(false);
 
@@ -206,6 +207,7 @@ export const ArticleFieldCard = ({ index, stage, article, onChange, language = '
               onDescriptionChange={(diagramDescription) => onChange({ ...article, diagramDescription })}
               keywords={article.diagramKeywords}
               onKeywordsChange={(diagramKeywords) => onChange({ ...article, diagramKeywords })}
+              onImageGenerated={onImageGenerated}
             />
 
             <SEOFieldsSection

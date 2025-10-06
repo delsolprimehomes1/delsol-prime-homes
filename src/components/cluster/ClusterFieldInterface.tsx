@@ -24,6 +24,12 @@ export const ClusterFieldInterface = () => {
   const [clusterDescription, setClusterDescription] = useState('');
   const [topic, setTopic] = useState('');
   const [language, setLanguage] = useState('en');
+  const [generatedImageUrl, setGeneratedImageUrl] = useState('');
+  const [imageGenerationPrompt, setImageGenerationPrompt] = useState('');
+  const [latestArticleTitle, setLatestArticleTitle] = useState('');
+  const [latestArticleContent, setLatestArticleContent] = useState('');
+  const [latestFunnelStage, setLatestFunnelStage] = useState('');
+  const [latestTags, setLatestTags] = useState<string[]>([]);
   
   // Scheduling state
   const [publishMode, setPublishMode] = useState<'immediate' | 'scheduled'>('immediate');
@@ -43,6 +49,15 @@ export const ClusterFieldInterface = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
+
+  const handleImageGenerated = (imageUrl: string, prompt: string, articleTitle: string, articleContent: string, funnelStage: string, tags: string[]) => {
+    setGeneratedImageUrl(imageUrl);
+    setImageGenerationPrompt(prompt);
+    setLatestArticleTitle(articleTitle);
+    setLatestArticleContent(articleContent);
+    setLatestFunnelStage(funnelStage);
+    setLatestTags(tags);
+  };
 
   const updateTofuArticle = (index: number, article: ArticleField) => {
     const updated = [...tofuArticles];
@@ -176,6 +191,12 @@ export const ClusterFieldInterface = () => {
             onDescriptionChange={setClusterDescription}
             onTopicChange={setTopic}
             onLanguageChange={setLanguage}
+            generatedImageUrl={generatedImageUrl}
+            imageGenerationPrompt={imageGenerationPrompt}
+            articleTitle={latestArticleTitle}
+            articleContent={latestArticleContent}
+            funnelStage={latestFunnelStage}
+            tags={latestTags}
           />
 
           <div>
@@ -232,6 +253,7 @@ export const ClusterFieldInterface = () => {
                     article={article}
                     onChange={(updated) => updateTofuArticle(index, updated)}
                     language={language}
+                    onImageGenerated={(imageUrl, prompt) => handleImageGenerated(imageUrl, prompt, article.title, article.content, 'TOFU', article.tags)}
                   />
                 </div>
               );
@@ -259,6 +281,7 @@ export const ClusterFieldInterface = () => {
                     article={article}
                     onChange={(updated) => updateMofuArticle(index, updated)}
                     language={language}
+                    onImageGenerated={(imageUrl, prompt) => handleImageGenerated(imageUrl, prompt, article.title, article.content, 'MOFU', article.tags)}
                   />
                 </div>
               );
@@ -281,6 +304,7 @@ export const ClusterFieldInterface = () => {
               article={bofuArticle}
               onChange={setBofuArticle}
               language={language}
+              onImageGenerated={(imageUrl, prompt) => handleImageGenerated(imageUrl, prompt, bofuArticle.title, bofuArticle.content, 'BOFU', bofuArticle.tags)}
             />
           </div>
         </div>

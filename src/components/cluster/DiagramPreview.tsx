@@ -25,6 +25,7 @@ interface DiagramPreviewProps {
   onDescriptionChange?: (description: string) => void;
   keywords?: string[];
   onKeywordsChange?: (keywords: string[]) => void;
+  onImageGenerated?: (imageUrl: string, prompt: string) => void;
 }
 
 export const DiagramPreview = ({ 
@@ -41,7 +42,8 @@ export const DiagramPreview = ({
   description = '',
   onDescriptionChange,
   keywords = [],
-  onKeywordsChange
+  onKeywordsChange,
+  onImageGenerated
 }: DiagramPreviewProps) => {
   const [visualType, setVisualType] = useState<'ai-image' | 'ai-diagram' | 'mermaid'>('mermaid');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -53,6 +55,7 @@ export const DiagramPreview = ({
   const [isEmbedding, setIsEmbedding] = useState(false);
   const [metadataEmbedded, setMetadataEmbedded] = useState(false);
   const [imageStoragePath, setImageStoragePath] = useState<string>('');
+  const [imagePrompt, setImagePrompt] = useState<string>('');
 
   const generateAIVisual = async (type: 'image' | 'diagram') => {
     if (!articleTitle || !articleContent) {
@@ -99,6 +102,16 @@ export const DiagramPreview = ({
         setImageStoragePath(data.storagePath || '');
         onChange(data.imageUrl);
         setMetadataEmbedded(false); // Reset embedding status for new image
+        
+        // Store the prompt that was used
+        const usedPrompt = data.prompt || (useCustomPrompt ? customPrompt.trim() : '');
+        setImagePrompt(usedPrompt);
+        
+        // Notify parent component
+        if (onImageGenerated && usedPrompt) {
+          onImageGenerated(data.imageUrl, usedPrompt);
+        }
+        
         toast.success(`AI ${type} generated successfully! Use "Generate Metadata" button if you need new metadata.`);
       }
     } catch (error) {
