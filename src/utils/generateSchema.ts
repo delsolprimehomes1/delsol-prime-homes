@@ -71,10 +71,10 @@ export function generateQAPageSchema(article: SchemaArticle): any {
     "dateModified": article.updated_at || article.created_at,
     "author": {
       "@type": "Person",
-      "name": article.author?.name || "Maria Rodriguez",
-      "jobTitle": article.author?.title || "Senior Real Estate Advisor",
-      "email": article.author?.email || "maria@delsolprimehomes.com",
-      "url": article.author?.url || `${BASE_URL}/team/maria-rodriguez`
+      "name": article.author?.name || "Hans Beeckman",
+      "jobTitle": article.author?.title || "Accredited Property Specialist",
+      "email": article.author?.email || "hans@delsolprimehomes.com",
+      "url": article.author?.url || `${BASE_URL}/team/hans-beeckman`
     },
     "publisher": {
       "@type": "Organization",
@@ -117,10 +117,10 @@ export function generateBlogPostingSchema(article: SchemaArticle): any {
     "dateModified": article.updated_at || article.created_at,
     "author": {
       "@type": "Person",
-      "name": article.author?.name || "Maria Rodriguez",
-      "jobTitle": article.author?.title || "Senior Real Estate Advisor",
-      "email": article.author?.email || "maria@delsolprimehomes.com",
-      "url": article.author?.url || `${BASE_URL}/team/maria-rodriguez`
+      "name": article.author?.name || "Hans Beeckman",
+      "jobTitle": article.author?.title || "Accredited Property Specialist",
+      "email": article.author?.email || "hans@delsolprimehomes.com",
+      "url": article.author?.url || `${BASE_URL}/team/hans-beeckman`
     },
     "publisher": {
       "@type": "Organization",

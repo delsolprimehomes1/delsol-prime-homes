@@ -65,5 +65,12 @@
     }
   },
   "loading": "Betöltés...",
-  "welcome": "Üdvözöljük"
+  "welcome": "Üdvözöljük",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Akkreditált Ingatlanszakértő",
+    "reviewed_by": "Tartalom ellenőrizve és hitelesítve Akkreditált Ingatlanszakértő — Hans Beeckman által",
+    "reviewed_by_short": "Ellenőrizte",
+    "credentials": "Akkreditált Ingatlanszakértő, Costa del Sol Ingatlanszakértő"
+  }
 }

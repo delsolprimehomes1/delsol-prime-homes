@@ -98,7 +98,7 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-indigo-600" />
               <span className="font-medium">Reviewed by</span>
-              <span className="text-gray-900">Maria Rodriguez, Costa del Sol Specialist</span>
+              <span className="text-gray-900">Hans Beeckman, Accredited Property Specialist</span>
             </div>
 
             <div className="hidden sm:block w-1 h-1 bg-gray-400 rounded-full"></div>

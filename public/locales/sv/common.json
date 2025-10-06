@@ -24,5 +24,12 @@
     "switchLanguage": "Byt till tillgängligt språk"
   },
   "loading": "Laddar...",
-  "welcome": "Välkommen"
+  "welcome": "Välkommen",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Ackrediterad Fastighetsspecialist",
+    "reviewed_by": "Innehåll granskat och verifierat av Ackrediterad Fastighetsspecialist — Hans Beeckman",
+    "reviewed_by_short": "Granskat av",
+    "credentials": "Ackrediterad Fastighetsspecialist, Costa del Sol Fastighetsexpert"
+  }
 }

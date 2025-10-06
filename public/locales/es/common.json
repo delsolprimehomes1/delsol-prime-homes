@@ -65,5 +65,12 @@
     }
   },
   "loading": "Cargando...",
-  "welcome": "Bienvenido"
+  "welcome": "Bienvenido",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Especialista Inmobiliario Acreditado",
+    "reviewed_by": "Contenido revisado y verificado por Especialista Inmobiliario Acreditado — Hans Beeckman",
+    "reviewed_by_short": "Revisado por",
+    "credentials": "Especialista Inmobiliario Acreditado, Experto en Inmuebles Costa del Sol"
+  }
 }

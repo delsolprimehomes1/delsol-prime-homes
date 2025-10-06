@@ -24,5 +24,12 @@
     "switchLanguage": "Changer vers la langue disponible"
   },
   "loading": "Chargement...",
-  "welcome": "Bienvenue"
+  "welcome": "Bienvenue",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Spécialiste Immobilier Accrédité",
+    "reviewed_by": "Contenu examiné et vérifié par Spécialiste Immobilier Accrédité — Hans Beeckman",
+    "reviewed_by_short": "Examiné par",
+    "credentials": "Spécialiste Immobilier Accrédité, Expert en Immobilier Costa del Sol"
+  }
 }

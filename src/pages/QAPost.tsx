@@ -195,13 +195,12 @@ const QAPost = () => {
 
   // Enhanced author credentials with E-E-A-T signals
   const authorCredentials = React.useMemo(() => ({
-    name: "Maria Rodriguez",
-    title: "Senior Real Estate Advisor & Costa del Sol Specialist",
+    name: "Hans Beeckman",
+    title: "Accredited Property Specialist",
     credentials: [
-      "Licensed Real Estate Professional (GIPE)",
-      "International Property Investment Certification",
-      "Spanish Property Law Specialist",
-      "RICS (Royal Institution of Chartered Surveyors) Member"
+      "Accredited Property Specialist",
+      "Costa del Sol Real Estate Expert",
+      "Licensed Real Estate Advisor"
     ],
     experience: "15+ years specializing in Costa del Sol luxury properties with €200M+ in successful transactions",
     expertise: [
@@ -578,9 +577,9 @@ const QAPost = () => {
                       <span className="text-sm font-medium">4.9/5 Rating</span>
                     </div>
                   </div>
-                  <h4 className="text-lg font-semibold text-foreground mb-2">
-                    Content Reviewed by Maria Rodriguez
-                  </h4>
+                <h4 className="text-lg font-semibold text-foreground mb-2">
+                  Content reviewed and verified by Accredited Property Specialist — Hans Beeckman
+                </h4>
                   <p className="text-sm text-muted-foreground mb-4">
                     Senior Real Estate Advisor & Costa del Sol Specialist
                   </p>
@@ -600,7 +599,7 @@ const QAPost = () => {
                     <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <div className="text-center">
                       <span className="font-medium text-green-900">
-                        ✓ Independently reviewed by {article.reviewer.name}, {article.reviewer.credentials?.[0] || 'CFP'}
+                        ✓ Independently reviewed by {article.reviewer?.name || 'Hans Beeckman'}, {article.reviewer?.credentials?.[0] || 'Accredited Property Specialist'}
                       </span>
                       {article.reviewer.reviewDate && (
                         <span className="text-green-700 ml-2">

@@ -24,5 +24,12 @@
     "switchLanguage": "Przełącz na dostępny język"
   },
   "loading": "Ładowanie...",
-  "welcome": "Witamy"
+  "welcome": "Witamy",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Akredytowany Specjalista ds. Nieruchomości",
+    "reviewed_by": "Treść sprawdzona i zweryfikowana przez Akredytowany Specjalista ds. Nieruchomości — Hans Beeckman",
+    "reviewed_by_short": "Sprawdzone przez",
+    "credentials": "Akredytowany Specjalista ds. Nieruchomości, Ekspert ds. Nieruchomości Costa del Sol"
+  }
 }

@@ -24,5 +24,12 @@
     "switchLanguage": "Schakel naar beschikbare taal"
   },
   "loading": "Laden...",
-  "welcome": "Welkom"
+  "welcome": "Welkom",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Geaccrediteerd Vastgoedspecialist",
+    "reviewed_by": "Inhoud beoordeeld en geverifieerd door Geaccrediteerd Vastgoedspecialist — Hans Beeckman",
+    "reviewed_by_short": "Beoordeeld door",
+    "credentials": "Geaccrediteerd Vastgoedspecialist, Costa del Sol Vastgoedexpert"
+  }
 }

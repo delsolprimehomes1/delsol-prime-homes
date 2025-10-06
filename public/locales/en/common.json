@@ -65,5 +65,12 @@
     }
   },
   "loading": "Loading...",
-  "welcome": "Welcome"
+  "welcome": "Welcome",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Accredited Property Specialist",
+    "reviewed_by": "Content reviewed and verified by Accredited Property Specialist — Hans Beeckman",
+    "reviewed_by_short": "Reviewed by",
+    "credentials": "Accredited Property Specialist, Costa del Sol Real Estate Expert"
+  }
 }

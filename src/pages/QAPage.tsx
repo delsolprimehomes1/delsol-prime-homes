@@ -186,7 +186,7 @@ const QAPage = () => {
 
               {/* Author Bio */}
               <AuthorBio
-                name="Maria Rodriguez"
+                name="Hans Beeckman"
                 title="Senior Real Estate Advisor"
                 bio="Specializing in Costa del Sol luxury properties with 15+ years of experience helping international clients find their dream homes."
                 credentials={[

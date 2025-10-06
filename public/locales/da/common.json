@@ -24,5 +24,12 @@
     "switchLanguage": "Skift til tilgængeligt sprog"
   },
   "loading": "Indlæser...",
-  "welcome": "Velkommen"
+  "welcome": "Velkommen",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Akkrediteret Ejendomsspecialist",
+    "reviewed_by": "Indhold gennemgået og verificeret af Akkrediteret Ejendomsspecialist — Hans Beeckman",
+    "reviewed_by_short": "Gennemgået af",
+    "credentials": "Akkrediteret Ejendomsspecialist, Costa del Sol Ejendomsekspert"
+  }
 }
