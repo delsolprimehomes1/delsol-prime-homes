@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "Hjem",
+    "properties": "Eiendommer",
+    "blog": "Blogg",
+    "qa": "Spørsmål & Svar",
+    "contact": "Kontakt",
+    "language": "Språk"
+  },
+  "search": {
+    "title": "Leter du etter et luksushjem på Costa Del Sol?",
+    "placeholder": "Søk eiendommer...",
+    "button": "Søk Eiendommer",
+    "selectLocation": "Velg Plassering",
+    "propertyType": "Eiendomstype",
+    "priceRange": "Prisklasse",
+    "bedrooms": "Soverom"
+  },
+  "cta": {
+    "bookViewing": "Bestill Din Private Visning",
+    "readMore": "Les Mer",
+    "contactUs": "Kontakt Oss",
+    "viewAll": "Vis Alle",
+    "virtualTours": "Virtuelle Omvisninger"
+  },
+  "hero": {
+    "title": "Leter etter Luksushjem",
+    "subtitle": "på Costa Del Sol?",
+    "description": "Vi hjelper deg med å kjøpe eksklusive villaer i",
+    "locations": "Marbella, Estepona & Fuengirola",
+    "expertise": "15+ Års Erfaring med Luksuseiendom",
+    "features": "Premium villaer • Havutsikt • Inngjerdet samfunn • Private bassenger"
+  },
+  "fallback": {
+    "title": "Innhold ikke tilgjengelig på norsk",
+    "description": "Dette innholdet er for øyeblikket tilgjengelig på andre språk.",
+    "switchLanguage": "Bytt til tilgjengelig språk"
+  },
+  "qa": {
+    "title": "Ofte Stilte Spørsmål",
+    "description": "Ekspertsvar for å hjelpe deg med din eiendomsreise på Costa del Sol",
+    "search": {
+      "placeholder": "Søk spørsmål, emner eller nøkkelord...",
+      "filterByTopic": "Filtrer etter Emne",
+      "allTopics": "Alle Emner"
+    },
+    "viewModes": {
+      "label": "Vis etter",
+      "clusters": "Emnegrupper",
+      "stages": "Kjøperreise"
+    },
+    "stages": {
+      "tofu": {
+        "label": "Kom i Gang",
+        "description": "Viktig informasjon for førstegangskjøpere"
+      },
+      "mofu": {
+        "label": "Undersøke Alternativer",
+        "description": "Detaljerte guider for informerte beslutninger"
+      },
+      "bofu": {
+        "label": "Klar til å Kjøpe",
+        "description": "Siste betraktninger og sjekklister"
+      }
+    }
+  },
+  "loading": "Laster...",
+  "welcome": "Velkommen",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Akkreditert Eiendomsspesialist",
+    "reviewed_by": "Innhold gjennomgått og verifisert av Akkreditert Eiendomsspesialist — Hans Beeckman",
+    "reviewed_by_short": "Gjennomgått av",
+    "credentials": "Akkreditert Eiendomsspesialist, Costa del Sol Eiendomsekspert"
+  }
+}

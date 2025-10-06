@@ -24,6 +24,7 @@ const contentCounts: Record<SupportedLanguage, number> = {
   sv: 0,
   da: 0,
   hu: 0,
+  no: 0,
 };
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -183,7 +184,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     const currentSearch = window.location.search;
     
     // Remove any existing language prefix from path
-    const cleanPath = currentPath.replace(/^\/(?:es|de|nl|fr|pl|sv|da|hu)/, '') || '/';
+    const cleanPath = currentPath.replace(/^\/(?:es|de|nl|fr|pl|sv|da|hu|no)/, '') || '/';
     
     let newUrl: string;
     if (language === 'en') {
@@ -220,7 +221,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const getUrlForLanguage = (language: SupportedLanguage, path?: string): string => {
     const targetPath = path || window.location.pathname;
-    const cleanPath = targetPath.replace(/^\/(?:es|de|nl|fr|pl|sv|da|hu)/, '') || '/';
+    const cleanPath = targetPath.replace(/^\/(?:es|de|nl|fr|pl|sv|da|hu|no)/, '') || '/';
     
     if (language === 'en') {
       return cleanPath;

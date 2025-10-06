@@ -271,6 +271,11 @@ function getLanguageInstructions(languageCode: string): {
       languageName: 'Hungarian',
       writingInstructions: 'Írjon világos, szakszerű magyarul. Használja a magázó formát.',
       culturalContext: 'Hungarian-speaking audience. Use respectful, formal tone with clear structure.'
+    },
+    'no': {
+      languageName: 'Norwegian',
+      writingInstructions: 'Skriv på klart, profesjonelt norsk. Bruk De-formen for formell tone.',
+      culturalContext: 'Norwegian-speaking audience. Use friendly yet professional tone with clarity and directness.'
     }
   };
 
