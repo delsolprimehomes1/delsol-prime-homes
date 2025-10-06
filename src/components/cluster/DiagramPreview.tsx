@@ -87,12 +87,7 @@ export const DiagramPreview = ({
       if (data.imageUrl) {
         setGeneratedImageUrl(data.imageUrl);
         onChange(data.imageUrl);
-        toast.success(`AI ${type} generated successfully!`);
-        
-        // Automatically analyze the generated image for metadata
-        if (onAltTextChange && onTitleAttrChange && onDescriptionChange) {
-          analyzeVisualMetadata(data.imageUrl);
-        }
+        toast.success(`AI ${type} generated successfully! Use "Generate Metadata" button if you need new metadata.`);
       }
     } catch (error) {
       console.error('Error generating AI visual:', error);
