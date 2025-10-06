@@ -14,6 +14,7 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     console.log('Starting external link health monitoring...');
@@ -33,7 +34,70 @@ serve(async (req) => {
       redirect: 0,
       timeout: 0,
       ssl_error: 0,
+      ai_validated: 0,
+      needs_replacement: 0,
       details: [] as any[]
+    };
+
+    // AI-powered validation for broken/questionable links (if Perplexity is available)
+    const aiValidation = async (link: any, httpStatus: string) => {
+      if (!perplexityApiKey || httpStatus === 'healthy') return null;
+
+      try {
+        console.log(`AI validating: ${link.url}`);
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${perplexityApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [
+              { 
+                role: 'system', 
+                content: 'You are a link quality expert. Search the web to verify if a URL is accessible and if there are better alternatives. Return JSON only.' 
+              },
+              { 
+                role: 'user', 
+                content: `Check this external link for a Spanish real estate article:
+
+URL: ${link.url}
+Anchor Text: ${link.anchor_text}
+Current Status: ${httpStatus}
+
+SEARCH THE WEB TO:
+1. Verify if this URL is still accessible (try to access it)
+2. Check if there's a better, more recent alternative from the same organization
+3. Rate the link quality 0-100
+
+Return JSON:
+{
+  "is_accessible": true/false,
+  "quality_score": 75,
+  "needs_replacement": false,
+  "better_alternative": "https://...",
+  "reason": "Brief explanation"
+}`
+              }
+            ],
+            temperature: 0.2,
+            search_recency_filter: 'year',
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const content = data.choices[0].message.content;
+          const analysis = JSON.parse(content);
+          results.ai_validated++;
+          if (analysis.needs_replacement) results.needs_replacement++;
+          return analysis;
+        }
+      } catch (e) {
+        console.error('AI validation error:', e);
+      }
+      return null;
     };
 
     // Check each link
@@ -74,6 +138,9 @@ serve(async (req) => {
           results.broken++;
         }
 
+        // Run AI validation for broken/redirect links
+        const aiAnalysis = await aiValidation(link, health_status);
+
         // Update link in database
         await supabase
           .from('external_links')
@@ -94,7 +161,8 @@ serve(async (req) => {
           health_status,
           redirect_url,
           article_type: link.article_type,
-          article_id: link.article_id
+          article_id: link.article_id,
+          ai_analysis: aiAnalysis
         });
 
       } catch (error: any) {

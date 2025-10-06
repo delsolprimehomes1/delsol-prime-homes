@@ -14,7 +14,7 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
+    const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { articleId, articleType } = await req.json();
@@ -53,31 +53,46 @@ serve(async (req) => {
       }))
     };
 
-    // Call AI to analyze and suggest improvements
-    const aiPrompt = `You are an SEO expert analyzing external links for a real estate article.
+    // Call Perplexity AI to analyze with real-time web search
+    const aiPrompt = `You are an SEO expert with web search access. Analyze external links for this Spanish real estate article.
 
 Article Title: ${context.title}
 Topic: ${context.topic}
 Funnel Stage: ${context.funnel_stage}
 
-Existing External Links:
+Existing External Links (${context.existing_links.length}):
 ${context.existing_links.map(l => `- [${l.anchor}](${l.url}) - Authority: ${l.authority}, Domain: ${l.domain}`).join('\n')}
 
-Content Excerpt:
+Content Excerpt (first 3000 chars):
 ${context.content}
 
-Analyze the existing external links and provide:
-1. **Quality Assessment**: Rate each link's relevance and authority (0-100)
-2. **Improvement Suggestions**: For low-quality links (<70), suggest better alternatives
-3. **Missing Links**: Identify topics that need external authority references
-4. **Domain Diversity**: Flag if too many links point to the same domain
+YOUR TASK - SEARCH THE WEB TO:
 
-Priority authoritative sources:
-- Government/Official sites (.gov, .gob.es, agenciatributaria.es, registradores.org)
+1. **VERIFY EXISTING LINKS**: Check if each URL is still live and authoritative
+   - Search for the URL or topic to verify it's still accessible
+   - Check if there are better, more recent alternatives from the same organization
+   - Rate quality 0-100 (consider authority, recency, relevance)
+
+2. **FIND BETTER ALTERNATIVES**: For links scoring <70
+   - Search for more authoritative sources on the same topic
+   - Prioritize 2024-2025 content from high-authority domains
+   - Suggest specific replacement URLs
+
+3. **IDENTIFY MISSING TOPICS**: Find content gaps needing external authority
+   - Search for official sources on key topics mentioned
+   - Focus on: regulations, statistics, legal requirements, market data
+
+4. **CHECK DOMAIN DIVERSITY**: Flag if too many links to same domain
+
+PRIORITY SOURCES TO SEARCH:
+- Spanish Tax Agency (agenciatributaria.es)
+- Property Registrars (registradores.org)
+- Spanish Government (.gov.es, .gob.es)
+- National Statistics (ine.es)
 - Regional tourism (spain.info, andalucia.org)
-- Professional bodies (notary associations, real estate regulatory)
-- Quality news (Financial Times, Reuters, El País)
-- Educational institutions
+- EU sources (europa.eu)
+- Major news 2024-2025 (Financial Times, Reuters, El País)
+- Professional bodies (notarios.org, arquitectos.org)
 
 Return JSON:
 {
@@ -85,37 +100,43 @@ Return JSON:
     {
       "url": "existing_url",
       "quality_score": 85,
+      "is_live": true,
       "keep": true,
-      "reason": "High authority government source",
-      "suggestion": null
+      "reason": "High authority government source, still accessible",
+      "better_alternative": null
     }
   ],
   "new_suggestions": [
     {
-      "topic": "Spanish property tax",
+      "topic": "Spanish property tax rates 2025",
       "suggested_url": "https://agenciatributaria.es/...",
-      "authority_score": 95,
-      "reason": "Official government tax information",
-      "anchor_text": "Spanish Tax Agency guidelines"
+      "authority_score": 98,
+      "year": 2025,
+      "reason": "Official 2025 tax guide from Spanish Tax Agency",
+      "anchor_text": "2025 property tax regulations"
     }
   ],
-  "domain_diversity_issues": ["Too many links to domain.com"],
-  "overall_health_score": 75
+  "domain_diversity_issues": ["3 links to same-domain.com - reduce to 2"],
+  "overall_health_score": 82
 }`;
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${perplexityApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'llama-3.1-sonar-large-128k-online',
         messages: [
-          { role: 'system', content: 'You are an SEO expert specializing in external link optimization. Always return valid JSON.' },
+          { role: 'system', content: 'You are an SEO expert with web search access specializing in external link optimization for Spanish real estate. Search the web to verify links and find authoritative sources. Always return valid JSON.' },
           { role: 'user', content: aiPrompt }
         ],
-        response_format: { type: "json_object" }
+        temperature: 0.2,
+        search_recency_filter: 'year',
+        return_related_questions: false,
+        return_citations: true,
+        search_domain_filter: ['gov.es', 'gob.es', 'agenciatributaria.es', 'registradores.org', 'europa.eu', 'ine.es', 'spain.info']
       }),
     });
 
