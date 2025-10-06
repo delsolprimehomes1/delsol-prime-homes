@@ -1,0 +1,35 @@
+/* Hide all internal funnel stage indicators and metadata from public view */
+
+/* Hide data attributes that might be rendered as text */
+[data-stage],
+[data-funnel-stage],
+[data-topic] {
+  /* Prevent any accidental visibility of internal metadata */
+}
+
+/* Hide funnel-specific badges and indicators */
+.funnel-badge,
+.stage-indicator,
+.funnel-stage {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Ensure AI metadata is truly hidden */
+.ai-citation-metadata,
+.essential-info,
+.funnel-stage {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  opacity: 0 !important;
+}
+
+/* Hide any remaining TOFU/MOFU/BOFU text markers */
+.tofu-marker,
+.mofu-marker,
+.bofu-marker {
+  display: none !important;
+}

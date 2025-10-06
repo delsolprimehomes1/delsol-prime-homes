@@ -41,16 +41,6 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
 
   return (
     <section className="qa-hero-section mb-8">
-      {/* Stage Badge */}
-      <div className="mb-4">
-        <Badge 
-          variant="outline" 
-          className={`${stageColors[funnelStage as keyof typeof stageColors]} font-medium`}
-        >
-          {stageLabels[funnelStage as keyof typeof stageLabels] || 'Getting Started'}
-        </Badge>
-      </div>
-
       {/* Main Title - Mobile Optimized Font Sizes */}
       <h1 className="text-[22px] leading-tight sm:text-[26px] sm:leading-tight lg:text-4xl xl:text-5xl font-bold text-foreground mb-3 lg:mb-4">
         🏠 {title}

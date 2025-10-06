@@ -152,8 +152,8 @@ function injectContextualLink(html: string, article: RelatedArticle, currentTopi
 
   if (!bestKeyword) return html;
 
-  // Create contextual link with preview
-  const linkHtml = `<a href="/qa/${article.slug}" class="contextual-link" data-preview="${escapeHtml(article.excerpt.substring(0, 100))}..." data-topic="${article.topic}" data-stage="${article.funnel_stage}">${bestKeyword}</a>`;
+  // Create contextual link (clean, no internal metadata)
+  const linkHtml = `<a href="/qa/${article.slug}" class="contextual-link">${bestKeyword}</a>`;
 
   // Replace first occurrence of the keyword with the link
   const regex = new RegExp(`\\b${escapeRegex(bestKeyword)}\\b`, 'i');

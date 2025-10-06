@@ -538,7 +538,7 @@ const QAPost = () => {
                     <div className="flex items-center justify-center gap-2 mb-3">
                       <Star className="w-5 h-5 text-yellow-500" />
                       <Badge variant="secondary" className="bg-green-500/10 text-green-700 border-green-200">
-                        Exclusive BOFU Content
+                        Expert Guide
                       </Badge>
                       <Star className="w-5 h-5 text-yellow-500" />
                     </div>

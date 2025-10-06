@@ -112,19 +112,18 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
         />
       </Helmet>
 
-      {/* Funnel Progress Bar - Mobile: sticky bottom, Desktop: top */}
-      <FunnelProgressBar
+      {/* Funnel Progress Bar - Hidden from public view */}
+      {/* <FunnelProgressBar
         currentStage={article.funnel_stage || 'TOFU'}
         topic={article.topic || 'General'}
         className={mobile ? "sticky bottom-0 z-50" : "sticky top-0 z-40"}
-      />
+      /> */}
 
       {/* Breadcrumb Navigation */}
       <div className="px-4 lg:px-0 mb-4">
         <QABreadcrumb
           title={article.title}
           topic={article.topic || 'General'}
-          funnelStage={article.funnel_stage || 'TOFU'}
         />
       </div>
 
@@ -278,14 +277,13 @@ export const EnhancedQAContent: React.FC<EnhancedQAContentProps> = ({
       </div>
 
       {/* Hidden AI Metadata for Citation & Discovery */}
-      <div className="hidden ai-citation-metadata" data-ai-content="true">
+      <div className="hidden ai-citation-metadata" data-ai-content="true" style={{ display: 'none' }} aria-hidden="true">
         <div className="ai-summary" data-speakable="true">
           {article.excerpt || shortAnswer}
         </div>
         
         <div className="essential-info">
           <span className="topic">{article.topic}</span>
-          <span className="funnel-stage">{article.funnel_stage}</span>
           <span className="location">{article.city || 'Costa del Sol'}</span>
           <span className="content-length">{qualityCheck.charCount}</span>
           <span className="reading-time">{readingTime}</span>

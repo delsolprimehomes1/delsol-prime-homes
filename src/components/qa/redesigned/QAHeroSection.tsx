@@ -78,13 +78,6 @@ export const QAHeroSection: React.FC<QAHeroSectionProps> = ({
                 Expert Reviewed
               </span>
             )}
-            
-            <Badge 
-              variant="outline" 
-              className={`${stageColors[funnelStage as keyof typeof stageColors]} font-medium`}
-            >
-              {stageLabels[funnelStage as keyof typeof stageLabels] || 'Getting Started'}
-            </Badge>
           </div>
 
           {/* Excerpt */}

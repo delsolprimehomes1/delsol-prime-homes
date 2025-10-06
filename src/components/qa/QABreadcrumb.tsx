@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 interface QABreadcrumbProps {
   title: string;
   topic: string;
-  funnelStage: string;
+  funnelStage?: string;
   className?: string;
 }
 
@@ -62,15 +62,6 @@ export const QABreadcrumb: React.FC<QABreadcrumbProps> = ({
             {topic}
           </Badge>
         </Link>
-        
-        <ChevronRight className="w-4 h-4 flex-shrink-0" />
-        
-        <Badge 
-          variant="secondary" 
-          className={`text-xs ${stageColors[funnelStage as keyof typeof stageColors]}`}
-        >
-          {stageLabels[funnelStage as keyof typeof stageLabels]}
-        </Badge>
       </div>
       
       <div className="flex-1 min-w-0 ml-2">
