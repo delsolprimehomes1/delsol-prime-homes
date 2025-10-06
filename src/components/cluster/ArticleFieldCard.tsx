@@ -217,6 +217,10 @@ export const ArticleFieldCard = ({ index, stage, article, onChange, language = '
               onLocationFocusChange={(locationFocus) => onChange({ ...article, locationFocus })}
               onTargetAudienceChange={(targetAudience) => onChange({ ...article, targetAudience })}
               onIntentChange={(intent) => onChange({ ...article, intent })}
+              articleTitle={article.title}
+              articleContent={article.content}
+              stage={stage}
+              language={language}
             />
           </CardContent>
         </CollapsibleContent>
