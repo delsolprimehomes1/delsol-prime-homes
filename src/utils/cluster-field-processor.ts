@@ -38,7 +38,7 @@ async function enhanceContentIfNeeded(
     return article;
   }
 
-  console.log(`🚀 Enhancing "${article.title}" (${wordCount} words) for ${stage} stage...`);
+  console.log(`🚀 Enhancing "${article.title}" (${wordCount} words) for ${stage} stage in ${clusterData.language.toUpperCase()}...`);
   
   try {
     const { data, error } = await supabase.functions.invoke('content-enhancer', {
@@ -47,6 +47,7 @@ async function enhanceContentIfNeeded(
         content: article.content,
         stage: stage,
         topic: clusterData.topic,
+        language: clusterData.language,
         locationFocus: article.locationFocus || 'Costa del Sol',
         targetAudience: article.targetAudience || 'International property buyers',
         tags: article.tags
@@ -105,12 +106,16 @@ const calculateTitleSimilarity = (title1: string, title2: string): number => {
 const findExistingArticleByTitle = async (
   title: string, 
   language: string,
+  topic: string,
   similarityThreshold: number = 0.9
 ): Promise<string | null> => {
+  const searchTitle = title.replace(/[^\w\s]/g, '');
+  
   const { data: articles, error } = await supabase
     .from('qa_articles')
     .select('id, title')
-    .eq('language', language);
+    .eq('language', language)
+    .eq('topic', topic);
 
   if (error || !articles) return null;
 
@@ -240,7 +245,7 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
       console.log(`Processing TOFU ${index + 1}: cluster_position=${currentPosition}, title="${article.title?.substring(0, 50)}"`);
 
-      const existingId = await findExistingArticleByTitle(article.title, data.language);
+      const existingId = await findExistingArticleByTitle(article.title, data.language, data.topic);
       const slug = generateSlug(article.title);
       
       if (existingId) {
@@ -338,7 +343,7 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
 
       console.log(`Processing MOFU ${index + 1}: cluster_position=${currentPosition}, title="${article.title?.substring(0, 50)}"`);
 
-      const existingId = await findExistingArticleByTitle(article.title, data.language);
+      const existingId = await findExistingArticleByTitle(article.title, data.language, data.topic);
       const slug = generateSlug(article.title);
       
       if (existingId) {
@@ -429,7 +434,7 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
       } else {
         console.log(`Processing BOFU: cluster_position=${currentPosition}, title="${enhancedBofuArticle.title?.substring(0, 50)}"`);
 
-        const existingBofuId = await findExistingArticleByTitle(enhancedBofuArticle.title, data.language);
+        const existingBofuId = await findExistingArticleByTitle(enhancedBofuArticle.title, data.language, data.topic);
         const slug = generateSlug(enhancedBofuArticle.title);
         
         if (existingBofuId) {

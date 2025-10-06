@@ -14,15 +14,24 @@ serve(async (req) => {
   }
 
   try {
-    const { title, content, stage, topic, locationFocus, targetAudience, tags } = await req.json();
+    const { title, content, stage, topic, language = 'en', locationFocus, targetAudience, tags } = await req.json();
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    console.log(`Enhancing ${stage} article: "${title}" (current: ${content.split(/\s+/).length} words)`);
+    console.log(`Enhancing ${stage} article: "${title}" in ${language.toUpperCase()} (current: ${content.split(/\s+/).length} words)`);
+
+    const languageInfo = getLanguageInstructions(language);
 
     const systemPrompt = `You are an expert SEO content writer specializing in Costa del Sol luxury property market. Current year: 2025.
+
+**🌍 LANGUAGE REQUIREMENT - CRITICAL:**
+- **Target Language**: ${languageInfo.languageName} (${language})
+- **Writing Instructions**: ${languageInfo.writingInstructions}
+- **Cultural Context**: ${languageInfo.culturalContext}
+- **IMPORTANT**: Write the ENTIRE article in ${languageInfo.languageName}. All headings, content, Q&A sections, and conclusions must be in ${languageInfo.languageName}.
+- **Location Names**: Keep Spanish location names (e.g., "Costa del Sol", "Marbella", "Málaga") but translate all surrounding text.
 
 **Brand Context:**
 - Brand: DelSol Prime Homes
@@ -108,6 +117,8 @@ serve(async (req) => {
 
     const userPrompt = `Expand this article to 800-1,200 words while maintaining quality:
 
+**🌍 WRITE IN ${languageInfo.languageName.toUpperCase()} (${language.toUpperCase()}) - ALL CONTENT MUST BE IN THIS LANGUAGE**
+
 **Title:** ${title}
 **Topic:** ${topic}
 **Location Focus:** ${locationFocus || 'Costa del Sol'}
@@ -173,7 +184,15 @@ Return ONLY the enhanced markdown content in this exact structure, no explanatio
     const enhancedContent = data.choices[0].message.content;
     const wordCount = enhancedContent.split(/\s+/).length;
 
-    console.log(`Enhanced content: ${wordCount} words`);
+    console.log(`✅ Enhanced content: ${wordCount} words in ${language}`);
+
+    // Validate language (basic check for English words in non-English content)
+    if (language !== 'en' && wordCount > 50) {
+      const englishWordCount = (enhancedContent.match(/\b(the|and|is|are|was|were|have|has|with|from|that|this)\b/gi) || []).length;
+      if (englishWordCount > 20) {
+        console.warn(`⚠️ Warning: Content may contain significant English despite ${language} request (${englishWordCount} common English words detected)`);
+      }
+    }
 
     return new Response(
       JSON.stringify({ 
@@ -201,6 +220,62 @@ Return ONLY the enhanced markdown content in this exact structure, no explanatio
     );
   }
 });
+
+function getLanguageInstructions(languageCode: string): { 
+  languageName: string; 
+  writingInstructions: string;
+  culturalContext: string;
+} {
+  const languageMap = {
+    'en': {
+      languageName: 'English',
+      writingInstructions: 'Write in clear, professional English with natural flow.',
+      culturalContext: 'International English-speaking audience, primarily UK, US, and Commonwealth countries.'
+    },
+    'es': {
+      languageName: 'Spanish',
+      writingInstructions: 'Escribe en español claro y profesional. Use "usted" for formal tone.',
+      culturalContext: 'Spanish-speaking audience from Spain and Latin America. Use European Spanish terminology for real estate.'
+    },
+    'nl': {
+      languageName: 'Dutch',
+      writingInstructions: 'Schrijf in helder, professioneel Nederlands. Gebruik de u-vorm voor formele toon.',
+      culturalContext: 'Dutch-speaking audience from Netherlands and Belgium. Use direct, practical communication style.'
+    },
+    'fr': {
+      languageName: 'French',
+      writingInstructions: 'Écrivez en français clair et professionnel. Utilisez le "vous" formel.',
+      culturalContext: 'French-speaking audience from France, Belgium, and Switzerland. Maintain elegant, sophisticated tone.'
+    },
+    'de': {
+      languageName: 'German',
+      writingInstructions: 'Schreiben Sie in klarem, professionellem Deutsch. Verwenden Sie die Sie-Form.',
+      culturalContext: 'German-speaking audience from Germany, Austria, and Switzerland. Use precise, detailed language.'
+    },
+    'pl': {
+      languageName: 'Polish',
+      writingInstructions: 'Pisz jasnym, profesjonalnym językiem polskim. Używaj formy grzecznościowej "Pan/Pani".',
+      culturalContext: 'Polish-speaking audience. Use formal, respectful tone with detailed explanations.'
+    },
+    'sv': {
+      languageName: 'Swedish',
+      writingInstructions: 'Skriv på klar, professionell svenska. Använd ni-formen.',
+      culturalContext: 'Swedish-speaking audience. Use friendly yet professional tone with clarity.'
+    },
+    'da': {
+      languageName: 'Danish',
+      writingInstructions: 'Skriv på klart, professionelt dansk. Brug De-formen for formel tone.',
+      culturalContext: 'Danish-speaking audience. Use warm, approachable yet professional style.'
+    },
+    'hu': {
+      languageName: 'Hungarian',
+      writingInstructions: 'Írjon világos, szakszerű magyarul. Használja a magázó formát.',
+      culturalContext: 'Hungarian-speaking audience. Use respectful, formal tone with clear structure.'
+    }
+  };
+
+  return languageMap[languageCode as keyof typeof languageMap] || languageMap['en'];
+}
 
 function getFunnelContext(stage: string): string {
   switch (stage) {

@@ -68,13 +68,15 @@ export const ClusterMetadataForm = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="es">Español</SelectItem>
-              <SelectItem value="de">Deutsch</SelectItem>
-              <SelectItem value="fr">Français</SelectItem>
-              <SelectItem value="nl">Nederlands</SelectItem>
-              <SelectItem value="sv">Svenska</SelectItem>
-              <SelectItem value="da">Dansk</SelectItem>
+              <SelectItem value="en">🇬🇧 English</SelectItem>
+              <SelectItem value="es">🇪🇸 Español</SelectItem>
+              <SelectItem value="nl">🇳🇱 Nederlands</SelectItem>
+              <SelectItem value="fr">🇫🇷 Français</SelectItem>
+              <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+              <SelectItem value="pl">🇵🇱 Polski</SelectItem>
+              <SelectItem value="sv">🇸🇪 Svenska</SelectItem>
+              <SelectItem value="da">🇩🇰 Dansk</SelectItem>
+              <SelectItem value="hu">🇭🇺 Magyar</SelectItem>
             </SelectContent>
           </Select>
         </div>

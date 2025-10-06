@@ -31,9 +31,10 @@ interface ArticleFieldCardProps {
   stage: 'TOFU' | 'MOFU' | 'BOFU';
   article: ArticleField;
   onChange: (article: ArticleField) => void;
+  language?: string;
 }
 
-export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFieldCardProps) => {
+export const ArticleFieldCard = ({ index, stage, article, onChange, language = 'en' }: ArticleFieldCardProps) => {
   const [isOpen, setIsOpen] = useState(index === 0);
   const [isEnhancing, setIsEnhancing] = useState(false);
 
@@ -53,6 +54,14 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
     return 'text-amber-600 dark:text-amber-400';
   };
 
+  const getLanguageFlag = (lang: string) => {
+    const flags: Record<string, string> = {
+      en: '🇬🇧', es: '🇪🇸', nl: '🇳🇱', fr: '🇫🇷', de: '🇩🇪',
+      pl: '🇵🇱', sv: '🇸🇪', da: '🇩🇰', hu: '🇭🇺'
+    };
+    return flags[lang] || '🌐';
+  };
+
   const handleAIEnhance = async () => {
     if (!article.title || !article.content) {
       toast.error('Please add title and content first');
@@ -67,6 +76,7 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
           content: article.content,
           stage,
           topic: article.tags?.[0] || 'Property',
+          language,
           locationFocus: article.locationFocus || 'Costa del Sol',
           targetAudience: article.targetAudience || 'International buyers',
           tags: article.tags,
@@ -107,7 +117,12 @@ export const ArticleFieldCard = ({ index, stage, article, onChange }: ArticleFie
               <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </div>
             {article.title && (
-              <p className="text-sm text-muted-foreground mt-2">{article.title}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <p className="text-sm text-muted-foreground">{article.title}</p>
+                <Badge variant="outline" className="text-xs">
+                  {getLanguageFlag(language)} {language.toUpperCase()}
+                </Badge>
+              </div>
             )}
           </CardHeader>
         </CollapsibleTrigger>

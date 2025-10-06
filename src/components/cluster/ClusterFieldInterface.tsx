@@ -202,6 +202,7 @@ export const ClusterFieldInterface = () => {
                     stage="TOFU"
                     article={article}
                     onChange={(updated) => updateTofuArticle(index, updated)}
+                    language={language}
                   />
                 </div>
               );
@@ -228,6 +229,7 @@ export const ClusterFieldInterface = () => {
                     stage="MOFU"
                     article={article}
                     onChange={(updated) => updateMofuArticle(index, updated)}
+                    language={language}
                   />
                 </div>
               );
@@ -249,6 +251,7 @@ export const ClusterFieldInterface = () => {
               stage="BOFU"
               article={bofuArticle}
               onChange={setBofuArticle}
+              language={language}
             />
           </div>
         </div>
