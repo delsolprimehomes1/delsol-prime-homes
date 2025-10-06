@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, CheckCircle2, Sparkles } from 'lucide-react';
+import { Loader2, CheckCircle2, Sparkles, Clock } from 'lucide-react';
 import { ClusterMetadataForm } from './ClusterMetadataForm';
 import { ArticleFieldCard, ArticleField } from './ArticleFieldCard';
 import { processClusterFields } from '@/utils/cluster-field-processor';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 const createEmptyArticle = (): ArticleField => ({
   title: '',
@@ -165,12 +166,15 @@ export const ClusterFieldInterface = () => {
     setImportResult(null);
 
     try {
-      // Combine date and time for scheduled publishing
+      // Combine date and time for scheduled publishing (Madrid timezone)
       let scheduledPublishAt: Date | undefined;
       if (publishMode === 'scheduled' && scheduledDate) {
         const [hours, minutes] = scheduledTime.split(':').map(Number);
-        scheduledPublishAt = new Date(scheduledDate);
-        scheduledPublishAt.setHours(hours, minutes, 0, 0);
+        const madridDate = new Date(scheduledDate);
+        madridDate.setHours(hours, minutes, 0, 0);
+        
+        // Convert Madrid time to UTC for storage
+        scheduledPublishAt = fromZonedTime(madridDate, 'Europe/Madrid');
       }
 
       const result = await processClusterFields({
@@ -188,7 +192,7 @@ export const ClusterFieldInterface = () => {
       setImportResult(result);
       if (result.success) {
         const message = publishMode === 'scheduled' 
-          ? `Cluster scheduled for ${scheduledPublishAt?.toLocaleString()}`
+          ? `Cluster scheduled for ${formatScheduleTime()}`
           : `Successfully imported cluster with ${result.articleCount} articles`;
         toast.success(message);
       } else {
@@ -206,7 +210,13 @@ export const ClusterFieldInterface = () => {
   const formatScheduleTime = () => {
     if (!scheduledDate) return '';
     const [hours, minutes] = scheduledTime.split(':');
-    return `${scheduledDate.toLocaleDateString()} ${hours}:${minutes}`;
+    const madridDate = new Date(scheduledDate);
+    madridDate.setHours(Number(hours), Number(minutes), 0, 0);
+    return formatInTimeZone(madridDate, 'Europe/Madrid', 'dd/MM/yyyy HH:mm') + ' (Madrid)';
+  };
+  
+  const getCurrentMadridTime = () => {
+    return formatInTimeZone(new Date(), 'Europe/Madrid', 'HH:mm');
   };
 
   const progress = calculateProgress();
@@ -393,25 +403,34 @@ export const ClusterFieldInterface = () => {
           </div>
 
           {publishMode === 'scheduled' && (
-            <div className="grid grid-cols-2 gap-4 pt-2 animate-fade-in">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Publish Date</label>
-                <input
-                  type="date"
-                  value={scheduledDate ? scheduledDate.toISOString().split('T')[0] : ''}
-                  onChange={(e) => setScheduledDate(e.target.value ? new Date(e.target.value) : undefined)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
+            <div className="space-y-4 pt-2 animate-fade-in">
+              <div className="flex items-center gap-2 p-3 bg-blue-100/50 rounded-md border border-blue-200">
+                <Clock className="h-4 w-4 text-blue-600" />
+                <span className="text-sm text-blue-700">
+                  Current Madrid time: <span className="font-semibold">{getCurrentMadridTime()}</span>
+                </span>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Time (24hr)</label>
-                <input
-                  type="time"
-                  value={scheduledTime}
-                  onChange={(e) => setScheduledTime(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
-                />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Publish Date</label>
+                  <input
+                    type="date"
+                    value={scheduledDate ? scheduledDate.toISOString().split('T')[0] : ''}
+                    onChange={(e) => setScheduledDate(e.target.value ? new Date(e.target.value) : undefined)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Time (24hr - Madrid Time)</label>
+                  <input
+                    type="time"
+                    value={scheduledTime}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                </div>
               </div>
             </div>
           )}
