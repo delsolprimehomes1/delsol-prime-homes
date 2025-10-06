@@ -146,7 +146,13 @@ serve(async (req) => {
       exif_latitude: geoCoordinates?.latitude || 36.5100, // Costa del Sol default
       exif_longitude: geoCoordinates?.longitude || -4.8826,
       exif_location_name: geoCoordinates?.locationName || 'Costa del Sol, Málaga, Spain',
-      mime_type: 'image/jpeg'
+      mime_type: 'image/jpeg',
+      // AI discovery fields
+      canonical_image_url: publicUrl,
+      embedded_exif_status: 'pending',
+      ai_citability_score: 0,
+      visual_accessibility_ready: false,
+      seo_optimized: false
     };
 
     const { error: metadataError } = await supabase

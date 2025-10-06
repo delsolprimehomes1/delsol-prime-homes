@@ -93,7 +93,13 @@ export async function uploadImage(options: UploadImageOptions): Promise<UploadRe
         width: dimensions.width,
         height: dimensions.height,
         file_size: file.size,
-        mime_type: file.type
+        mime_type: file.type,
+        // AI discovery fields
+        canonical_image_url: urlData.publicUrl,
+        embedded_exif_status: 'pending',
+        ai_citability_score: 0,
+        visual_accessibility_ready: false,
+        seo_optimized: false
       })
       .select()
       .single();

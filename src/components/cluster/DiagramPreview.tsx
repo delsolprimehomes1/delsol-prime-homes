@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
-import { Info, Loader2, Image as ImageIcon, GitGraph, Code } from 'lucide-react';
+import { Info, Loader2, Image as ImageIcon, GitGraph, Code, CheckCircle2, Database } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -50,6 +50,9 @@ export const DiagramPreview = ({
   const [showMetadata, setShowMetadata] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [useCustomPrompt, setUseCustomPrompt] = useState<boolean>(false);
+  const [isEmbedding, setIsEmbedding] = useState(false);
+  const [metadataEmbedded, setMetadataEmbedded] = useState(false);
+  const [imageStoragePath, setImageStoragePath] = useState<string>('');
 
   const generateAIVisual = async (type: 'image' | 'diagram') => {
     if (!articleTitle || !articleContent) {
@@ -93,7 +96,9 @@ export const DiagramPreview = ({
 
       if (data.imageUrl) {
         setGeneratedImageUrl(data.imageUrl);
+        setImageStoragePath(data.storagePath || '');
         onChange(data.imageUrl);
+        setMetadataEmbedded(false); // Reset embedding status for new image
         toast.success(`AI ${type} generated successfully! Use "Generate Metadata" button if you need new metadata.`);
       }
     } catch (error) {
@@ -139,6 +144,61 @@ export const DiagramPreview = ({
       toast.error('Failed to analyze image');
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleEmbedMetadata = async () => {
+    if (!generatedImageUrl || !imageStoragePath) {
+      toast.error('No image available to embed metadata');
+      return;
+    }
+
+    if (!altText || !description) {
+      toast.error('Please generate metadata first (Alt Text and Description are required)');
+      return;
+    }
+
+    setIsEmbedding(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('embed-image-metadata', {
+        body: {
+          imageUrl: generatedImageUrl,
+          storagePath: imageStoragePath,
+          metadata: {
+            altText,
+            titleAttr,
+            description,
+            keywords,
+            geoCoordinates: {
+              latitude: 36.5100,
+              longitude: -4.8826,
+              locationName: 'Costa del Sol, Málaga, Spain'
+            },
+            attribution: 'DelSolPrimeHomes',
+            license: 'All Rights Reserved'
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Embedding error:', error);
+        toast.error('Failed to embed metadata into image');
+        return;
+      }
+
+      if (data?.success) {
+        setMetadataEmbedded(true);
+        toast.success(
+          `Metadata embedded successfully! AI Citability Score: ${data.metadata?.ai_citability_score}/100`,
+          { duration: 5000 }
+        );
+      }
+    } catch (error) {
+      console.error('Error embedding metadata:', error);
+      toast.error('Failed to embed metadata into image');
+    } finally {
+      setIsEmbedding(false);
     }
   };
 
@@ -302,32 +362,61 @@ export const DiagramPreview = ({
                 title={titleAttr}
                 className="w-full h-auto rounded-md"
               />
-              <div className="flex gap-2 mt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => generateAIVisual(visualType === 'ai-image' ? 'image' : 'diagram')}
-                  className="flex-1"
-                  disabled={isGenerating}
-                >
-                  Regenerate
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => analyzeVisualMetadata(generatedImageUrl)}
-                  className="flex-1"
-                  disabled={isAnalyzing}
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    'Generate Metadata'
-                  )}
-                </Button>
+              <div className="space-y-2 mt-2">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => generateAIVisual(visualType === 'ai-image' ? 'image' : 'diagram')}
+                    className="flex-1"
+                    disabled={isGenerating}
+                  >
+                    Regenerate
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => analyzeVisualMetadata(generatedImageUrl)}
+                    className="flex-1"
+                    disabled={isAnalyzing}
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      'Generate Metadata'
+                    )}
+                  </Button>
+                </div>
+                
+                {showMetadata && (altText || description) && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleEmbedMetadata}
+                    className="w-full"
+                    disabled={isEmbedding || metadataEmbedded}
+                  >
+                    {isEmbedding ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Embedding metadata...
+                      </>
+                    ) : metadataEmbedded ? (
+                      <>
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Metadata Embedded ✓
+                      </>
+                    ) : (
+                      <>
+                        <Database className="h-4 w-4 mr-2" />
+                        Embed Metadata for AI Discovery
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </Card>
           )}
@@ -386,6 +475,18 @@ export const DiagramPreview = ({
                 )}
               </div>
             </Card>
+          )}
+
+          {metadataEmbedded && (
+            <Alert className="border-green-500/50 bg-green-500/10">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <AlertTitle>Metadata Embedded Successfully</AlertTitle>
+              <AlertDescription className="text-xs mt-1">
+                All metadata has been stored in the database with AI-optimized fields. 
+                AI/LLMs can now discover and cite this image with full context including 
+                accessibility, geo-location, and SEO optimization.
+              </AlertDescription>
+            </Alert>
           )}
 
           <Alert>
