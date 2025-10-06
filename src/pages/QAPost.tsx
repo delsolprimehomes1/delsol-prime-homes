@@ -87,51 +87,70 @@ const QAPost = () => {
     queryFn: async () => {
       if (!slug) return null;
       
-      // Detect language from slug prefix
-      const { language: slugLanguage, cleanSlug } = detectLanguageFromSlug(slug);
-      
-      // First, try to get the article using the detected language from slug
+      // PRIORITY 1: Use language from URL route parameter (/:lang/qa/:slug)
+      // This is the most reliable source when user navigates via language-prefixed URLs
       let { data, error } = await supabase
         .from('qa_articles' as any)
         .select('*')
-        .eq('slug', slug)  // Use original slug for exact match
-        .eq('language', slugLanguage)
+        .eq('slug', slug)  // Use exact slug from URL
+        .eq('language', detectedLanguage)  // Use language from route parameter
         .single();
       
       // If found, update i18n to match the article's language
-      if (data && slugLanguage !== detectedLanguage) {
-        i18n.changeLanguage(slugLanguage);
+      if (data && detectedLanguage !== currentLanguage) {
+        i18n.changeLanguage(detectedLanguage);
+        return data as any;
       }
       
-      // If not found with detected language, try alternative slug constructions
-      if ((error?.code === 'PGRST116' || !data)) {
-        // Try with clean slug and detected language
-        const altQuery = await supabase
+      // PRIORITY 2: Detect language from slug prefix as fallback
+      const { language: slugLanguage, cleanSlug } = detectLanguageFromSlug(slug);
+      
+      // Try with detected slug language if different from URL language
+      if (!data && slugLanguage !== detectedLanguage) {
+        const slugQuery = await supabase
           .from('qa_articles' as any)
           .select('*')
-          .eq('slug', cleanSlug)
+          .eq('slug', slug)
           .eq('language', slugLanguage)
           .single();
           
-        if (altQuery.data) {
-          data = altQuery.data;
+        if (slugQuery.data) {
+          data = slugQuery.data;
           error = null;
-        } else {
-          // If still not found and slug language isn't English, try English fallback
-          if (slugLanguage !== 'en') {
-            const englishSlug = constructDatabaseSlug(slug, 'en');
-            const fallback = await supabase
-              .from('qa_articles' as any)
-              .select('*')
-              .eq('slug', englishSlug)
-              .eq('language', 'en')
-              .single();
-            
-            if (fallback.data) {
-              data = fallback.data;
-              error = null;
-            }
+          if (slugLanguage !== currentLanguage) {
+            i18n.changeLanguage(slugLanguage);
           }
+          return data as any;
+        }
+      }
+      
+      // PRIORITY 3: Try with clean slug if different
+      if (!data && cleanSlug !== slug) {
+        const cleanQuery = await supabase
+          .from('qa_articles' as any)
+          .select('*')
+          .eq('slug', cleanSlug)
+          .eq('language', detectedLanguage)
+          .single();
+          
+        if (cleanQuery.data) {
+          data = cleanQuery.data;
+          error = null;
+          return data as any;
+        }
+      }
+      
+      // PRIORITY 4: English fallback
+      if (!data && detectedLanguage !== 'en') {
+        const fallback = await supabase
+          .from('qa_articles' as any)
+          .select('*')
+          .eq('slug', slug)
+          .eq('language', 'en')
+          .single();
+        
+        if (fallback.data) {
+          return fallback.data as any;
         }
       }
       
