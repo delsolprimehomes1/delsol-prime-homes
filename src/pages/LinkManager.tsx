@@ -65,6 +65,8 @@ export default function LinkManager() {
   const [brokenLinkReports, setBrokenLinkReports] = useState<any[]>([]);
   const [brokenLinkStats, setBrokenLinkStats] = useState<any>(null);
   const [scanningLinks, setScanningLinks] = useState(false);
+  const [isBulkRepairRunning, setIsBulkRepairRunning] = useState(false);
+  const [bulkRepairProgress, setBulkRepairProgress] = useState<string>('');
 
   const { toast } = useToast();
 
@@ -453,6 +455,38 @@ export default function LinkManager() {
     }
   };
 
+  const handleBulkRepair = async (action: 'internal' | 'external' | 'all') => {
+    setIsBulkRepairRunning(true);
+    setBulkRepairProgress(`Starting ${action} link repair...`);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('bulk-repair-links', {
+        body: { action, autoApproveThreshold: 80 }
+      });
+
+      if (error) throw error;
+
+      setBulkRepairProgress(`Completed! Fixed ${data.totalLinksFixed} links across ${data.successful} articles.`);
+      
+      toast({
+        title: "Bulk Repair Complete",
+        description: `Fixed ${data.totalLinksFixed} links. ${data.successful} successful, ${data.skipped} skipped, ${data.errors} errors.`,
+      });
+
+      await Promise.all([fetchArticles(), fetchLinkHealth(), fetchBrokenLinkStats()]);
+    } catch (error: any) {
+      console.error('Bulk repair error:', error);
+      toast({
+        title: "Bulk Repair Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsBulkRepairRunning(false);
+      setTimeout(() => setBulkRepairProgress(''), 3000);
+    }
+  };
+
   const generateBulkLinks = async () => {
     const articlesToProcess = filteredArticles.filter(
       a => a.external_link_count === 0 || a.internal_link_count === 0
@@ -546,7 +580,7 @@ export default function LinkManager() {
               </Button>
               <Button
                 onClick={generateBulkLinks}
-                disabled={bulkGenerating}
+                disabled={bulkGenerating || isBulkRepairRunning}
                 size="default"
               >
                 {bulkGenerating ? (
@@ -563,6 +597,58 @@ export default function LinkManager() {
               </Button>
             </div>
           </div>
+
+          {/* Bulk Repair Actions */}
+          <div className="flex gap-2 mt-4">
+            <Button 
+              variant="default"
+              onClick={() => handleBulkRepair('internal')}
+              disabled={isBulkRepairRunning || (brokenLinkStats?.totalBrokenLinks || 0) === 0}
+            >
+              {isBulkRepairRunning ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <>🔧</>
+              )}
+              <span className="ml-2">Fix All Internal ({brokenLinkStats?.totalBrokenLinks || 0})</span>
+            </Button>
+            
+            <Button 
+              variant="default"
+              onClick={() => handleBulkRepair('external')}
+              disabled={isBulkRepairRunning || linkHealth.broken === 0}
+            >
+              {isBulkRepairRunning ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <>🔗</>
+              )}
+              <span className="ml-2">Fix All External ({linkHealth.broken})</span>
+            </Button>
+            
+            <Button 
+              variant="default"
+              onClick={() => handleBulkRepair('all')}
+              disabled={isBulkRepairRunning || ((brokenLinkStats?.totalBrokenLinks || 0) + linkHealth.broken) === 0}
+            >
+              {isBulkRepairRunning ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <>⚡</>
+              )}
+              <span className="ml-2">Fix Everything ({(brokenLinkStats?.totalBrokenLinks || 0) + linkHealth.broken})</span>
+            </Button>
+          </div>
+
+          {/* Bulk Repair Progress */}
+          {bulkRepairProgress && (
+            <Card className="p-4 bg-primary/5 border-primary mt-4">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <p className="text-sm font-medium">{bulkRepairProgress}</p>
+              </div>
+            </Card>
+          )}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4 mt-6">
