@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "Etusivu",
+    "properties": "Kiinteistöt",
+    "blog": "Blogi",
+    "qa": "UKK",
+    "contact": "Yhteystiedot",
+    "language": "Kieli"
+  },
+  "search": {
+    "title": "Etsitkö luksusasuntoa Costa Del Solilta?",
+    "placeholder": "Etsi kiinteistöjä...",
+    "button": "Etsi kiinteistöjä",
+    "selectLocation": "Valitse sijainti",
+    "propertyType": "Kiinteistötyyppi",
+    "priceRange": "Hintaluokka",
+    "bedrooms": "Makuuhuoneet"
+  },
+  "cta": {
+    "bookViewing": "Varaa yksityinen esittely",
+    "readMore": "Lue lisää",
+    "contactUs": "Ota yhteyttä",
+    "viewAll": "Näytä kaikki",
+    "virtualTours": "Virtuaalikierrokset"
+  },
+  "hero": {
+    "title": "Etsitkö luksusasuntoa",
+    "subtitle": "Costa Del Solilta?",
+    "description": "Autamme sinua ostamaan yksinoikeudella huviloita",
+    "locations": "Marbellassa, Esteponassa ja Fuengirolassa",
+    "expertise": "Yli 15 vuoden kokemus luksuskiinteistöistä",
+    "features": "Premium-huvilat • Merinäköalat • Suljetut yhteisöt • Yksityiset altaat"
+  },
+  "fallback": {
+    "title": "Sisältö ei ole saatavilla suomeksi",
+    "description": "Tämä sisältö on tällä hetkellä saatavilla muilla kielillä.",
+    "switchLanguage": "Vaihda saatavilla olevaan kieleen"
+  },
+  "qa": {
+    "title": "Usein kysytyt kysymykset",
+    "description": "Asiantuntijavastauksia Costa del Solin kiinteistömatkaasi varten",
+    "search": {
+      "placeholder": "Etsi kysymyksiä, aiheita tai avainsanoja...",
+      "filterByTopic": "Suodata aiheen mukaan",
+      "allTopics": "Kaikki aiheet"
+    },
+    "viewModes": {
+      "label": "Näytä",
+      "clusters": "Aiheryhmiä",
+      "stages": "Ostajan matka"
+    },
+    "stages": {
+      "tofu": {
+        "label": "Aloittaminen",
+        "description": "Olennaiset tiedot ensiostajille"
+      },
+      "mofu": {
+        "label": "Vaihtoehtojen tutkiminen",
+        "description": "Yksityiskohtaiset oppaat tietoon perustuvaan päätöksentekoon"
+      },
+      "bofu": {
+        "label": "Valmis ostamaan",
+        "description": "Viimeiset huomiot ja tarkistuslistat"
+      }
+    }
+  },
+  "loading": "Ladataan...",
+  "welcome": "Tervetuloa",
+  "reviewer": {
+    "name": "Hans Beeckman",
+    "title": "Akkreditoitu kiinteistöasiantuntija",
+    "reviewed_by": "Sisältö tarkistanut ja vahvistanut akkreditoitu kiinteistöasiantuntija — Hans Beeckman",
+    "reviewed_by_short": "Tarkistanut",
+    "credentials": "Akkreditoitu kiinteistöasiantuntija, Costa del Solin kiinteistöasiantuntija"
+  }
+}

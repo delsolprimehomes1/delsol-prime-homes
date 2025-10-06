@@ -276,6 +276,11 @@ function getLanguageInstructions(languageCode: string): {
       languageName: 'Norwegian',
       writingInstructions: 'Skriv på klart, profesjonelt norsk. Bruk De-formen for formell tone.',
       culturalContext: 'Norwegian-speaking audience. Use friendly yet professional tone with clarity and directness.'
+    },
+    'fi': {
+      languageName: 'Finnish',
+      writingInstructions: 'Kirjoita selkeää, ammattimaista suomea. Käytä te-muotoa muodolliseen sävyyn.',
+      culturalContext: 'Finnish-speaking audience. Use direct, concise communication style with professional tone. Finns value clarity and honesty.'
     }
   };
 

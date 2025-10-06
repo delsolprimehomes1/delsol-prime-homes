@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-const supportedLanguages = ['en', 'es', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'hu', 'no'] as const;
+const supportedLanguages = ['en', 'es', 'nl', 'fr', 'de', 'pl', 'sv', 'da', 'hu', 'no', 'fi'] as const;
 export type SupportedLanguage = typeof supportedLanguages[number];
 
 export const languageConfig = {
@@ -17,6 +17,7 @@ export const languageConfig = {
   da: { name: 'Dansk', flag: '🇩🇰' },
   hu: { name: 'Magyar', flag: '🇭🇺' },
   no: { name: 'Norsk', flag: '🇳🇴' },
+  fi: { name: 'Suomi', flag: '🇫🇮' },
 };
 
 // Initialize i18n with dynamic loading from public/locales

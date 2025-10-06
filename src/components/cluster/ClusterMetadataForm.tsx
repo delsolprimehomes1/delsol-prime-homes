@@ -78,6 +78,7 @@ export const ClusterMetadataForm = ({
               <SelectItem value="da">🇩🇰 Dansk</SelectItem>
               <SelectItem value="hu">🇭🇺 Magyar</SelectItem>
               <SelectItem value="no">🇳🇴 Norsk</SelectItem>
+              <SelectItem value="fi">🇫🇮 Suomi</SelectItem>
             </SelectContent>
           </Select>
         </div>

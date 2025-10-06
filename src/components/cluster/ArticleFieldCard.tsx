@@ -57,7 +57,7 @@ export const ArticleFieldCard = ({ index, stage, article, onChange, language = '
   const getLanguageFlag = (lang: string) => {
     const flags: Record<string, string> = {
       en: '🇬🇧', es: '🇪🇸', nl: '🇳🇱', fr: '🇫🇷', de: '🇩🇪',
-      pl: '🇵🇱', sv: '🇸🇪', da: '🇩🇰', hu: '🇭🇺', no: '🇳🇴'
+      pl: '🇵🇱', sv: '🇸🇪', da: '🇩🇰', hu: '🇭🇺', no: '🇳🇴', fi: '🇫🇮'
     };
     return flags[lang] || '🌐';
   };
