@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
 import { processMarkdownContent, processMarkdownTitle } from '@/utils/markdown';
+import { getQAArticleUrl } from '@/utils/multilingual-routing';
 
 interface QAArticle {
   id: string;
@@ -34,7 +35,7 @@ export const QACard = ({ article, animationDelay = 0 }: QACardProps) => {
   };
 
   return (
-    <Link to={`/qa/${article.slug}`} className="block group touch-manipulation">
+    <Link to={getQAArticleUrl(article.slug)} className="block group touch-manipulation">
       <Card 
         className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-muted hover:border-primary/20 animate-fade-in will-change-transform p-1 sm:p-0"
         style={{ animationDelay: `${animationDelay}ms` }}

@@ -13,8 +13,9 @@ import {
   ExternalLink,
   ArrowRight
 } from 'lucide-react';
-import { processMarkdownContent } from '@/utils/markdown';
+import { processMarkdownContent, processMarkdownTitle } from '@/utils/markdown';
 import { trackEvent } from '@/utils/analytics';
+import { getQAArticleUrl } from '@/utils/multilingual-routing';
 
 interface QAArticle {
   id: string;
@@ -136,9 +137,8 @@ export const QAAccordionItem = ({ article, animationDelay = 0 }: QAAccordionItem
                 <h3 
                   className="question-title text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 leading-tight"
                   itemProp="name"
-                >
-                  {article.title}
-                </h3>
+                  dangerouslySetInnerHTML={{ __html: processMarkdownTitle(article.title) }}
+                />
 
                 {/* Short Answer - Optimized for AI/Voice */}
                 <div 
@@ -210,7 +210,7 @@ export const QAAccordionItem = ({ article, animationDelay = 0 }: QAAccordionItem
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-muted/30">
                   <Link 
-                    to={`/qa/${article.slug}`}
+                    to={getQAArticleUrl(article.slug)}
                     onClick={handleViewFullArticle}
                     className="flex-1"
                   >

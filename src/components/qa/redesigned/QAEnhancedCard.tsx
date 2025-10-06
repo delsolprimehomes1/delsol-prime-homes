@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Calendar, Tag, Clock, MessageSquare, Shield, CheckCircle } from 'lucide-react';
 import { processMarkdownContent, processMarkdownTitle } from '@/utils/markdown';
+import { getQAArticleUrl } from '@/utils/multilingual-routing';
 
 interface QAArticle {
   id: string;
@@ -43,7 +44,7 @@ export const QAEnhancedCard: React.FC<QAEnhancedCardProps> = ({
   const readingTime = Math.ceil((article.excerpt?.length || 200) / 200);
 
   return (
-    <Link to={`/qa/${article.slug}`} className="block group">
+    <Link to={getQAArticleUrl(article.slug)} className="block group">
       <Card 
         className="qa-card bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-1"
         style={{ animationDelay: `${animationDelay}ms` }}

@@ -218,3 +218,23 @@ export const constructDatabaseSlug = (originalSlug: string, targetLanguage: Supp
   // Otherwise, construct slug with target language prefix
   return `${targetLanguage}-${cleanSlug}`;
 };
+
+/**
+ * Detects current language from URL pathname and constructs proper QA article URL
+ */
+export const getQAArticleUrl = (slug: string): string => {
+  if (typeof window === 'undefined') return `/qa/${slug}`;
+  
+  const pathname = window.location.pathname;
+  const supportedLanguages: (SupportedLanguage | 'es')[] = ['nl', 'fr', 'de', 'pl', 'sv', 'da', 'es', 'hu', 'fi', 'no'];
+  
+  // Check if pathname starts with a language prefix (e.g., "/nl/", "/de/", etc.)
+  for (const lang of supportedLanguages) {
+    if (pathname.startsWith(`/${lang}/`)) {
+      return `/${lang}/qa/${slug}`;
+    }
+  }
+  
+  // Default to English (no language prefix)
+  return `/qa/${slug}`;
+};
