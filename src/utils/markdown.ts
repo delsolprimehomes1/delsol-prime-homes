@@ -1,4 +1,26 @@
 /**
+ * Processes markdown in titles to remove header syntax and convert bold text
+ * @param title - The title string that may contain markdown
+ * @returns Clean HTML for the title
+ */
+export function processMarkdownTitle(title: string): string {
+  if (!title) return '';
+  
+  let processed = title;
+  
+  // Remove header markdown (##, ###, etc.)
+  processed = processed.replace(/^#{1,6}\s*/gm, '');
+  
+  // Convert bold text **text** to <strong> tags
+  processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+  
+  // Remove any remaining markdown artifacts
+  processed = processed.replace(/[*_~`]/g, '');
+  
+  return processed.trim();
+}
+
+/**
  * Converts markdown content to HTML with proper formatting
  * Handles headers, bold text, lists, and line breaks
  */

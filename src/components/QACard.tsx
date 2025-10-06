@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
-import { processMarkdownContent } from '@/utils/markdown';
+import { processMarkdownContent, processMarkdownTitle } from '@/utils/markdown';
 
 interface QAArticle {
   id: string;
@@ -50,9 +50,10 @@ export const QACard = ({ article, animationDelay = 0 }: QACardProps) => {
             </div>
           </div>
           
-          <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors duration-200 line-clamp-3">
-            {article.title}
-          </CardTitle>
+          <CardTitle 
+            className="text-lg leading-tight group-hover:text-primary transition-colors duration-200 line-clamp-3"
+            dangerouslySetInnerHTML={{ __html: processMarkdownTitle(article.title) }}
+          />
         </CardHeader>
         
         <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6">

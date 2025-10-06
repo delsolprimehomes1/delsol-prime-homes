@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Calendar, Tag, Clock, MessageSquare, Shield, CheckCircle } from 'lucide-react';
-import { processMarkdownContent } from '@/utils/markdown';
+import { processMarkdownContent, processMarkdownTitle } from '@/utils/markdown';
 
 interface QAArticle {
   id: string;
@@ -69,9 +69,10 @@ export const QAEnhancedCard: React.FC<QAEnhancedCardProps> = ({
               </div>
 
               {/* Title */}
-              <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors leading-tight">
-                {article.title}
-              </h3>
+              <h3 
+                className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors leading-tight"
+                dangerouslySetInnerHTML={{ __html: processMarkdownTitle(article.title) }}
+              />
 
               {/* Excerpt */}
               <div 
