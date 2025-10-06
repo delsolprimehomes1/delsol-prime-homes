@@ -268,7 +268,7 @@ async function scanContentForBrokenLinks(
   return brokenLinks;
 }
 
-// Helper function to find replacement suggestions
+// Helper function to find replacement suggestions using Perplexity AI
 async function findReplacementSuggestions(
   brokenLink: BrokenLink,
   currentTopic: string,
@@ -276,10 +276,123 @@ async function findReplacementSuggestions(
   blogPosts: any[],
   qaArticles: any[]
 ): Promise<LinkSuggestion[]> {
-  const suggestions: LinkSuggestion[] = [];
+  const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
   const targetArticles = brokenLink.articleType === 'blog' ? blogPosts : qaArticles;
   
-  // Score each potential replacement
+  // Try Perplexity AI for intelligent suggestions first
+  if (perplexityApiKey && targetArticles.length > 0) {
+    try {
+      console.log(`Using Perplexity AI to find replacements for: ${brokenLink.url}`);
+      
+      // Prepare available articles for Perplexity
+      const availableArticles = targetArticles.map(a => ({
+        id: a.id,
+        slug: a.slug,
+        title: a.title,
+        topic: a.topic,
+        funnel_stage: a.funnel_stage,
+        excerpt: a.excerpt || a.content?.substring(0, 200)
+      }));
+
+      const prompt = `You are an SEO expert analyzing broken internal links on a Spanish Costa del Sol real estate website.
+
+CONTEXT:
+- Current article topic: ${currentTopic}
+- Current funnel stage: ${currentFunnelStage}
+
+BROKEN LINK:
+- URL: ${brokenLink.url}
+- Anchor text: "${brokenLink.anchorText}"
+- Article type: ${brokenLink.articleType}
+
+AVAILABLE REPLACEMENT ARTICLES (${availableArticles.length} total):
+${JSON.stringify(availableArticles, null, 2)}
+
+TASK:
+Analyze the broken link's anchor text and context to find the 5 most relevant replacement articles from the available list.
+
+Consider:
+1. Semantic relevance (does the replacement match what the anchor text implies?)
+2. User intent (what information was the reader expecting to find?)
+3. Funnel stage alignment (keep users in an appropriate journey stage)
+4. Topic relevance (related real estate content areas)
+5. Content depth match (detailed guides vs. quick answers)
+
+Return ONLY a JSON array of the top 5 suggestions, ordered by relevance:
+[
+  {
+    "id": "article-id",
+    "slug": "article-slug", 
+    "title": "Article Title",
+    "relevanceScore": 95,
+    "reasoning": "Brief explanation of why this is a good match"
+  }
+]
+
+Return ONLY the JSON array, no other text.`;
+
+      const response = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${perplexityApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-large-128k-online',
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.2,
+          max_tokens: 2000,
+          return_citations: false
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Perplexity API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiResponse = data.choices[0].message.content;
+      
+      // Parse AI response
+      const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const aiSuggestions = JSON.parse(jsonMatch[0]);
+        
+        // Map AI suggestions to our format with enhanced scoring
+        const suggestions: LinkSuggestion[] = aiSuggestions.map((suggestion: any) => {
+          const article = targetArticles.find(a => a.id === suggestion.id);
+          if (!article) return null;
+          
+          // Combine Perplexity score with basic topic/funnel matching
+          let finalScore = suggestion.relevanceScore * 0.7; // 70% from AI
+          
+          if (article.topic === currentTopic) finalScore += 20; // 20% topic match
+          if (article.funnel_stage === currentFunnelStage) finalScore += 10; // 10% funnel match
+          
+          return {
+            id: article.id,
+            slug: article.slug,
+            title: article.title,
+            topic: article.topic,
+            funnelStage: article.funnel_stage,
+            relevanceScore: Math.round(finalScore)
+          };
+        }).filter(Boolean);
+
+        console.log(`Perplexity found ${suggestions.length} AI-powered suggestions`);
+        return suggestions.slice(0, 5);
+      }
+    } catch (error) {
+      console.error('Perplexity AI failed, falling back to rule-based suggestions:', error);
+    }
+  }
+  
+  // Fallback: Rule-based scoring (original logic)
+  console.log('Using rule-based scoring for suggestions');
+  const suggestions: LinkSuggestion[] = [];
+  
   for (const article of targetArticles) {
     let score = 0;
     
