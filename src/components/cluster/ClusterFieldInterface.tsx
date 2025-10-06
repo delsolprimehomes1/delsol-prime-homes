@@ -8,6 +8,7 @@ import { ClusterMetadataForm } from './ClusterMetadataForm';
 import { ArticleFieldCard, ArticleField } from './ArticleFieldCard';
 import { processClusterFields } from '@/utils/cluster-field-processor';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const createEmptyArticle = (): ArticleField => ({
   title: '',
@@ -57,6 +58,47 @@ export const ClusterFieldInterface = () => {
     setLatestArticleContent(articleContent);
     setLatestFunnelStage(funnelStage);
     setLatestTags(tags);
+  };
+
+  const handleAutoGenerateSEO = async () => {
+    if (!latestArticleTitle || !latestArticleContent) {
+      console.log('No article content available for SEO generation');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-seo-fields', {
+        body: {
+          title: latestArticleTitle,
+          content: latestArticleContent,
+          stage: latestFunnelStage || 'TOFU',
+          language,
+        }
+      });
+
+      if (error) {
+        console.error('SEO generation error:', error);
+        toast.error('Failed to generate SEO fields');
+        return;
+      }
+
+      if (data?.success && data.seoFields) {
+        // Update the first TOFU article with SEO fields
+        const firstArticle = tofuArticles[0];
+        const updatedArticle = {
+          ...firstArticle,
+          tags: data.seoFields.tags || [],
+          locationFocus: data.seoFields.locationFocus || '',
+          targetAudience: data.seoFields.targetAudience || '',
+          intent: data.seoFields.intent || 'informational',
+        };
+        updateTofuArticle(0, updatedArticle);
+        toast.success('Cluster and SEO metadata generated! ✨');
+      }
+    } catch (error) {
+      console.error('Error generating SEO fields:', error);
+      toast.error('Failed to generate SEO fields');
+    }
   };
 
   const updateTofuArticle = (index: number, article: ArticleField) => {
@@ -197,6 +239,7 @@ export const ClusterFieldInterface = () => {
             articleContent={latestArticleContent}
             funnelStage={latestFunnelStage}
             tags={latestTags}
+            onMetadataGenerated={handleAutoGenerateSEO}
           />
 
           <div>

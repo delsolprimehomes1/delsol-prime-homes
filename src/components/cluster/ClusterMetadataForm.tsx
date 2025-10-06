@@ -24,6 +24,7 @@ interface ClusterMetadataFormProps {
   articleContent?: string;
   funnelStage?: string;
   tags?: string[];
+  onMetadataGenerated?: () => void;
 }
 
 export const ClusterMetadataForm = ({
@@ -41,6 +42,7 @@ export const ClusterMetadataForm = ({
   articleContent,
   funnelStage,
   tags = [],
+  onMetadataGenerated,
 }: ClusterMetadataFormProps) => {
   const { isAdmin } = useUserRole();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -76,7 +78,12 @@ export const ClusterMetadataForm = ({
         onTitleChange(data.metadata.clusterTitle);
         onDescriptionChange(data.metadata.clusterDescription);
         onTopicChange(data.metadata.topic);
-        toast.success('Cluster metadata generated from image analysis');
+        toast.success('Cluster metadata generated! Generating SEO fields...');
+        
+        // Trigger SEO generation after successful metadata generation
+        if (onMetadataGenerated) {
+          onMetadataGenerated();
+        }
       }
     } catch (error) {
       console.error('Error generating metadata:', error);
