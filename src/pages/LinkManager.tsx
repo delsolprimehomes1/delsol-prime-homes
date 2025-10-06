@@ -653,7 +653,7 @@ export default function LinkManager() {
           <div className="space-y-4">
             {filteredArticles.map((article) => {
               const brokenReport = brokenLinkReports.find(r => r.articleId === article.id);
-              const hasBrokenLinks = brokenReport && brokenReport.broken_links && brokenReport.broken_links.length > 0;
+              const hasBrokenLinks = brokenReport && brokenReport.brokenLinks && brokenReport.brokenLinks.length > 0;
 
               return (
                 <Card key={article.id} className="p-4">
@@ -666,7 +666,7 @@ export default function LinkManager() {
                         {hasBrokenLinks && (
                           <Badge variant="destructive">
                             <AlertTriangle className="h-3 w-3 mr-1" />
-                            {brokenReport?.broken_links?.length || 0} Broken
+                            {brokenReport?.brokenLinks?.length || 0} Broken
                           </Badge>
                         )}
                         {article.ai_score && (
