@@ -28,6 +28,7 @@ import MarkdownManagerPage from "./pages/MarkdownManager";
 import Phase1TestDashboard from "./pages/Phase1TestDashboard";
 import Phase2EEATDashboard from "./pages/Phase2EEATDashboard";
 import LinkManager from "./pages/LinkManager";
+import ScheduledContent from "./pages/ScheduledContent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/:lang/qa" element={<QAHub />} />
               <Route path="/:lang/faq" element={<QAHub />} />
               <Route path="/content-manager" element={<ContentManager />} />
+              <Route path="/scheduled-content" element={<ScheduledContent />} />
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />
               <Route path="/blog-builder" element={<BlogBuilderPage />} />
               <Route path="/markdown-manager" element={<MarkdownManagerPage />} />

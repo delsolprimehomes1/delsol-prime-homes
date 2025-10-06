@@ -15,6 +15,8 @@ interface ClusterFieldData {
   tofuArticles: ArticleField[];
   mofuArticles: ArticleField[];
   bofuArticle: ArticleField;
+  publishMode?: 'immediate' | 'scheduled';
+  scheduledPublishAt?: Date;
 }
 
 interface ProcessResult {
@@ -182,6 +184,11 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
   const errors: string[] = [];
 
   try {
+    // Determine publish status based on mode
+    const publishStatus = data.publishMode === 'scheduled' ? 'scheduled' : 'published';
+    const scheduledPublishAt = data.publishMode === 'scheduled' ? data.scheduledPublishAt?.toISOString() : null;
+    const isActive = data.publishMode === 'immediate';
+
     // Create the cluster
     const { data: cluster, error: clusterError } = await supabase
       .from('qa_clusters')
@@ -190,7 +197,9 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
         description: data.clusterDescription,
         topic: data.topic,
         language: data.language,
-        is_active: true,
+        is_active: isActive,
+        publish_status: publishStatus,
+        scheduled_publish_at: scheduledPublishAt,
       })
       .select()
       .single();
@@ -302,6 +311,9 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             ai_optimization_score: wordCount >= 800 ? 90 : 75,
             voice_search_ready: true,
             citation_ready: true,
+            published: data.publishMode === 'immediate',
+            publish_status: publishStatus,
+            scheduled_publish_at: scheduledPublishAt,
           })
           .select()
           .single();
@@ -400,6 +412,9 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
             ai_optimization_score: wordCount >= 800 ? 92 : 78,
             voice_search_ready: true,
             citation_ready: true,
+            published: data.publishMode === 'immediate',
+            publish_status: publishStatus,
+            scheduled_publish_at: scheduledPublishAt,
           })
           .select()
           .single();
@@ -495,6 +510,9 @@ export const processClusterFields = async (data: ClusterFieldData): Promise<Proc
               citation_ready: true,
               appointment_booking_enabled: true,
               final_cta_type: 'booking',
+              published: data.publishMode === 'immediate',
+              publish_status: publishStatus,
+              scheduled_publish_at: scheduledPublishAt,
             })
             .select()
             .single();

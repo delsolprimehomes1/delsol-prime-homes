@@ -65,6 +65,7 @@ const QA = () => {
         .from('qa_articles')
         .select('*')
         .eq('language', currentLanguage)
+        .eq('publish_status', 'published')
         .order('funnel_stage', { ascending: true })
         .order('title', { ascending: true });
       

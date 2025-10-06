@@ -919,6 +919,7 @@ export type Database = {
           area_served: string[] | null
           author: Json | null
           author_id: string | null
+          auto_published_at: string | null
           citation_ready: boolean | null
           city: string
           cluster_id: string | null
@@ -957,9 +958,11 @@ export type Database = {
           parent_id: string | null
           points_to_bofu_id: string | null
           points_to_mofu_id: string | null
+          publish_status: string | null
           published: boolean | null
           reviewer: Json | null
           reviewer_id: string | null
+          scheduled_publish_at: string | null
           seo: Json | null
           slug: string
           speakable_answer: string | null
@@ -980,6 +983,7 @@ export type Database = {
           area_served?: string[] | null
           author?: Json | null
           author_id?: string | null
+          auto_published_at?: string | null
           citation_ready?: boolean | null
           city?: string
           cluster_id?: string | null
@@ -1018,9 +1022,11 @@ export type Database = {
           parent_id?: string | null
           points_to_bofu_id?: string | null
           points_to_mofu_id?: string | null
+          publish_status?: string | null
           published?: boolean | null
           reviewer?: Json | null
           reviewer_id?: string | null
+          scheduled_publish_at?: string | null
           seo?: Json | null
           slug: string
           speakable_answer?: string | null
@@ -1041,6 +1047,7 @@ export type Database = {
           area_served?: string[] | null
           author?: Json | null
           author_id?: string | null
+          auto_published_at?: string | null
           citation_ready?: boolean | null
           city?: string
           cluster_id?: string | null
@@ -1079,9 +1086,11 @@ export type Database = {
           parent_id?: string | null
           points_to_bofu_id?: string | null
           points_to_mofu_id?: string | null
+          publish_status?: string | null
           published?: boolean | null
           reviewer?: Json | null
           reviewer_id?: string | null
+          scheduled_publish_at?: string | null
           seo?: Json | null
           slug?: string
           speakable_answer?: string | null
@@ -1148,33 +1157,42 @@ export type Database = {
       }
       qa_clusters: {
         Row: {
+          auto_published_at: string | null
           created_at: string
           description: string | null
           id: string
           is_active: boolean | null
           language: string
+          publish_status: string | null
+          scheduled_publish_at: string | null
           sort_order: number | null
           title: string
           topic: string
           updated_at: string
         }
         Insert: {
+          auto_published_at?: string | null
           created_at?: string
           description?: string | null
           id?: string
           is_active?: boolean | null
           language?: string
+          publish_status?: string | null
+          scheduled_publish_at?: string | null
           sort_order?: number | null
           title: string
           topic: string
           updated_at?: string
         }
         Update: {
+          auto_published_at?: string | null
           created_at?: string
           description?: string | null
           id?: string
           is_active?: boolean | null
           language?: string
+          publish_status?: string | null
+          scheduled_publish_at?: string | null
           sort_order?: number | null
           title?: string
           topic?: string

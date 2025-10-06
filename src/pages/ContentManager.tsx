@@ -74,10 +74,11 @@ const ContentManager = () => {
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="cluster" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-7">
+              <TabsList className="grid w-full grid-cols-8">
                 <TabsTrigger value="cluster">Cluster Mode</TabsTrigger>
                 <TabsTrigger value="blog">Blog Manager</TabsTrigger>
                 <TabsTrigger value="import">Bulk Import</TabsTrigger>
+                <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
                 <TabsTrigger value="funnel">Funnel Overview</TabsTrigger>
                 <TabsTrigger value="bottlenecks">Fix Bottlenecks</TabsTrigger>
                 <TabsTrigger value="links">Manual Linking</TabsTrigger>
@@ -104,6 +105,27 @@ const ContentManager = () => {
 
               <TabsContent value="import" className="space-y-6">
                 <ContentImportManager />
+              </TabsContent>
+              
+              <TabsContent value="scheduled" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Scheduled Publications</CardTitle>
+                    <CardDescription>
+                      View and manage scheduled QA cluster publications
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4">
+                      Redirecting to Scheduled Content dashboard...
+                    </p>
+                    <iframe 
+                      src="/scheduled-content" 
+                      className="w-full h-[600px] border-0 rounded-lg"
+                      title="Scheduled Content"
+                    />
+                  </CardContent>
+                </Card>
               </TabsContent>
               
               <TabsContent value="funnel" className="space-y-6">

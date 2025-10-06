@@ -24,6 +24,11 @@ export const ClusterFieldInterface = () => {
   const [clusterDescription, setClusterDescription] = useState('');
   const [topic, setTopic] = useState('');
   const [language, setLanguage] = useState('en');
+  
+  // Scheduling state
+  const [publishMode, setPublishMode] = useState<'immediate' | 'scheduled'>('immediate');
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
+  const [scheduledTime, setScheduledTime] = useState<string>('09:00');
 
   const [tofuArticles, setTofuArticles] = useState<ArticleField[]>([
     createEmptyArticle(),
@@ -93,11 +98,24 @@ export const ClusterFieldInterface = () => {
       toast.error('Please complete all required fields');
       return;
     }
+    
+    if (publishMode === 'scheduled' && !scheduledDate) {
+      toast.error('Please select a scheduled date and time');
+      return;
+    }
 
     setIsProcessing(true);
     setImportResult(null);
 
     try {
+      // Combine date and time for scheduled publishing
+      let scheduledPublishAt: Date | undefined;
+      if (publishMode === 'scheduled' && scheduledDate) {
+        const [hours, minutes] = scheduledTime.split(':').map(Number);
+        scheduledPublishAt = new Date(scheduledDate);
+        scheduledPublishAt.setHours(hours, minutes, 0, 0);
+      }
+
       const result = await processClusterFields({
         clusterTitle,
         clusterDescription,
@@ -106,11 +124,16 @@ export const ClusterFieldInterface = () => {
         tofuArticles,
         mofuArticles,
         bofuArticle,
+        publishMode,
+        scheduledPublishAt,
       });
 
       setImportResult(result);
       if (result.success) {
-        toast.success(`Successfully imported cluster with ${result.articleCount} articles`);
+        const message = publishMode === 'scheduled' 
+          ? `Cluster scheduled for ${scheduledPublishAt?.toLocaleString()}`
+          : `Successfully imported cluster with ${result.articleCount} articles`;
+        toast.success(message);
       } else {
         toast.error('Import completed with errors');
       }
@@ -121,6 +144,12 @@ export const ClusterFieldInterface = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+  
+  const formatScheduleTime = () => {
+    if (!scheduledDate) return '';
+    const [hours, minutes] = scheduledTime.split(':');
+    return `${scheduledDate.toLocaleDateString()} ${hours}:${minutes}`;
   };
 
   const progress = calculateProgress();
@@ -257,11 +286,76 @@ export const ClusterFieldInterface = () => {
         </div>
       </div>
 
+      {/* Publishing Schedule */}
+      <Card className="bg-blue-50/50 border-blue-200">
+        <CardHeader>
+          <CardTitle className="text-lg">📅 Publishing Schedule</CardTitle>
+          <CardDescription>
+            Choose when this cluster should go live on the public QA page
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <label className="flex items-center space-x-3 cursor-pointer p-3 border rounded-lg hover:bg-blue-100/50 transition-colors">
+              <input
+                type="radio"
+                value="immediate"
+                checked={publishMode === 'immediate'}
+                onChange={(e) => setPublishMode(e.target.value as 'immediate')}
+                className="w-4 h-4 text-primary"
+              />
+              <div>
+                <div className="font-medium">🚀 Publish Immediately</div>
+                <div className="text-sm text-muted-foreground">Content goes live as soon as import completes</div>
+              </div>
+            </label>
+            
+            <label className="flex items-center space-x-3 cursor-pointer p-3 border rounded-lg hover:bg-blue-100/50 transition-colors">
+              <input
+                type="radio"
+                value="scheduled"
+                checked={publishMode === 'scheduled'}
+                onChange={(e) => setPublishMode(e.target.value as 'scheduled')}
+                className="w-4 h-4 text-primary"
+              />
+              <div>
+                <div className="font-medium">📆 Schedule for Later</div>
+                <div className="text-sm text-muted-foreground">Content publishes automatically at a specific date & time</div>
+              </div>
+            </label>
+          </div>
+
+          {publishMode === 'scheduled' && (
+            <div className="grid grid-cols-2 gap-4 pt-2 animate-fade-in">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Publish Date</label>
+                <input
+                  type="date"
+                  value={scheduledDate ? scheduledDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => setScheduledDate(e.target.value ? new Date(e.target.value) : undefined)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Time (24hr)</label>
+                <input
+                  type="time"
+                  value={scheduledTime}
+                  onChange={(e) => setScheduledTime(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardContent className="pt-6">
           <Button
             onClick={handleImport}
-            disabled={!isValid() || isProcessing}
+            disabled={!isValid() || isProcessing || (publishMode === 'scheduled' && !scheduledDate)}
             className="w-full"
             size="lg"
           >
@@ -270,15 +364,23 @@ export const ClusterFieldInterface = () => {
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 AI Enhancing & Importing...
               </>
+            ) : publishMode === 'scheduled' ? (
+              <>
+                <CheckCircle2 className="mr-2 h-5 w-5" />
+                📅 Import & Schedule for {formatScheduleTime() || 'Selected Date'}
+              </>
             ) : (
               <>
                 <CheckCircle2 className="mr-2 h-5 w-5" />
-                Import with AI Enhancement (800+ words/article)
+                🚀 Import & Publish Now
               </>
             )}
           </Button>
           <p className="text-xs text-center text-muted-foreground mt-2">
-            Articles under 800 words will be automatically enhanced with stage-specific content
+            {publishMode === 'scheduled' 
+              ? 'Content will be stored as draft and automatically published at the scheduled time'
+              : 'Articles under 800 words will be automatically enhanced with stage-specific content'
+            }
           </p>
         </CardContent>
       </Card>
