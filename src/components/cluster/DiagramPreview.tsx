@@ -6,7 +6,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
-import { Info, Loader2, Image as ImageIcon, GitGraph, Code } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Info, Loader2, Image as ImageIcon, GitGraph, Code, Eye, ChevronDown, X, AlertTriangle, CheckCircle2, RotateCcw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -50,6 +53,14 @@ export const DiagramPreview = ({
   const [showMetadata, setShowMetadata] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [useCustomPrompt, setUseCustomPrompt] = useState<boolean>(false);
+  const [keywordInput, setKeywordInput] = useState<string>('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [originalMetadata, setOriginalMetadata] = useState<{
+    altText: string;
+    titleAttr: string;
+    description: string;
+    keywords: string[];
+  } | null>(null);
 
   const generateAIVisual = async (type: 'image' | 'diagram') => {
     if (!articleTitle || !articleContent) {
@@ -126,6 +137,14 @@ export const DiagramPreview = ({
       if (data?.success && data.metadata) {
         const { altText: generatedAlt, title: generatedTitle, description: generatedDesc, keywords: generatedKeys } = data.metadata;
         
+        // Store original AI-generated metadata
+        setOriginalMetadata({
+          altText: generatedAlt,
+          titleAttr: generatedTitle,
+          description: generatedDesc,
+          keywords: generatedKeys,
+        });
+        
         if (onAltTextChange) onAltTextChange(generatedAlt);
         if (onTitleAttrChange) onTitleAttrChange(generatedTitle);
         if (onDescriptionChange) onDescriptionChange(generatedDesc);
@@ -133,6 +152,8 @@ export const DiagramPreview = ({
         
         setShowMetadata(true);
         toast.success('AI metadata generated for accessibility & SEO');
+      } else {
+        toast.error('No metadata generated. Please try again or enter manually.');
       }
     } catch (error) {
       console.error('Error analyzing visual metadata:', error);
@@ -332,58 +353,255 @@ export const DiagramPreview = ({
             </Card>
           )}
 
-          {showMetadata && (altText || titleAttr || description) && (
-            <Card className="p-4 bg-primary/5 border-primary/20">
-              <div className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <Info className="h-4 w-4" />
-                AI-Generated Metadata
+{showMetadata && (
+            <Card className="p-5 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/30">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm font-semibold flex items-center gap-2">
+                  <Info className="h-4 w-4 text-primary" />
+                  AI-Generated Metadata
+                </div>
+                {originalMetadata && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (onAltTextChange) onAltTextChange(originalMetadata.altText);
+                      if (onTitleAttrChange) onTitleAttrChange(originalMetadata.titleAttr);
+                      if (onDescriptionChange) onDescriptionChange(originalMetadata.description);
+                      if (onKeywordsChange) onKeywordsChange(originalMetadata.keywords);
+                      toast.success('Restored AI-generated metadata');
+                    }}
+                    className="text-xs"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    Reset
+                  </Button>
+                )}
               </div>
-              <div className="space-y-3">
-                {altText && (
-                  <div>
-                    <Label className="text-xs">Alt Text (Accessibility)</Label>
-                    <Textarea
-                      value={altText}
-                      onChange={(e) => onAltTextChange?.(e.target.value)}
-                      rows={2}
-                      className="mt-1 text-sm"
-                    />
+
+              <div className="space-y-5">
+                {/* Accessibility Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                      📋 Accessibility
+                    </h4>
+                    <Badge variant="destructive" className="text-[10px] h-4 px-1.5">Required</Badge>
                   </div>
-                )}
-                {titleAttr && (
-                  <div>
-                    <Label className="text-xs">Title Attribute (Hover Text)</Label>
-                    <Textarea
-                      value={titleAttr}
-                      onChange={(e) => onTitleAttrChange?.(e.target.value)}
-                      rows={2}
-                      className="mt-1 text-sm"
-                    />
-                  </div>
-                )}
-                {description && (
-                  <div>
-                    <Label className="text-xs">Long Description (AI/LLM Understanding)</Label>
-                    <Textarea
-                      value={description}
-                      onChange={(e) => onDescriptionChange?.(e.target.value)}
-                      rows={3}
-                      className="mt-1 text-sm"
-                    />
-                  </div>
-                )}
-                {keywords && keywords.length > 0 && (
-                  <div>
-                    <Label className="text-xs">Keywords</Label>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {keywords.map((kw, idx) => (
-                        <span key={idx} className="text-xs bg-primary/10 px-2 py-1 rounded">
-                          {kw}
-                        </span>
-                      ))}
+
+                  <div className="bg-background/50 p-3 rounded-lg space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <Label className="text-xs font-medium">Alt Text</Label>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] ${
+                            !altText ? 'text-destructive' :
+                            altText.length < 50 ? 'text-orange-500' :
+                            altText.length > 125 ? 'text-orange-500' :
+                            'text-green-600'
+                          }`}>
+                            {altText.length}/125
+                          </span>
+                          {altText.length >= 50 && altText.length <= 125 && (
+                            <CheckCircle2 className="h-3 w-3 text-green-600" />
+                          )}
+                        </div>
+                      </div>
+                      <Textarea
+                        value={altText}
+                        onChange={(e) => onAltTextChange?.(e.target.value.slice(0, 125))}
+                        rows={2}
+                        className="text-sm resize-none"
+                        placeholder="Describe the image for screen readers..."
+                      />
+                      {!altText && (
+                        <div className="flex items-center gap-1 mt-1 text-destructive text-[10px]">
+                          <AlertTriangle className="h-3 w-3" />
+                          Alt text is required for accessibility
+                        </div>
+                      )}
+                      {altText && altText.length < 50 && (
+                        <div className="flex items-center gap-1 mt-1 text-orange-600 text-[10px]">
+                          <Info className="h-3 w-3" />
+                          Recommended: 50-125 characters for better accessibility
+                        </div>
+                      )}
+                      {altText.length > 125 && (
+                        <div className="flex items-center gap-1 mt-1 text-orange-600 text-[10px]">
+                          <AlertTriangle className="h-3 w-3" />
+                          Alt text too long (max 125 chars)
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
+
+                {/* SEO & Discovery Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                      🔍 SEO & Discovery
+                    </h4>
+                    <Badge variant="outline" className="text-[10px] h-4 px-1.5">Optional</Badge>
+                  </div>
+
+                  <div className="bg-background/50 p-3 rounded-lg space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <Label className="text-xs font-medium">Title Attribute (hover text)</Label>
+                        <span className="text-[10px] text-muted-foreground">
+                          {titleAttr.length}/150
+                        </span>
+                      </div>
+                      <Textarea
+                        value={titleAttr}
+                        onChange={(e) => onTitleAttrChange?.(e.target.value.slice(0, 150))}
+                        rows={2}
+                        className="text-sm resize-none"
+                        placeholder="Additional context shown on hover..."
+                      />
+                      {titleAttr && altText && titleAttr.toLowerCase() === altText.toLowerCase() && (
+                        <div className="flex items-center gap-1 mt-1 text-orange-600 text-[10px]">
+                          <Info className="h-3 w-3" />
+                          Title is same as alt text (redundant)
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-medium mb-1.5 block">Keywords (comma-separated)</Label>
+                      <div className="flex gap-2 mb-2">
+                        <Input
+                          value={keywordInput}
+                          onChange={(e) => setKeywordInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && keywordInput.trim()) {
+                              e.preventDefault();
+                              const newKeyword = keywordInput.trim();
+                              if (!keywords.includes(newKeyword)) {
+                                onKeywordsChange?.([...keywords, newKeyword]);
+                                setKeywordInput('');
+                              } else {
+                                toast.error('Keyword already exists');
+                              }
+                            }
+                          }}
+                          placeholder="Type keyword and press Enter..."
+                          className="text-sm"
+                        />
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => {
+                            if (keywordInput.trim() && !keywords.includes(keywordInput.trim())) {
+                              onKeywordsChange?.([...keywords, keywordInput.trim()]);
+                              setKeywordInput('');
+                            }
+                          }}
+                          disabled={!keywordInput.trim()}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {keywords.map((kw, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="text-xs pl-2 pr-1 py-0.5 flex items-center gap-1"
+                          >
+                            {kw}
+                            <button
+                              onClick={() => onKeywordsChange?.(keywords.filter((_, i) => i !== idx))}
+                              className="hover:text-destructive"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                        {keywords.length === 0 && (
+                          <span className="text-[10px] text-muted-foreground">No keywords added yet</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI/LLM Understanding Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                      🧠 AI/LLM Understanding
+                    </h4>
+                    <Badge variant="outline" className="text-[10px] h-4 px-1.5">Recommended</Badge>
+                  </div>
+
+                  <div className="bg-background/50 p-3 rounded-lg space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <Label className="text-xs font-medium">Long Description</Label>
+                        <span className={`text-[10px] ${
+                          description.length > 500 ? 'text-orange-500' : 'text-muted-foreground'
+                        }`}>
+                          {description.length}/500
+                        </span>
+                      </div>
+                      <Textarea
+                        value={description}
+                        onChange={(e) => onDescriptionChange?.(e.target.value.slice(0, 500))}
+                        rows={3}
+                        className="text-sm resize-none"
+                        placeholder="Detailed description for AI citation and image understanding..."
+                      />
+                      <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
+                        <Info className="h-3 w-3" />
+                        Used by AI/LLMs to cite and understand this image
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview Final Output */}
+                <Collapsible open={showPreview} onOpenChange={setShowPreview}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Eye className="h-3 w-3 mr-2" />
+                      {showPreview ? 'Hide' : 'Preview'} Final Output
+                      <ChevronDown className={`h-3 w-3 ml-2 transition-transform ${showPreview ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-3 space-y-3">
+                    <div className="bg-background p-3 rounded-lg border">
+                      <div className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+                        HTML Output
+                      </div>
+                      <pre className="text-[10px] overflow-x-auto text-foreground/80 whitespace-pre-wrap break-all">
+{`<img 
+  src="${generatedImageUrl || '[image-url]'}"
+  alt="${altText || '[alt-text-required]'}"${titleAttr ? `\n  title="${titleAttr}"` : ''}${description ? `\n  aria-describedby="img-desc-${Date.now()}"` : ''}
+/>
+${description ? `<div id="img-desc-${Date.now()}" class="sr-only">
+  ${description}
+</div>` : ''}`}
+                      </pre>
+                    </div>
+
+                    <div className="bg-background p-3 rounded-lg border">
+                      <div className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+                        Schema.org JSON-LD
+                      </div>
+                      <pre className="text-[10px] overflow-x-auto text-foreground/80 whitespace-pre-wrap">
+{JSON.stringify({
+  "@type": "ImageObject",
+  "url": generatedImageUrl || "[image-url]",
+  "description": description || altText || "[description]",
+  "name": titleAttr || articleTitle,
+  ...(keywords.length > 0 && { "keywords": keywords.join(", ") })
+}, null, 2)}
+                      </pre>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             </Card>
           )}
