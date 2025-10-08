@@ -29,6 +29,7 @@ import Phase1TestDashboard from "./pages/Phase1TestDashboard";
 import Phase2EEATDashboard from "./pages/Phase2EEATDashboard";
 import LinkManager from "./pages/LinkManager";
 import ScheduledContent from "./pages/ScheduledContent";
+import BulkOptimize from "./pages/BulkOptimize";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,7 @@ const App = () => (
           <Route path="/admin/phase1-test" element={<Phase1TestDashboard />} />
           <Route path="/admin/phase2-eeat" element={<Phase2EEATDashboard />} />
           <Route path="/admin/link-manager" element={<LinkManager />} />
+          <Route path="/admin/bulk-optimize" element={<BulkOptimize />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />
