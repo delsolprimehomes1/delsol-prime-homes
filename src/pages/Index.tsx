@@ -1,11 +1,14 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import SearchSection from '@/components/SearchSection';
 import BlogSection from '@/components/BlogSection';
+import { RecentlyUpdatedWidget } from '@/components/RecentlyUpdatedWidget';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
+  const { currentLanguage } = useLanguage();
+
   return (
     <div className="min-h-screen">
       {/* Enhanced SEO Meta Tags */}
@@ -105,6 +108,20 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <SearchSection />
+      
+      {/* Recently Updated Content Section */}
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <RecentlyUpdatedWidget 
+              language={currentLanguage} 
+              limit={10}
+              contentType="both"
+            />
+          </div>
+        </div>
+      </section>
+      
       <BlogSection />
     </div>
   );

@@ -17,6 +17,8 @@ import { Card } from '@/components/ui/card';
 import { ReadingProgressBar } from '@/components/ReadingProgressBar';
 import { SkeletonLoader } from '@/components/ui/skeleton-loader';
 import { useFunnelNavigation } from '@/hooks/useFunnelNavigation';
+import { ArticleMetadata } from '@/components/ArticleMetadata';
+import { RecentlyUpdatedWidget } from '@/components/RecentlyUpdatedWidget';
 import { Calendar, Clock, TrendingUp } from 'lucide-react';
 import { trackEvent } from '@/utils/analytics';
 
@@ -135,6 +137,14 @@ const QAPage = () => {
           {/* Breadcrumbs */}
           <Breadcrumb items={breadcrumbItems} className="mb-8" />
 
+          {/* Article Metadata */}
+          <ArticleMetadata
+            updatedAt={article.updated_at}
+            author={typeof article.author === 'string' ? article.author : article.author?.name || 'DelSol Prime Homes'}
+            reviewer={typeof article.reviewer === 'object' && article.reviewer ? (article.reviewer as any).name : undefined}
+            language={detectedLanguage}
+          />
+
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-8 space-y-8">
@@ -216,7 +226,12 @@ const QAPage = () => {
             </div>
 
             {/* Sidebar */}
-            <aside className="lg:col-span-4">
+            <aside className="lg:col-span-4 space-y-6">
+              <RecentlyUpdatedWidget 
+                language={detectedLanguage} 
+                limit={10}
+                contentType="qa"
+              />
               <TOC content={article.content} />
             </aside>
           </div>

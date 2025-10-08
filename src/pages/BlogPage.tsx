@@ -14,6 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { BlogReadingProgress } from '@/components/blog/BlogReadingProgress';
 import { SkeletonLoader } from '@/components/ui/skeleton-loader';
+import { ArticleMetadata } from '@/components/ArticleMetadata';
+import { RecentlyUpdatedWidget } from '@/components/RecentlyUpdatedWidget';
 import { Calendar, Clock, Home, ChevronRight } from 'lucide-react';
 import { trackEvent } from '@/utils/analytics';
 
@@ -141,6 +143,14 @@ const BlogPage = () => {
             </ol>
           </nav>
 
+          {/* Article Metadata */}
+          <ArticleMetadata
+            updatedAt={post.updated_at}
+            author={post.author || 'DelSolPrimeHomes'}
+            reviewer={typeof post.reviewer === 'object' && post.reviewer ? (post.reviewer as any).name : undefined}
+            language={i18n.language}
+          />
+
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-8 space-y-8">
@@ -228,7 +238,12 @@ const BlogPage = () => {
             </div>
 
             {/* Sidebar */}
-            <aside className="lg:col-span-4">
+            <aside className="lg:col-span-4 space-y-6">
+              <RecentlyUpdatedWidget 
+                language={i18n.language} 
+                limit={10}
+                contentType="blog"
+              />
               <TOC content={post.content} />
             </aside>
           </div>
