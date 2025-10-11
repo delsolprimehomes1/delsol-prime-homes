@@ -30,6 +30,7 @@ import MarkdownManagerPage from "./pages/MarkdownManager";
 import Phase1TestDashboard from "./pages/Phase1TestDashboard";
 import Phase2EEATDashboard from "./pages/Phase2EEATDashboard";
 import LinkManager from "./pages/LinkManager";
+import AIScoreImprovement from "./pages/AIScoreImprovement";
 import ScheduledContent from "./pages/ScheduledContent";
 import BulkOptimize from "./pages/BulkOptimize";
 import NotFound from "./pages/NotFound";
@@ -74,6 +75,7 @@ const App = () => (
           <Route path="/admin/bulk-optimize" element={<BulkOptimize />} />
           <Route path="/admin/speakable-generator" element={<SpeakableAnswerGenerator />} />
           <Route path="/admin/ai-discovery-test" element={<AIDiscoveryTestDashboard />} />
+          <Route path="/admin/ai-score-improvement" element={<AIScoreImprovement />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />
