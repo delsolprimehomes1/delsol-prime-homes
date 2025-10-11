@@ -24,16 +24,19 @@ serve(async (req) => {
   }
 
   try {
-    const { articleId, articleIds, recalculateAll } = await req.json();
+    const body = await req.json();
+    const { articleId, articleIds, recalculateAll, recalculate_all } = body;
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    console.log('Received request:', { articleId, articleIds, recalculateAll, recalculate_all });
+
     // Fetch articles to score
     let articlesToScore = [];
     
-    if (recalculateAll) {
+    if (recalculateAll || recalculate_all) {
       const { data, error } = await supabase
         .from('qa_articles')
         .select('*');
