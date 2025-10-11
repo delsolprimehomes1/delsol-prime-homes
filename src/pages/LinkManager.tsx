@@ -459,8 +459,8 @@ export default function LinkManager() {
     setIsBulkRepairRunning(true);
     
     const loadingToast = toast({
-      title: "Starting Bulk Repair",
-      description: "Processing articles in batches...",
+      title: "Bulk Repair in Progress",
+      description: `Processing ${action === 'all' ? 'all links' : action + ' links'} across articles...`,
       duration: Infinity,
     });
 
@@ -473,7 +473,31 @@ export default function LinkManager() {
       });
 
       if (error) {
-        throw new Error(error.message || 'Function invocation failed');
+        // Enhanced error categorization
+        let errorTitle = "Bulk Repair Failed";
+        let errorDescription = error.message || "An unexpected error occurred";
+        
+        if (error.message?.includes('timeout') || error.errorType === 'timeout') {
+          errorTitle = "⏱️ Processing Timeout";
+          errorDescription = "The operation took too long. Try processing fewer articles or contact support if the issue persists.";
+        } else if (error.message?.includes('fetch') || error.message?.includes('network') || error.errorType === 'network') {
+          errorTitle = "🌐 Network Error";
+          errorDescription = "Could not connect to the repair service. Check your connection and try again.";
+        } else if (error.errorType === 'processing') {
+          errorTitle = "❌ Processing Error";
+          errorDescription = `Failed to process articles: ${error.message}`;
+        }
+        
+        loadingToast.dismiss();
+        
+        toast({
+          title: errorTitle,
+          description: errorDescription,
+          variant: "destructive",
+          duration: 10000,
+        });
+        
+        throw error;
       }
 
       loadingToast.dismiss();
@@ -482,21 +506,31 @@ export default function LinkManager() {
       const errorCount = data.errors || 0;
       const skippedCount = data.skipped || 0;
       const totalBatches = data.totalBatches || 0;
+      const hasErrors = errorCount > 0;
+      const timeoutErrors = data.details?.filter((d: any) => d.errorType === 'timeout').length || 0;
+
+      let description = `✅ Fixed ${data.totalLinksFixed} links across ${data.totalArticlesProcessed} articles`;
+      
+      if (totalBatches > 1) {
+        description += `\n📦 Processed in ${totalBatches} batches`;
+      }
+      
+      if (successCount > 0 || skippedCount > 0 || errorCount > 0) {
+        description += `\n\nSuccess: ${successCount} • Skipped: ${skippedCount} • Errors: ${errorCount}`;
+      }
+      
+      if (timeoutErrors > 0) {
+        description += `\n\n⚠️ ${timeoutErrors} articles timed out - consider processing them individually.`;
+      }
 
       toast({
-        title: "Bulk Repair Complete",
+        title: hasErrors ? "Bulk Repair Partially Complete" : "Bulk Repair Complete",
         description: (
-          <div className="space-y-1">
-            <p>✅ Fixed {data.totalLinksFixed} links across {data.totalArticlesProcessed} articles</p>
-            <p className="text-xs text-muted-foreground">
-              Processed in {totalBatches} batches • 
-              Success: {successCount} • 
-              Skipped: {skippedCount} • 
-              Errors: {errorCount}
-            </p>
+          <div className="space-y-1 whitespace-pre-line">
+            {description}
           </div>
         ),
-        duration: 8000,
+        duration: 10000,
       });
 
       if (data.batches) {
@@ -509,28 +543,31 @@ export default function LinkManager() {
       
       loadingToast.dismiss();
       
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      const isTimeout = errorMessage.includes('timeout') || errorMessage.includes('Timeout');
-      const isNetwork = errorMessage.includes('network') || errorMessage.includes('Failed to fetch');
-      
-      toast({
-        title: "Bulk Repair Failed",
-        description: (
-          <div className="space-y-1">
-            <p className="font-semibold">
-              {isTimeout ? '⏱️ Timeout Error' : isNetwork ? '🌐 Network Error' : '❌ Processing Error'}
-            </p>
-            <p className="text-sm">{errorMessage}</p>
-            {isTimeout && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Try processing fewer articles or use the individual repair function
+      // Only show toast if we haven't already shown one
+      if (!error.message?.includes('timeout') && !error.errorType) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        const isTimeout = errorMessage.includes('timeout') || errorMessage.includes('Timeout');
+        const isNetwork = errorMessage.includes('network') || errorMessage.includes('Failed to fetch');
+        
+        toast({
+          title: "Bulk Repair Failed",
+          description: (
+            <div className="space-y-1">
+              <p className="font-semibold">
+                {isTimeout ? '⏱️ Timeout Error' : isNetwork ? '🌐 Network Error' : '❌ Processing Error'}
               </p>
-            )}
-          </div>
-        ),
-        variant: "destructive",
-        duration: 10000,
-      });
+              <p className="text-sm">{errorMessage}</p>
+              {isTimeout && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Try processing fewer articles or use the individual repair function
+                </p>
+              )}
+            </div>
+          ),
+          variant: "destructive",
+          duration: 10000,
+        });
+      }
     } finally {
       setIsBulkRepairRunning(false);
       setBulkRepairProgress('');
