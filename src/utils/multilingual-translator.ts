@@ -27,12 +27,18 @@ export interface MultilingualResult {
   dutchArticles: number;
   frenchArticles: number;
   hungarianArticles: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: number;
+  errorLog: Array<{ slug: string; error: string; code?: string }>;
   translationDetails: {
     sourceId: string;
     targetId: string;
     language: string;
     slug: string;
     title: string;
+    action: 'created' | 'updated' | 'skipped';
   }[];
 }
 
@@ -395,16 +401,44 @@ export const createSpanishTOFUTranslations = async (): Promise<MultilingualResul
   if (error) throw error;
 
   const translationDetails: any[] = [];
+  const errorLog: Array<{ slug: string; error: string; code?: string }> = [];
   let spanishCount = 0;
+  let created = 0;
+  let updated = 0;
+  let skipped = 0;
+  let errors = 0;
 
   for (const article of tofuArticles || []) {
     try {
       const translation = translateToSpanish(article);
       
-      // Insert Spanish translation
-      const { data: newArticle, error: insertError } = await supabase
+      // Check if translation already exists
+      const { data: existingTranslation } = await supabase
         .from('qa_articles')
-        .insert({
+        .select('id, slug')
+        .eq('parent_id', article.id)
+        .eq('language', 'es')
+        .maybeSingle();
+
+      if (existingTranslation) {
+        console.log(`⏭️  Skipped (exists): ${translation.title}`);
+        translationDetails.push({
+          sourceId: article.id,
+          targetId: existingTranslation.id,
+          language: 'es',
+          slug: existingTranslation.slug,
+          title: translation.title,
+          action: 'skipped'
+        });
+        skipped++;
+        spanishCount++;
+        continue;
+      }
+      
+      // Upsert Spanish translation (will update if slug exists, insert if not)
+      const { data: newArticle, error: upsertError } = await supabase
+        .from('qa_articles')
+        .upsert({
           title: translation.title,
           slug: translation.slug,
           content: translation.content,
@@ -423,27 +457,55 @@ export const createSpanishTOFUTranslations = async (): Promise<MultilingualResul
             translated_from: article.id,
             translation_date: new Date().toISOString()
           }
+        }, {
+          onConflict: 'slug',
+          ignoreDuplicates: false
         })
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (upsertError) {
+        console.error(`❌ Error translating ${article.slug}:`, upsertError.message);
+        errorLog.push({
+          slug: article.slug,
+          error: upsertError.message,
+          code: upsertError.code
+        });
+        errors++;
+        continue;
+      }
 
+      const action = newArticle.created_at === newArticle.updated_at ? 'created' : 'updated';
+      
       translationDetails.push({
         sourceId: article.id,
         targetId: newArticle.id,
         language: 'es',
         slug: translation.slug,
-        title: translation.title
+        title: translation.title,
+        action
       });
 
+      if (action === 'created') {
+        created++;
+        console.log(`✅ Created Spanish: ${translation.title}`);
+      } else {
+        updated++;
+        console.log(`🔄 Updated Spanish: ${translation.title}`);
+      }
       spanishCount++;
-      console.log(`✅ Spanish: ${translation.title}`);
       
-    } catch (error) {
-      console.error(`Error translating ${article.slug}:`, error);
+    } catch (error: any) {
+      console.error(`❌ Error processing ${article.slug}:`, error?.message || error);
+      errorLog.push({
+        slug: article.slug,
+        error: error?.message || String(error)
+      });
+      errors++;
     }
   }
+
+  console.log(`\n📊 Spanish Summary: ${created} created, ${updated} updated, ${skipped} skipped, ${errors} errors`);
 
   return {
     totalTranslated: spanishCount,
@@ -452,6 +514,11 @@ export const createSpanishTOFUTranslations = async (): Promise<MultilingualResul
     dutchArticles: 0,
     frenchArticles: 0,
     hungarianArticles: 0,
+    created,
+    updated,
+    skipped,
+    errors,
+    errorLog,
     translationDetails
   };
 };
@@ -472,16 +539,44 @@ export const createGermanInvestmentTranslations = async (): Promise<Multilingual
   if (error) throw error;
 
   const translationDetails: any[] = [];
+  const errorLog: Array<{ slug: string; error: string; code?: string }> = [];
   let germanCount = 0;
+  let created = 0;
+  let updated = 0;
+  let skipped = 0;
+  let errors = 0;
 
   for (const article of investmentArticles || []) {
     try {
       const translation = translateToGerman(article);
       
-      // Insert German translation
-      const { data: newArticle, error: insertError } = await supabase
+      // Check if translation already exists
+      const { data: existingTranslation } = await supabase
         .from('qa_articles')
-        .insert({
+        .select('id, slug')
+        .eq('parent_id', article.id)
+        .eq('language', 'de')
+        .maybeSingle();
+
+      if (existingTranslation) {
+        console.log(`⏭️  Skipped (exists): ${translation.title}`);
+        translationDetails.push({
+          sourceId: article.id,
+          targetId: existingTranslation.id,
+          language: 'de',
+          slug: existingTranslation.slug,
+          title: translation.title,
+          action: 'skipped'
+        });
+        skipped++;
+        germanCount++;
+        continue;
+      }
+      
+      // Upsert German translation (will update if slug exists, insert if not)
+      const { data: newArticle, error: upsertError } = await supabase
+        .from('qa_articles')
+        .upsert({
           title: translation.title,
           slug: translation.slug,
           content: translation.content,
@@ -500,27 +595,55 @@ export const createGermanInvestmentTranslations = async (): Promise<Multilingual
             translated_from: article.id,
             translation_date: new Date().toISOString()
           }
+        }, {
+          onConflict: 'slug',
+          ignoreDuplicates: false
         })
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (upsertError) {
+        console.error(`❌ Error translating ${article.slug}:`, upsertError.message);
+        errorLog.push({
+          slug: article.slug,
+          error: upsertError.message,
+          code: upsertError.code
+        });
+        errors++;
+        continue;
+      }
 
+      const action = newArticle.created_at === newArticle.updated_at ? 'created' : 'updated';
+      
       translationDetails.push({
         sourceId: article.id,
         targetId: newArticle.id,
         language: 'de',
         slug: translation.slug,
-        title: translation.title
+        title: translation.title,
+        action
       });
 
+      if (action === 'created') {
+        created++;
+        console.log(`✅ Created German: ${translation.title}`);
+      } else {
+        updated++;
+        console.log(`🔄 Updated German: ${translation.title}`);
+      }
       germanCount++;
-      console.log(`✅ German: ${translation.title}`);
       
-    } catch (error) {
-      console.error(`Error translating ${article.slug}:`, error);
+    } catch (error: any) {
+      console.error(`❌ Error processing ${article.slug}:`, error?.message || error);
+      errorLog.push({
+        slug: article.slug,
+        error: error?.message || String(error)
+      });
+      errors++;
     }
   }
+
+  console.log(`\n📊 German Summary: ${created} created, ${updated} updated, ${skipped} skipped, ${errors} errors`);
 
   return {
     totalTranslated: germanCount,
@@ -529,6 +652,11 @@ export const createGermanInvestmentTranslations = async (): Promise<Multilingual
     dutchArticles: 0,
     frenchArticles: 0,
     hungarianArticles: 0,
+    created,
+    updated,
+    skipped,
+    errors,
+    errorLog,
     translationDetails
   };
 };
@@ -551,15 +679,31 @@ export const runPhase3MultilingualImplementation = async (): Promise<Multilingua
     dutchArticles: 0,
     frenchArticles: 0,
     hungarianArticles: 0,
+    created: spanishResult.created + germanResult.created,
+    updated: spanishResult.updated + germanResult.updated,
+    skipped: spanishResult.skipped + germanResult.skipped,
+    errors: spanishResult.errors + germanResult.errors,
+    errorLog: [...spanishResult.errorLog, ...germanResult.errorLog],
     translationDetails: [
       ...spanishResult.translationDetails,
       ...germanResult.translationDetails
     ]
   };
 
-  console.log(`🎉 Phase 3 Complete: ${combinedResult.totalTranslated} total translations`);
+  console.log(`\n🎉 Phase 3 Complete: ${combinedResult.totalTranslated} total translations`);
+  console.log(`   ✅ Created: ${combinedResult.created}`);
+  console.log(`   🔄 Updated: ${combinedResult.updated}`);
+  console.log(`   ⏭️  Skipped: ${combinedResult.skipped}`);
+  console.log(`   ❌ Errors: ${combinedResult.errors}`);
   console.log(`🇪🇸 Spanish: ${combinedResult.spanishArticles} articles`);
   console.log(`🇩🇪 German: ${combinedResult.germanArticles} articles`);
+  
+  if (combinedResult.errorLog.length > 0) {
+    console.log(`\n⚠️  Error Details:`);
+    combinedResult.errorLog.forEach(err => {
+      console.log(`   - ${err.slug}: ${err.error}${err.code ? ` (${err.code})` : ''}`);
+    });
+  }
   
   return combinedResult;
 };

@@ -200,83 +200,135 @@ const Phase3MultilingualDashboard: React.FC = () => {
 
       {/* Results Dashboard */}
       {results && (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Translations</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {results.totalTranslated}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Target: {TARGET_TOTAL} articles
-              </p>
-              <Progress 
-                value={getProgressPercentage(results.totalTranslated, TARGET_TOTAL)} 
-                className="mt-2" 
-              />
-            </CardContent>
-          </Card>
+        <>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Translations</CardTitle>
+                <Target className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {results.totalTranslated}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Target: {TARGET_TOTAL} articles
+                </p>
+                <Progress 
+                  value={getProgressPercentage(results.totalTranslated, TARGET_TOTAL)} 
+                  className="mt-2" 
+                />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Spanish (es)</CardTitle>
-              <span className="text-lg">🇪🇸</span>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {results.spanishArticles}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Target: {TARGET_SPANISH} TOFU articles
-              </p>
-              <Progress 
-                value={getProgressPercentage(results.spanishArticles, TARGET_SPANISH)} 
-                className="mt-2" 
-              />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Spanish (es)</CardTitle>
+                <span className="text-lg">🇪🇸</span>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {results.spanishArticles}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Target: {TARGET_SPANISH} TOFU articles
+                </p>
+                <Progress 
+                  value={getProgressPercentage(results.spanishArticles, TARGET_SPANISH)} 
+                  className="mt-2" 
+                />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">German (de)</CardTitle>
-              <span className="text-lg">🇩🇪</span>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {results.germanArticles}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Target: {TARGET_GERMAN} investment/legal
-              </p>
-              <Progress 
-                value={getProgressPercentage(results.germanArticles, TARGET_GERMAN)} 
-                className="mt-2" 
-              />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">German (de)</CardTitle>
+                <span className="text-lg">🇩🇪</span>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {results.germanArticles}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Target: {TARGET_GERMAN} investment/legal
+                </p>
+                <Progress 
+                  value={getProgressPercentage(results.germanArticles, TARGET_GERMAN)} 
+                  className="mt-2" 
+                />
+              </CardContent>
+            </Card>
 
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {getProgressPercentage(results.totalTranslated, TARGET_TOTAL)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Phase 3 progress
+                </p>
+                <Progress 
+                  value={getProgressPercentage(results.totalTranslated, TARGET_TOTAL)} 
+                  className="mt-2" 
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Operation Summary */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Operation Summary
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {getProgressPercentage(results.totalTranslated, TARGET_TOTAL)}%
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="text-2xl font-bold text-green-600">{results.created}</div>
+                  <p className="text-sm text-muted-foreground">✅ Created</p>
+                </div>
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-600">{results.updated}</div>
+                  <p className="text-sm text-muted-foreground">🔄 Updated</p>
+                </div>
+                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <div className="text-2xl font-bold text-yellow-600">{results.skipped}</div>
+                  <p className="text-sm text-muted-foreground">⏭️ Skipped</p>
+                </div>
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                  <div className="text-2xl font-bold text-red-600">{results.errors}</div>
+                  <p className="text-sm text-muted-foreground">❌ Errors</p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Phase 3 progress
-              </p>
-              <Progress 
-                value={getProgressPercentage(results.totalTranslated, TARGET_TOTAL)} 
-                className="mt-2" 
-              />
+              
+              {results.errorLog && results.errorLog.length > 0 && (
+                <Alert className="mt-4" variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="font-semibold mb-2">Translation Errors ({results.errorLog.length})</div>
+                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                      {results.errorLog.slice(0, 5).map((err, idx) => (
+                        <div key={idx} className="text-xs">
+                          <span className="font-mono">{err.slug}</span>: {err.error}
+                          {err.code && <span className="ml-2 opacity-70">({err.code})</span>}
+                        </div>
+                      ))}
+                      {results.errorLog.length > 5 && (
+                        <p className="text-xs italic">+{results.errorLog.length - 5} more errors</p>
+                      )}
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
             </CardContent>
           </Card>
-        </div>
+        </>
       )}
 
       {/* Detailed Results */}
@@ -311,10 +363,18 @@ const Phase3MultilingualDashboard: React.FC = () => {
                           .map((detail, index) => (
                             <div key={index} className="flex items-center justify-between text-sm">
                               <span className="font-medium">{detail.title}</span>
-                              <Badge variant="outline" className="text-xs">
-                                <Link className="w-3 h-3 mr-1" />
-                                /qa/es/{detail.slug}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <Badge 
+                                  variant={detail.action === 'created' ? 'default' : detail.action === 'updated' ? 'secondary' : 'outline'}
+                                  className="text-xs"
+                                >
+                                  {detail.action === 'created' ? '✅' : detail.action === 'updated' ? '🔄' : '⏭️'} {detail.action}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  <Link className="w-3 h-3 mr-1" />
+                                  /qa/es/{detail.slug}
+                                </Badge>
+                              </div>
                             </div>
                           ))}
                         {results.translationDetails.filter(d => d.language === 'es').length > 10 && (
@@ -339,10 +399,18 @@ const Phase3MultilingualDashboard: React.FC = () => {
                           .map((detail, index) => (
                             <div key={index} className="flex items-center justify-between text-sm">
                               <span className="font-medium">{detail.title}</span>
-                              <Badge variant="outline" className="text-xs">
-                                <Link className="w-3 h-3 mr-1" />
-                                /qa/de/{detail.slug}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <Badge 
+                                  variant={detail.action === 'created' ? 'default' : detail.action === 'updated' ? 'secondary' : 'outline'}
+                                  className="text-xs"
+                                >
+                                  {detail.action === 'created' ? '✅' : detail.action === 'updated' ? '🔄' : '⏭️'} {detail.action}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  <Link className="w-3 h-3 mr-1" />
+                                  /qa/de/{detail.slug}
+                                </Badge>
+                              </div>
                             </div>
                           ))}
                         {results.translationDetails.filter(d => d.language === 'de').length > 10 && (
