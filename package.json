@@ -19,4 +19,4 @@
     "lint:headings": "node scripts/lint-headings.js",
     "check:scores": "node scripts/check-ai-scores.js",
     "check:links": "node scripts/check-external-links.js"
-  },
+  }
