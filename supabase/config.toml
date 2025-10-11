@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.rebuild-sitemaps]
 verify_jwt = false
+
+[functions.batch-generate-speakable]
+verify_jwt = false
