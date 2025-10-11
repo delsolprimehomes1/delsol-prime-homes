@@ -457,33 +457,83 @@ export default function LinkManager() {
 
   const handleBulkRepair = async (action: 'internal' | 'external' | 'all') => {
     setIsBulkRepairRunning(true);
-    setBulkRepairProgress(`Starting ${action} link repair...`);
+    
+    const loadingToast = toast({
+      title: "Starting Bulk Repair",
+      description: "Processing articles in batches...",
+      duration: Infinity,
+    });
 
     try {
       const { data, error } = await supabase.functions.invoke('bulk-repair-links', {
-        body: { action, autoApproveThreshold: 80 }
+        body: {
+          action,
+          autoApproveThreshold: 80
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || 'Function invocation failed');
+      }
 
-      setBulkRepairProgress(`Completed! Fixed ${data.totalLinksFixed} links across ${data.successful} articles.`);
-      
+      loadingToast.dismiss();
+
+      const successCount = data.successful || 0;
+      const errorCount = data.errors || 0;
+      const skippedCount = data.skipped || 0;
+      const totalBatches = data.totalBatches || 0;
+
       toast({
         title: "Bulk Repair Complete",
-        description: `Fixed ${data.totalLinksFixed} links. ${data.successful} successful, ${data.skipped} skipped, ${data.errors} errors.`,
+        description: (
+          <div className="space-y-1">
+            <p>✅ Fixed {data.totalLinksFixed} links across {data.totalArticlesProcessed} articles</p>
+            <p className="text-xs text-muted-foreground">
+              Processed in {totalBatches} batches • 
+              Success: {successCount} • 
+              Skipped: {skippedCount} • 
+              Errors: {errorCount}
+            </p>
+          </div>
+        ),
+        duration: 8000,
       });
+
+      if (data.batches) {
+        console.log('Batch processing details:', data.batches);
+      }
 
       await Promise.all([fetchArticles(), fetchLinkHealth(), fetchBrokenLinkStats()]);
     } catch (error: any) {
       console.error('Bulk repair error:', error);
+      
+      loadingToast.dismiss();
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const isTimeout = errorMessage.includes('timeout') || errorMessage.includes('Timeout');
+      const isNetwork = errorMessage.includes('network') || errorMessage.includes('Failed to fetch');
+      
       toast({
         title: "Bulk Repair Failed",
-        description: error.message,
+        description: (
+          <div className="space-y-1">
+            <p className="font-semibold">
+              {isTimeout ? '⏱️ Timeout Error' : isNetwork ? '🌐 Network Error' : '❌ Processing Error'}
+            </p>
+            <p className="text-sm">{errorMessage}</p>
+            {isTimeout && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Try processing fewer articles or use the individual repair function
+              </p>
+            )}
+          </div>
+        ),
         variant: "destructive",
+        duration: 10000,
       });
     } finally {
       setIsBulkRepairRunning(false);
-      setTimeout(() => setBulkRepairProgress(''), 3000);
+      setBulkRepairProgress('');
     }
   };
 

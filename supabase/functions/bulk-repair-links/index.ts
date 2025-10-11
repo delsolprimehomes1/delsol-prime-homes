@@ -16,6 +16,16 @@ interface RepairProgress {
   error?: string;
 }
 
+interface BatchProgress {
+  batchNumber: number;
+  totalBatches: number;
+  articlesInBatch: number;
+  results: RepairProgress[];
+}
+
+const BATCH_SIZE = 50;
+const BATCH_TIMEOUT = 50000; // 50 seconds per batch
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -40,119 +50,162 @@ Deno.serve(async (req) => {
       // Process specific articles
       const { data: blogs } = await supabase
         .from('blog_posts')
-        .select('id, title, content, slug')
+        .select('id, title, content, slug, category_key')
         .in('id', articleIds)
         .eq('published', true);
 
       const { data: qaArticles } = await supabase
         .from('qa_articles')
-        .select('id, title, content, slug')
+        .select('id, title, content, slug, topic')
         .in('id', articleIds)
         .eq('published', true);
 
       articlesToProcess = [
-        ...(blogs || []).map(b => ({ ...b, type: 'blog' })),
+        ...(blogs || []).map(b => ({ ...b, type: 'blog', topic: b.category_key })),
         ...(qaArticles || []).map(q => ({ ...q, type: 'qa' }))
       ];
     } else {
       // Get all articles if no specific IDs provided
       const { data: blogs } = await supabase
         .from('blog_posts')
-        .select('id, title, content, slug')
+        .select('id, title, content, slug, category_key')
         .eq('published', true);
 
       const { data: qaArticles } = await supabase
         .from('qa_articles')
-        .select('id, title, content, slug')
+        .select('id, title, content, slug, topic')
         .eq('published', true);
 
       articlesToProcess = [
-        ...(blogs || []).map(b => ({ ...b, type: 'blog' })),
+        ...(blogs || []).map(b => ({ ...b, type: 'blog', topic: b.category_key })),
         ...(qaArticles || []).map(q => ({ ...q, type: 'qa' }))
       ];
     }
 
+    console.log(`Total articles to process: ${articlesToProcess.length}`);
+    
+    const totalBatches = Math.ceil(articlesToProcess.length / BATCH_SIZE);
+    const batchProgresses: BatchProgress[] = [];
+
     // Process based on action type
     if (action === 'internal' || action === 'all') {
-      console.log('Processing internal links...');
+      console.log('Processing internal links in batches...');
 
-      for (const article of articlesToProcess) {
-        const progress: RepairProgress = {
-          articleId: article.id,
-          articleTitle: article.title,
-          articleType: article.type,
-          status: 'processing',
-          linksFixed: 0,
-        };
+      for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+        const startIdx = batchIndex * BATCH_SIZE;
+        const endIdx = Math.min(startIdx + BATCH_SIZE, articlesToProcess.length);
+        const batch = articlesToProcess.slice(startIdx, endIdx);
+        
+        console.log(`Processing batch ${batchIndex + 1}/${totalBatches} (${batch.length} articles)`);
+        
+        const batchResults: RepairProgress[] = [];
+        const batchStartTime = Date.now();
 
-        try {
-          // Scan for broken links
-          const scanResponse = await fetch(`${supabaseUrl}/functions/v1/validate-and-fix-links`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${supabaseKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'scan',
-              articleId: article.id,
-              articleType: article.type,
-            }),
-          });
+        for (const article of batch) {
+          // Check batch timeout
+          if (Date.now() - batchStartTime > BATCH_TIMEOUT) {
+            console.warn(`Batch ${batchIndex + 1} timeout reached, moving to next batch`);
+            break;
+          }
 
-          const scanResult = await scanResponse.json();
+          const progress: RepairProgress = {
+            articleId: article.id,
+            articleTitle: article.title,
+            articleType: article.type,
+            status: 'processing',
+            linksFixed: 0,
+          };
 
-          if (scanResult.reports && scanResult.reports.length > 0) {
-            const report = scanResult.reports.find((r: any) => r.articleId === article.id);
+          try {
+            // Scan for broken links
+            const scanResponse = await fetch(`${supabaseUrl}/functions/v1/validate-and-fix-links`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                action: 'scan',
+                articleId: article.id,
+                articleType: article.type,
+              }),
+            });
 
-            if (report && report.brokenLinks && report.brokenLinks.length > 0) {
-              // Auto-select best suggestions
-              const replacements: Record<string, string> = {};
+            if (!scanResponse.ok) {
+              throw new Error(`Scan failed: ${scanResponse.statusText}`);
+            }
 
-              for (const brokenLink of report.brokenLinks) {
-                if (brokenLink.suggestions && brokenLink.suggestions.length > 0) {
-                  const bestSuggestion = brokenLink.suggestions[0];
-                  if (bestSuggestion.relevance >= autoApproveThreshold) {
-                    replacements[brokenLink.url] = bestSuggestion.url;
-                    progress.linksFixed++;
+            const scanResult = await scanResponse.json();
+
+            if (scanResult.reports && scanResult.reports.length > 0) {
+              const report = scanResult.reports.find((r: any) => r.articleId === article.id);
+
+              if (report && report.brokenLinks && report.brokenLinks.length > 0) {
+                // Auto-select best suggestions
+                const replacements: Record<string, string> = {};
+
+                for (const brokenLink of report.brokenLinks) {
+                  if (brokenLink.suggestions && brokenLink.suggestions.length > 0) {
+                    const bestSuggestion = brokenLink.suggestions[0];
+                    if (bestSuggestion.relevance >= autoApproveThreshold) {
+                      replacements[brokenLink.url] = bestSuggestion.url;
+                      progress.linksFixed++;
+                    }
                   }
                 }
-              }
 
-              // Apply fixes if we have any
-              if (Object.keys(replacements).length > 0) {
-                await fetch(`${supabaseUrl}/functions/v1/validate-and-fix-links`, {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${supabaseKey}`,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    action: 'fix',
-                    articleId: article.id,
-                    articleType: article.type,
-                    replacements,
-                  }),
-                });
+                // Apply fixes if we have any
+                if (Object.keys(replacements).length > 0) {
+                  const fixResponse = await fetch(`${supabaseUrl}/functions/v1/validate-and-fix-links`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${supabaseKey}`,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      action: 'fix',
+                      articleId: article.id,
+                      articleType: article.type,
+                      replacements,
+                    }),
+                  });
 
-                progress.status = 'success';
-                totalFixed += progress.linksFixed;
+                  if (!fixResponse.ok) {
+                    throw new Error(`Fix failed: ${fixResponse.statusText}`);
+                  }
+
+                  progress.status = 'success';
+                  totalFixed += progress.linksFixed;
+                } else {
+                  progress.status = 'skipped';
+                  progress.error = 'No high-confidence replacements found';
+                }
               } else {
                 progress.status = 'skipped';
-                progress.error = 'No high-confidence replacements found';
+                progress.error = 'No broken links found';
               }
             } else {
               progress.status = 'skipped';
-              progress.error = 'No broken links found';
+              progress.error = 'No scan results';
             }
+          } catch (error) {
+            console.error(`Error processing article ${article.id}:`, error);
+            progress.status = 'error';
+            progress.error = error.message;
           }
-        } catch (error) {
-          console.error(`Error processing article ${article.id}:`, error);
-          progress.status = 'error';
-          progress.error = error.message;
+
+          batchResults.push(progress);
+          results.push(progress);
         }
 
-        results.push(progress);
+        batchProgresses.push({
+          batchNumber: batchIndex + 1,
+          totalBatches,
+          articlesInBatch: batch.length,
+          results: batchResults,
+        });
+
+        console.log(`Batch ${batchIndex + 1} complete: ${batchResults.filter(r => r.status === 'success').length} successful`);
       }
     }
 
@@ -176,6 +229,9 @@ Deno.serve(async (req) => {
       successful: results.filter(r => r.status === 'success').length,
       skipped: results.filter(r => r.status === 'skipped').length,
       errors: results.filter(r => r.status === 'error').length,
+      totalBatches,
+      batchSize: BATCH_SIZE,
+      batches: batchProgresses,
       details: results,
     };
 

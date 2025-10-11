@@ -119,67 +119,72 @@ serve(async (req) => {
 
     console.log(`Generating ${targetLinks} external links for ${wordCount} words`);
 
-    // Enhanced prompt for Perplexity's web search capabilities
-    const systemPrompt = `You are an expert content editor with access to real-time web search. Find opportunities to add helpful external links using ONLY live, accessible URLs.
+    const systemPrompt = `You are an expert SEO content researcher specializing in real estate and Costa del Sol region.
+Your task is to find ${targetLinks} highly authoritative, recent external links that are TOPICALLY RELEVANT to the article subject.
 
-Your task: Search the web to find ${targetLinks} authoritative sources for phrases already in the content.
+ARTICLE TOPIC: ${topic}
 
-CRITICAL RULES:
-1. SEARCH the web for the most authoritative, recent sources (2024-2025)
-2. VERIFY URLs are live and accessible (not 404)
-3. Find phrases in the article (2-5 words) that need authoritative backing
-4. Prioritize: .gov, .gov.es, .gob.es, .edu, official organizations, major news outlets
-5. Authority score must be 80+ (government=100, education=88, major news=85)
-6. Use HTTPS only
-7. Ensure domain diversity (max 2 links per domain)
+PRIORITY SOURCES (in order):
+1. Government & Official Sites (.gov, .es official tourism, Spanish property registries)
+2. Major News Organizations (BBC, Reuters, EL PAÍS, local Spanish news)
+3. Educational Institutions (.edu, universities with real estate programs)
+4. Established Real Estate Publications (specific to Spanish/Costa del Sol market)
+5. Financial & Legal Advisory Sites (Spanish property law, taxation)
+6. Tourism & Cultural Organizations (Costa del Sol specific)
 
-Return valid JSON only with your suggestions.`;
+STRICT QUALITY REQUIREMENTS:
+- Must be TOPICALLY RELEVANT to: ${topic}
+- Must be from 2023-2025 (prefer 2024-2025)
+- Must be HTTPS
+- Must be authoritative (no blogs, forums, or user-generated content)
+- Must add factual value (statistics, regulations, market data, official guidance)
+- Diverse domains (max 2 links from same domain)
+- Geographic relevance to Costa del Sol when applicable
 
-    const userPrompt = `SEARCH THE WEB to find ${targetLinks} authoritative external links for this Spanish real estate article.
+TOPIC VALIDATION:
+- For "buying" topics: Link to mortgage info, legal requirements, buying process guides
+- For "investment" topics: Link to ROI data, market trends, financial regulations
+- For "location" topics: Link to area guides, demographics, local amenities
+- For "legal" topics: Link to Spanish property law, tax regulations, official registries
+- For "lifestyle" topics: Link to cultural attractions, climate data, expat resources
 
-ARTICLE INFO:
-Title: ${topic || 'Spanish Real Estate'}
-Topic: ${topic}
-Word Count: ${wordCount}
+Return ONLY valid JSON.`;
 
-CONTENT:
-${content}
+    const userPrompt = `Article Topic: ${topic}
+Article Type: ${articleType}
 
-YOUR TASK:
-1. Read the content and identify ${targetLinks} concepts/phrases that need authoritative backing
-2. SEARCH THE WEB for the most authoritative, recent sources (2024-2025)
-3. VERIFY each URL is live and accessible
-4. Match each source to an exact phrase in the content
+Content Excerpt (first 2000 characters):
+${content.substring(0, 2000)}
 
-SEARCH PRIORITY (but explore beyond these):
-- Spanish Tax Agency: agenciatributaria.es
-- Property Registrars: registradores.org
-- Spanish Government: .gov.es, .gob.es
-- Spanish Statistics: ine.es
-- Tourism: spain.info, andalucia.org, malagaturismo.com
-- EU sources: europa.eu
-- Major news: Financial Times, Reuters, El País (2024-2025 articles)
-- Professional bodies: notarios.org, arquitectos.org
+CRITICAL: All links must be TOPICALLY RELEVANT to "${topic}"
 
-REQUIREMENTS:
-- Find LIVE, accessible URLs (verify they exist in 2025)
-- Authority score 80+ (government=100, edu=88, news=85)
-- Prefer content from 2024-2025
-- HTTPS only
-- Match to exact phrases from the content
+Find ${targetLinks} authoritative external links that:
+1. Directly relate to the article's topic: ${topic}
+2. Come from the priority sources listed (government, news, education)
+3. Are recent (2023-2025, prefer 2024-2025)
+4. Add genuine value with facts, data, or official guidance specific to ${topic}
+5. Have anchor text that naturally fits in the article content
+6. Are from diverse domains (max 2 per domain)
+7. Include geographic relevance to Costa del Sol when applicable
 
-Return JSON in this format:
-{
-  "links": [
-    {
-      "anchorText": "exact phrase from article",
-      "url": "https://verified-live-url.com",
-      "reason": "Why this authoritative source adds value",
-      "contextSentence": "Full sentence containing the phrase",
-      "authorityScore": 95
-    }
-  ]
-}`;
+TOPIC-SPECIFIC FOCUS:
+- If topic is about buying/purchasing: Focus on legal requirements, mortgage info, buying process
+- If topic is about investment: Focus on ROI data, market analysis, financial regulations
+- If topic is about specific locations: Focus on area statistics, demographics, local regulations
+- If topic is about legal matters: Focus on Spanish property law, tax regulations, official procedures
+- If topic is about lifestyle: Focus on climate, culture, amenities, expat resources
+
+Return ONLY a JSON array in this exact format:
+[
+  {
+    "url": "https://example.com/page",
+    "anchorText": "descriptive anchor text that exists in article",
+    "contextSnippet": "the sentence or paragraph where this link would fit",
+    "reasoning": "Topic relevance: [how it relates to ${topic}]. Authority: [why source is credible]. Value: [what factual info it adds]"
+  }
+]
+
+Validate that each link's content ACTUALLY relates to ${topic} before suggesting it.`;
 
     // Call Perplexity AI with web search
     const aiResponse = await fetch('https://api.perplexity.ai/chat/completions', {

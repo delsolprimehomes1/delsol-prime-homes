@@ -27,26 +27,59 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Find related articles (same topic, different articles, different funnel stages)
-    const { data: relatedQA } = await supabase
+    // Map common topics between blogs and QA articles
+    const topicMapping: Record<string, string[]> = {
+      'buying-process': ['buying', 'purchase', 'investment'],
+      'property-types': ['villas', 'apartments', 'properties'],
+      'locations': ['marbella', 'costa-del-sol', 'areas'],
+      'legal': ['legal', 'taxes', 'regulations'],
+      'investment': ['investment', 'roi', 'returns'],
+      'lifestyle': ['lifestyle', 'amenities', 'living'],
+    };
+
+    const relatedTopics = topicMapping[topic] || [topic];
+    console.log(`Looking for articles related to topics:`, relatedTopics);
+
+    // Fetch related QA articles with topic matching
+    const { data: relatedQAArticles } = await supabase
       .from('qa_articles')
-      .select('id, title, slug, funnel_stage, topic, excerpt')
-      .eq('topic', topic)
-      .neq('id', articleId)
+      .select('id, slug, title, topic, funnel_stage, tags, excerpt, content')
       .eq('published', true)
-      .limit(10);
-
-    const { data: relatedBlogs } = await supabase
-      .from('blog_posts')
-      .select('id, title, slug, category_key, excerpt')
-      .eq('status', 'published')
       .neq('id', articleId)
-      .limit(5);
+      .limit(50);
 
-    const relatedArticles = [
-      ...(relatedQA || []).map(a => ({ ...a, type: 'qa' })),
-      ...(relatedBlogs || []).map(a => ({ ...a, type: 'blog' }))
-    ];
+    // Fetch related blog posts
+    const { data: relatedBlogPosts } = await supabase
+      .from('blog_posts')
+      .select('id, slug, title, category_key, funnel_stage, tags, excerpt, content')
+      .eq('published', true)
+      .neq('id', articleId)
+      .limit(50);
+
+    // Filter and score articles based on relevance
+    const scoredArticles = [
+      ...(relatedQAArticles || []).map(a => {
+        let score = 0;
+        if (relatedTopics.includes(a.topic)) score += 50;
+        const tagOverlap = (a.tags || []).filter((tag: string) => relatedTopics.includes(tag)).length;
+        score += tagOverlap * 10;
+        return { ...a, type: 'qa', topic: a.topic, relevanceScore: score };
+      }),
+      ...(relatedBlogPosts || []).map(a => {
+        let score = 0;
+        if (relatedTopics.includes(a.category_key)) score += 50;
+        const tagOverlap = (a.tags || []).filter((tag: string) => relatedTopics.includes(tag)).length;
+        score += tagOverlap * 10;
+        return { ...a, type: 'blog', topic: a.category_key, relevanceScore: score };
+      })
+    ]
+    .filter(a => a.relevanceScore > 0)
+    .sort((a, b) => b.relevanceScore - a.relevanceScore)
+    .slice(0, 30);
+
+    console.log(`Found ${scoredArticles.length} relevant articles for linking`);
+
+    const relatedArticles = scoredArticles;
 
     if (relatedArticles.length === 0) {
       console.log('No related articles found for linking');
@@ -58,51 +91,69 @@ serve(async (req) => {
 
     console.log(`Found ${relatedArticles.length} related articles for internal linking`);
 
-    // Enhanced prompt for finding naturally linkable internal phrases
-    const systemPrompt = `You are an expert editor finding opportunities to add helpful internal links within article content.
+    const systemPrompt = `You are an expert SEO content strategist for a Costa del Sol real estate website.
 
-LINKING STRATEGY:
-1. Link to articles at different funnel stages (TOFU → MOFU → BOFU progression)
-2. Use ONLY exact text that appears in the article (3-8 words)
-3. The anchor text should clearly relate to the target article's topic
-4. Links should add genuine value and help reader navigation
-5. Avoid linking generic phrases - be specific
-6. Space links naturally throughout the content
+Analyze this article content and identify opportunities for internal linking to related articles.
 
-Return valid JSON only.`;
+CURRENT ARTICLE TOPIC: ${topic}
+ARTICLE TYPE: ${articleType.toUpperCase()}
 
-    const userPrompt = `CURRENT ARTICLE CONTENT:
-${content.substring(0, 2500)}
+STRICT REQUIREMENTS:
+1. Find 3-5 natural anchor text phrases that EXIST WORD-FOR-WORD in the article content
+2. Only suggest links to articles with MATCHING or HIGHLY RELATED topics
+3. Prioritize funnel progression:
+   - TOFU articles should link to MOFU articles (deeper exploration)
+   - MOFU articles should link to BOFU articles (decision-making)
+   - BOFU articles can link to related TOFU/MOFU for context
+4. Verify semantic relevance: the link must make sense in the context of the sentence
+5. Each link needs a relevance score (0-100):
+   - 90-100: Exact topic match, perfect context fit
+   - 80-89: Related topic, strong context relevance
+   - 70-79: Adjacent topic, good context fit
+   - Below 70: Don't suggest
 
-AVAILABLE RELATED CONTENT:
-${relatedArticles.map((a: any, i: number) => `
-${i + 1}. ${a.title}
-   Type: ${a.type?.toUpperCase() || 'BLOG'}
-   URL Slug: ${a.slug}
-   Topic: ${a.topic || 'General'}
-   Summary: ${a.excerpt?.substring(0, 150) || 'Related content'}
-`).join('\n')}
+QUALITY STANDARDS:
+- NO generic phrases like "click here" or "read more"
+- Use descriptive anchor text that exists in the content
+- Ensure geographic relevance (Costa del Sol focus)
+- Balance link distribution (don't cluster all links in one section)
 
-TASK: Find 2-4 exact phrases in the current article that would naturally link to the related content above.
+Return ONLY valid JSON.`;
 
-Return JSON array in this exact format:
+    const userPrompt = `ARTICLE CONTENT:
+${content.substring(0, 3000)}
+
+AVAILABLE RELATED ARTICLES (sorted by relevance):
+${relatedArticles.map(a => 
+  `- [${a.type.toUpperCase()}] "${a.title}" (/${a.type === 'qa' ? 'qa' : 'blog'}/${a.slug})
+    Topic: ${a.topic}
+    Funnel Stage: ${a.funnel_stage || 'Unknown'}
+    Relevance Score: ${a.relevanceScore}
+    Excerpt: ${a.excerpt?.substring(0, 150) || 'No excerpt'}`
+).join('\n')}
+
+CRITICAL: All links must be TOPICALLY RELEVANT to "${topic}"
+
+Find 3-5 exact phrases in the article that would naturally link to the most relevant articles.
+
+TOPIC-SPECIFIC FOCUS:
+- Match topic semantically (e.g., "buying" relates to "purchase", "investment")
+- Consider funnel progression (awareness → consideration → decision)
+- Verify the link adds value in its specific context
+
+Return ONLY a JSON array of suggestions in this exact format:
 [
   {
-    "anchorText": "exact phrase from current article",
-    "targetArticleId": "${relatedArticles[0]?.id}",
-    "targetSlug": "target-article-slug",
-    "targetTitle": "Target Article Title",
+    "anchorText": "exact phrase from article",
+    "targetArticleId": "article-uuid",
+    "targetSlug": "article-slug",
+    "targetTitle": "Article Title",
     "targetType": "qa",
-    "reason": "How this link helps the reader",
-    "relevanceScore": 88,
+    "reason": "Topic match: [topic]. Context: [why it fits]. Funnel: [stage progression]",
+    "relevanceScore": 95,
     "contextSentence": "Full sentence containing the anchor text"
   }
 ]
-
-REQUIREMENTS:
-- Anchor text must exist EXACTLY in the current article
-- Only suggest links with relevance score 80+
-- Each link should feel natural and helpful`;
 
     // Call Lovable AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
