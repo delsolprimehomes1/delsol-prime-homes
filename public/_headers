@@ -1,0 +1,68 @@
+# Cloudflare Pages Custom Headers Configuration
+# These headers apply to all routes unless overridden by more specific rules
+
+/*
+  X-Robots-Tag: all
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# AI Discovery Endpoints - Enable CORS and optimize caching
+/api/ai-feed.json
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS
+  Access-Control-Allow-Headers: Content-Type
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  X-Robots-Tag: all
+
+/api/sitemap-ai.xml
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/xml
+  X-Robots-Tag: all
+
+/api/qa/*.json
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS
+  Cache-Control: public, max-age=86400, s-maxage=86400
+  X-Robots-Tag: all
+
+# AI Crawlers - Explicitly allow
+/robots.txt
+  Cache-Control: public, max-age=3600
+  X-Robots-Tag: all
+
+# Sitemaps - Optimize for crawlers
+/sitemap*.xml
+  Content-Type: application/xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  X-Robots-Tag: all
+
+# Static Assets - Long cache
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images - Optimize caching
+/public/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+  
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+  
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+# QA Pages - Allow AI crawler access
+/qa/*
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=3600, s-maxage=3600
+
+# Blog Pages - Allow AI crawler access
+/blog/*
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=3600, s-maxage=3600

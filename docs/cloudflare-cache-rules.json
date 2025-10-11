@@ -1,0 +1,142 @@
+{
+  "cloudflare_cache_rules": [
+    {
+      "name": "Cache AI Feed",
+      "description": "Cache the AI discovery feed for 1 hour",
+      "expression": "(http.request.uri.path eq \"/api/ai-feed.json\")",
+      "action": "cache",
+      "edge_ttl": 3600,
+      "browser_ttl": 3600,
+      "cache_everything": true
+    },
+    {
+      "name": "Cache AI Sitemap",
+      "description": "Cache the AI-optimized sitemap for 1 hour",
+      "expression": "(http.request.uri.path eq \"/api/sitemap-ai.xml\")",
+      "action": "cache",
+      "edge_ttl": 3600,
+      "browser_ttl": 3600,
+      "cache_everything": true
+    },
+    {
+      "name": "Cache QA JSON Endpoints",
+      "description": "Cache individual QA article JSON for 24 hours",
+      "expression": "(http.request.uri.path contains \"/api/qa/\" and http.request.uri.path contains \".json\")",
+      "action": "cache",
+      "edge_ttl": 86400,
+      "browser_ttl": 86400,
+      "cache_everything": true
+    },
+    {
+      "name": "Cache Static Assets",
+      "description": "Long cache for immutable static assets",
+      "expression": "(http.request.uri.path contains \"/assets/\")",
+      "action": "cache",
+      "edge_ttl": 31536000,
+      "browser_ttl": 31536000,
+      "cache_everything": true
+    },
+    {
+      "name": "Cache Images",
+      "description": "Long cache for images",
+      "expression": "(http.request.uri.path matches \"\\.(webp|png|jpg|jpeg|gif|svg|ico)$\")",
+      "action": "cache",
+      "edge_ttl": 31536000,
+      "browser_ttl": 31536000,
+      "cache_everything": true
+    },
+    {
+      "name": "Cache Sitemaps",
+      "description": "Cache all sitemaps for 1 hour",
+      "expression": "(http.request.uri.path contains \"sitemap\" and http.request.uri.path contains \".xml\")",
+      "action": "cache",
+      "edge_ttl": 3600,
+      "browser_ttl": 3600,
+      "cache_everything": true
+    }
+  ],
+  
+  "cloudflare_transform_rules": [
+    {
+      "name": "Security Headers - All Pages",
+      "description": "Add security headers to all pages",
+      "expression": "(http.request.uri.path ne \"/\")",
+      "action": "modify_response_header",
+      "headers": [
+        {
+          "operation": "set",
+          "name": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "operation": "set",
+          "name": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "operation": "set",
+          "name": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "operation": "set",
+          "name": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "name": "CORS - AI Endpoints",
+      "description": "Enable CORS for AI discovery endpoints",
+      "expression": "(http.request.uri.path matches \"^/api/(ai-feed\\.json|sitemap-ai\\.xml|qa/.*)$\")",
+      "action": "modify_response_header",
+      "headers": [
+        {
+          "operation": "set",
+          "name": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "operation": "set",
+          "name": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "operation": "set",
+          "name": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    },
+    {
+      "name": "Allow AI Crawlers - All Pages",
+      "description": "Explicitly allow AI bot indexing",
+      "expression": "(true)",
+      "action": "modify_response_header",
+      "headers": [
+        {
+          "operation": "set",
+          "name": "X-Robots-Tag",
+          "value": "all"
+        }
+      ]
+    }
+  ],
+
+  "bot_management_rules": {
+    "description": "Configure these in Cloudflare Dashboard > Security > Bots",
+    "allowed_bots": [
+      "GPTBot (OpenAI)",
+      "ChatGPT-User (OpenAI)",
+      "ClaudeBot (Anthropic)",
+      "Claude-Web (Anthropic)",
+      "anthropic-ai",
+      "CCBot (Common Crawl)",
+      "Applebot (Apple Intelligence)",
+      "Googlebot (Google/Gemini)",
+      "Bingbot (Microsoft/Bing)"
+    ],
+    "action": "allow",
+    "note": "Do NOT block these bots - they need access to cite your content"
+  }
+}
