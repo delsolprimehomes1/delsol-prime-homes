@@ -264,7 +264,7 @@ export function LinkHealthManager() {
             <SelectItem value="approved">Approved Only</SelectItem>
             <SelectItem value="unapproved">Unapproved Only</SelectItem>
           </SelectContent>
-        </SelectContent>
+        </Select>
       </div>
 
       {/* Links List */}
