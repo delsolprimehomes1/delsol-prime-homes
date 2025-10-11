@@ -194,7 +194,7 @@ Validate that each link's content ACTUALLY relates to ${topic} before suggesting
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
+        model: 'sonar-pro',  // Updated to current Perplexity AI model (Jan 2025)
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
