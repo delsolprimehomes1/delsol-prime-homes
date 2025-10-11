@@ -12,8 +12,8 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 // Supabase configuration
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://qvrbaovlmhxupzjesykw.supabase.co';
-const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qvrvcvmoudxchipvzksh.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2cnZjdm1vdWR4Y2hpcHZ6a3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTIyMzksImV4cCI6MjA2ODE4ODIzOX0.4EPE_-5OsZGC10Jeg90q4um8Rdsc1-hXoy5S_gPhl6Q';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
