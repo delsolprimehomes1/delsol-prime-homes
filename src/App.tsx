@@ -23,6 +23,7 @@ import AIOptimizationDashboard from "./pages/AIOptimizationDashboard";
 import LinkReviewDashboard from "./pages/LinkReviewDashboard";
 import PreLaunchValidation from "./pages/PreLaunchValidation";
 import SpeakableAnswerGenerator from "./pages/SpeakableAnswerGenerator";
+import AIDiscoveryTestDashboard from "./pages/AIDiscoveryTestDashboard";
 import AIOptimizationTest from "./pages/AIOptimizationTest";
 import BlogBuilderPage from "./pages/BlogBuilder";
 import MarkdownManagerPage from "./pages/MarkdownManager";
@@ -72,6 +73,7 @@ const App = () => (
           <Route path="/admin/link-manager" element={<LinkManager />} />
           <Route path="/admin/bulk-optimize" element={<BulkOptimize />} />
           <Route path="/admin/speakable-generator" element={<SpeakableAnswerGenerator />} />
+          <Route path="/admin/ai-discovery-test" element={<AIDiscoveryTestDashboard />} />
               
               {/* Location-specific landing pages for enhanced SEO */}
               <Route path="/marbella" element={<QAHub />} />
