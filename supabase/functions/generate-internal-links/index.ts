@@ -153,7 +153,7 @@ Return ONLY a JSON array of suggestions in this exact format:
     "relevanceScore": 95,
     "contextSentence": "Full sentence containing the anchor text"
   }
-]
+]`;
 
     // Call Lovable AI
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
