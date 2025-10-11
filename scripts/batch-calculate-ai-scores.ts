@@ -1,230 +1,310 @@
 #!/usr/bin/env node
 
 /**
- * Batch AI Score Calculator
- * Calculates AI optimization scores for all articles in database
- * 
- * Usage: npm run calculate:scores
+ * Batch calculate AI optimization scores for all articles
+ * Usage: npm run calculate:ai-scores
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { calculateAIScore } from '../src/lib/scoring/calculate-ai-score.js';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
 
-// Supabase configuration
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qvrvcvmoudxchipvzksh.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2cnZjdm1vdWR4Y2hpcHZ6a3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MTIyMzksImV4cCI6MjA2ODE4ODIzOX0.4EPE_-5OsZGC10Jeg90q4um8Rdsc1-hXoy5S_gPhl6Q';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://qvrvcvmoudxchipvzksh.supabase.co';
+const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || '';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 interface ScoreStats {
   total: number;
   processed: number;
+  success: number;
   failed: number;
-  scores: number[];
-  excellent: number; // >= 9.8
-  good: number; // 8.0-9.7
-  needsWork: number; // < 8.0
   avgScore: number;
+  excellentCount: number;
+  goodCount: number;
+  needsWorkCount: number;
+  criticalCount: number;
+  topIssues: Map<string, number>;
+  topSuggestions: Map<string, number>;
+  lowScoringArticles: Array<{
+    id: string;
+    title: string;
+    score: number;
+    issues: string[];
+    suggestions: string[];
+  }>;
 }
 
 const stats: ScoreStats = {
   total: 0,
   processed: 0,
+  success: 0,
   failed: 0,
-  scores: [],
-  excellent: 0,
-  good: 0,
-  needsWork: 0,
   avgScore: 0,
+  excellentCount: 0,
+  goodCount: 0,
+  needsWorkCount: 0,
+  criticalCount: 0,
+  topIssues: new Map(),
+  topSuggestions: new Map(),
+  lowScoringArticles: [],
 };
 
 /**
- * Calculate score for a single article
+ * Calculate AI score for a single article (inline implementation)
  */
-async function calculateScore(articleId: string): Promise<void> {
-  try {
-    console.log(`📊 Calculating score for article: ${articleId}`);
-    
-    // Use existing calculateAIScore function
-    const result = await calculateAIScore(articleId);
-    
-    // Update database with the score
-    const { error } = await supabase
-      .from('qa_articles')
-      .update({ ai_score: result.score })
-      .eq('id', articleId);
-    
-    if (error) {
-      console.error(`❌ Failed to update score for ${articleId}:`, error.message);
-      stats.failed++;
-      return;
-    }
-    
-    // Track statistics
-    stats.scores.push(result.score);
-    if (result.score >= 9.8) stats.excellent++;
-    else if (result.score >= 8.0) stats.good++;
-    else stats.needsWork++;
-    
-    stats.processed++;
-    
-    // Log progress
-    const progress = `${stats.processed}/${stats.total}`;
-    const scoreEmoji = result.score >= 9.8 ? '🟢' : result.score >= 8.0 ? '🟡' : '🔴';
-    console.log(`${scoreEmoji} [${progress}] Score: ${result.score.toFixed(2)}/10 | Issues: ${result.issues.length}`);
-    
-    if (result.issues.length > 0) {
-      console.log(`   ⚠️  Issues: ${result.issues.slice(0, 3).join(', ')}${result.issues.length > 3 ? '...' : ''}`);
-    }
-    
-  } catch (error) {
-    stats.failed++;
-    console.error(`❌ Error calculating score for ${articleId}:`, error instanceof Error ? error.message : error);
-  }
+async function calculateScore(articleId: string) {
+  const issues: string[] = [];
+  const suggestions: string[] = [];
+  let score = 0;
+
+  // Fetch article
+  const { data: article, error } = await supabase
+    .from('qa_articles')
+    .select('*')
+    .eq('id', articleId)
+    .single();
+
+  if (error || !article) throw new Error(`Article not found: ${articleId}`);
+
+  // 1. Voice Readiness (2.0)
+  const speakableQuestions = article.speakable_questions || [];
+  const speakableAnswer = article.speakable_answer || '';
+  const questionsWords = speakableQuestions.join(' ').split(/\s+/).length;
+  const answerWords = speakableAnswer.split(/\s+/).filter(w => w.length > 0).length;
+
+  if (questionsWords >= 40 && questionsWords <= 60) score += 1.0;
+  else if (questionsWords > 0) { score += 0.5; issues.push(`Speakable questions: ${questionsWords}w`); }
+  else issues.push('No speakable questions');
+
+  if (answerWords >= 40 && answerWords <= 60) score += 1.0;
+  else if (answerWords > 0) { score += 0.5; issues.push(`Speakable answer: ${answerWords}w`); }
+  else issues.push('No speakable answer');
+
+  // 2. Schema Quality (1.5)
+  const hasGeo = article.geo_coordinates && typeof article.geo_coordinates === 'object';
+  if (hasGeo) score += 0.5;
+  else issues.push('No geo coordinates');
+
+  if (speakableQuestions.length > 0 && speakableAnswer) score += 0.5;
+  if (article.author_id || article.author) score += 0.5;
+  else issues.push('No author');
+
+  // 3. External Links (2.0)
+  const wordCount = (article.content || '').split(/\s+/).length;
+  const { data: links } = await supabase
+    .from('external_links')
+    .select('verified')
+    .eq('article_id', articleId)
+    .eq('verified', true);
+
+  const linksPerK = wordCount > 0 ? ((links?.length || 0) / wordCount) * 1000 : 0;
+  if (linksPerK >= 2) score += 2.0;
+  else if (linksPerK >= 1) { score += 1.0; suggestions.push('Add more external links'); }
+  else if (linksPerK > 0) { score += 0.5; issues.push('Low link density'); }
+  else issues.push('No external links');
+
+  // 4. Heading Structure (1.5)
+  const content = article.content || '';
+  const h1Count = (content.match(/^# .+$/gm) || []).length;
+  const h2Count = (content.match(/^## .+$/gm) || []).length;
+
+  if (h1Count === 1) score += 0.5;
+  else issues.push(h1Count === 0 ? 'No H1' : `${h1Count} H1s`);
+
+  if (h2Count >= 3) score += 0.5;
+  else issues.push(`Only ${h2Count} H2s`);
+
+  if (h2Count > 0) score += 0.5;
+
+  // 5. Multilingual (1.0)
+  const { data: translations } = await supabase
+    .from('qa_articles')
+    .select('id')
+    .eq('slug', article.slug)
+    .neq('language', article.language);
+
+  const transCount = translations?.length || 0;
+  if (transCount >= 5) score += 1.0;
+  else if (transCount >= 3) { score += 0.7; suggestions.push('More translations'); }
+  else if (transCount >= 1) { score += 0.3; issues.push(`${transCount} translations`); }
+  else issues.push('No translations');
+
+  // 6. Freshness (1.0)
+  const days = Math.floor((Date.now() - new Date(article.updated_at).getTime()) / 86400000);
+  if (days < 30) score += 1.0;
+  else if (days < 90) { score += 0.7; suggestions.push('Refresh content'); }
+  else { score += 0.3; issues.push(`${days} days old`); }
+
+  // 7. E-E-A-T (1.0)
+  const hasAuthor = !!(article.author_id || article.author);
+  const hasReviewer = !!(article.reviewer_id || article.reviewer);
+  if (hasAuthor && hasReviewer) score += 1.0;
+  else if (hasAuthor) { score += 0.5; issues.push('No reviewer'); }
+  else issues.push('No author/reviewer');
+
+  return { score: Number(score.toFixed(2)), issues, suggestions };
 }
 
 /**
  * Process articles in batches
  */
-async function processBatch(articles: any[]): Promise<void> {
-  const BATCH_SIZE = 10;
-  
-  for (let i = 0; i < articles.length; i += BATCH_SIZE) {
-    const batch = articles.slice(i, i + BATCH_SIZE);
-    
-    console.log(`\n🔄 Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(articles.length / BATCH_SIZE)}`);
-    
-    // Process batch in parallel
-    await Promise.all(
-      batch.map(article => calculateScore(article.id))
-    );
-    
-    // Small delay between batches to avoid rate limits
-    if (i + BATCH_SIZE < articles.length) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+async function processBatch(articles: any[]) {
+  for (const article of articles) {
+    stats.processed++;
+
+    try {
+      console.log(`[${stats.processed}/${stats.total}] ${article.title.substring(0, 50)}...`);
+
+      const result = await calculateScore(article.id);
+
+      // Update database
+      const { error: updateError } = await supabase
+        .from('qa_articles')
+        .update({ ai_score: result.score })
+        .eq('id', article.id);
+
+      if (updateError) {
+        console.error(`❌ Failed to update: ${updateError.message}`);
+        stats.failed++;
+        continue;
+      }
+
+      stats.success++;
+      stats.avgScore += result.score;
+
+      // Categorize
+      if (result.score >= 9.8) stats.excellentCount++;
+      else if (result.score >= 9.0) stats.goodCount++;
+      else if (result.score >= 8.0) stats.needsWorkCount++;
+      else stats.criticalCount++;
+
+      // Track issues and suggestions
+      result.issues.forEach(issue => {
+        stats.topIssues.set(issue, (stats.topIssues.get(issue) || 0) + 1);
+      });
+      result.suggestions.forEach(suggestion => {
+        stats.topSuggestions.set(suggestion, (stats.topSuggestions.get(suggestion) || 0) + 1);
+      });
+
+      // Track low-scoring articles
+      if (result.score < 9.8) {
+        stats.lowScoringArticles.push({
+          id: article.id,
+          title: article.title,
+          score: result.score,
+          issues: result.issues,
+          suggestions: result.suggestions,
+        });
+      }
+
+      console.log(`✅ Score: ${result.score}/10`);
+
+    } catch (error) {
+      stats.failed++;
+      console.error(`❌ Error: ${error instanceof Error ? error.message : error}`);
     }
   }
 }
 
 /**
- * Generate CSV report of low-scoring articles
+ * Export low-scoring articles to CSV
  */
-async function exportCSV(): Promise<void> {
+async function exportCSV() {
   try {
-    console.log('\n📄 Generating CSV report...');
-    
-    const { data: lowScoreArticles, error } = await supabase
-      .from('qa_articles')
-      .select('id, title, slug, language, ai_score, funnel_stage')
-      .lt('ai_score', 9.8)
-      .order('ai_score', { ascending: true })
-      .limit(100);
-    
-    if (error) throw error;
-    
-    if (!lowScoreArticles || lowScoreArticles.length === 0) {
-      console.log('✅ No low-scoring articles found!');
-      return;
-    }
-    
-    const csv = [
-      'ID,Title,Slug,Language,Score,Funnel Stage,URL',
-      ...lowScoreArticles.map(a => 
-        `${a.id},"${a.title}",${a.slug},${a.language},${a.ai_score?.toFixed(2) || 0},${a.funnel_stage},https://delsolprimehomes.com/${a.language}/qa/${a.slug}`
-      )
-    ].join('\n');
-    
-    const fs = await import('fs');
-    const path = await import('path');
-    
-    const reportsDir = path.join(process.cwd(), 'reports');
-    if (!fs.existsSync(reportsDir)) {
-      fs.mkdirSync(reportsDir, { recursive: true });
-    }
-    
-    const filePath = path.join(reportsDir, 'low-scoring-articles.csv');
-    fs.writeFileSync(filePath, csv, 'utf-8');
-    
-    console.log(`✅ Report saved to: ${filePath}`);
-    console.log(`   Articles needing improvement: ${lowScoreArticles.length}`);
-    
+    await mkdir('reports', { recursive: true });
+
+    const csvLines = [
+      'ID,Title,Score,Issues,Suggestions',
+      ...stats.lowScoringArticles
+        .sort((a, b) => a.score - b.score)
+        .map(article => 
+          `"${article.id}","${article.title}",${article.score},"${article.issues.join('; ')}","${article.suggestions.join('; ')}"`
+        )
+    ];
+
+    await writeFile('reports/low-scoring-articles.csv', csvLines.join('\n'), 'utf-8');
+    console.log('\n📄 Exported to: reports/low-scoring-articles.csv');
+
   } catch (error) {
-    console.error('❌ Error generating CSV:', error);
+    console.error('Failed to export CSV:', error);
   }
 }
 
 /**
  * Main execution
  */
-async function main(): Promise<void> {
-  console.log('🚀 Starting AI Score Calculation...\n');
-  
-  try {
-    // Fetch all QA articles
-    console.log('📥 Fetching articles from database...');
-    const { data: articles, error } = await supabase
-      .from('qa_articles')
-      .select('id, title, slug, language')
-      .eq('published', true)
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('❌ Error fetching articles:', error);
-      throw error;
-    }
-    
-    if (!articles || articles.length === 0) {
-      console.log('⚠️  No articles found in database.');
-      return;
-    }
-    
-    stats.total = articles.length;
-    console.log(`\n📊 Found ${stats.total} articles to process\n`);
-    
-    // Process all articles
-    await processBatch(articles);
-    
-    // Calculate final statistics
-    stats.avgScore = stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length;
-    
-    // Export CSV report
-    await exportCSV();
-    
-    // Print summary
-    console.log('\n' + '='.repeat(70));
-    console.log('📊 AI SCORE CALCULATION SUMMARY');
-    console.log('='.repeat(70));
-    console.log(`✅ Successfully processed: ${stats.processed} articles`);
-    console.log(`❌ Failed to process: ${stats.failed} articles`);
-    console.log(`\n📈 Score Distribution:`);
-    console.log(`   🟢 Excellent (≥9.8): ${stats.excellent} articles (${(stats.excellent / stats.total * 100).toFixed(1)}%)`);
-    console.log(`   🟡 Good (8.0-9.7): ${stats.good} articles (${(stats.good / stats.total * 100).toFixed(1)}%)`);
-    console.log(`   🔴 Needs Work (<8.0): ${stats.needsWork} articles (${(stats.needsWork / stats.total * 100).toFixed(1)}%)`);
-    console.log(`\n📊 Average Score: ${stats.avgScore.toFixed(2)}/10`);
-    console.log(`\n🎯 Target: ${stats.excellent} articles ready for AI indexing (≥9.8)`);
-    console.log(`⚠️  Action Required: ${stats.total - stats.excellent} articles need optimization`);
-    console.log('='.repeat(70));
-    
-    if (stats.needsWork > 0) {
-      console.log(`\n💡 Next steps:`);
-      console.log(`   1. Review low-scoring articles in reports/low-scoring-articles.csv`);
-      console.log(`   2. Run: npm run generate:speakable (fixes voice readiness)`);
-      console.log(`   3. Run: npm run generate:links (fixes external link quality)`);
-      console.log(`   4. Re-run this script to verify improvements\n`);
-    } else {
-      console.log(`\n🎉 All articles are scoring well! Ready for deployment.\n`);
-    }
-    
-  } catch (error) {
-    console.error('\n❌ Calculation failed:', error);
+async function main() {
+  console.log('🚀 Starting AI score calculation...\n');
+
+  // Fetch all articles
+  const { data: articles, error } = await supabase
+    .from('qa_articles')
+    .select('id, title, slug')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('❌ Failed to fetch articles:', error);
     process.exit(1);
   }
+
+  stats.total = articles?.length || 0;
+  console.log(`📊 Found ${stats.total} articles to process\n`);
+
+  if (stats.total === 0) {
+    console.log('No articles found. Exiting...');
+    return;
+  }
+
+  // Process in batches of 50
+  const BATCH_SIZE = 50;
+  for (let i = 0; i < articles.length; i += BATCH_SIZE) {
+    const batch = articles.slice(i, Math.min(i + BATCH_SIZE, articles.length));
+    await processBatch(batch);
+    console.log(`\n📊 Progress: ${stats.processed}/${stats.total} (${Math.round(stats.processed/stats.total*100)}%)\n`);
+  }
+
+  // Calculate averages
+  stats.avgScore = stats.avgScore / stats.success;
+
+  // Export CSV
+  await exportCSV();
+
+  // Print summary
+  console.log('\n' + '='.repeat(60));
+  console.log('📊 FINAL REPORT');
+  console.log('='.repeat(60));
+  console.log(`Total articles: ${stats.total}`);
+  console.log(`Successfully scored: ${stats.success}`);
+  console.log(`Failed: ${stats.failed}`);
+  console.log(`\nAverage score: ${stats.avgScore.toFixed(2)}/10`);
+  console.log(`\n📊 Distribution:`);
+  console.log(`  9.8-10.0 (Excellent): ${stats.excellentCount} (${(stats.excellentCount/stats.total*100).toFixed(1)}%)`);
+  console.log(`  9.0-9.7 (Good): ${stats.goodCount} (${(stats.goodCount/stats.total*100).toFixed(1)}%)`);
+  console.log(`  8.0-8.9 (Needs Work): ${stats.needsWorkCount} (${(stats.needsWorkCount/stats.total*100).toFixed(1)}%)`);
+  console.log(`  <8.0 (Critical): ${stats.criticalCount} (${(stats.criticalCount/stats.total*100).toFixed(1)}%)`);
+
+  // Top 10 issues
+  const topIssues = Array.from(stats.topIssues.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  console.log(`\n⚠️  Top 10 Issues:`);
+  topIssues.forEach(([issue, count], idx) => {
+    console.log(`  ${idx + 1}. ${issue}: ${count} articles`);
+  });
+
+  // Top 10 suggestions
+  const topSuggestions = Array.from(stats.topSuggestions.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  console.log(`\n💡 Top 10 Suggestions:`);
+  topSuggestions.forEach(([suggestion, count], idx) => {
+    console.log(`  ${idx + 1}. ${suggestion}: ${count} articles`);
+  });
+
+  console.log('\n✨ Scoring complete!\n');
 }
 
-// Run calculation
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-  });
+main().catch(console.error);

@@ -8,17 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "export:content": "npx tsx scripts/export-content-to-github.ts",
-    "sync:content": "node scripts/sync-content-to-supabase.js ./content",
-    "calculate:scores": "npx tsx scripts/batch-calculate-ai-scores.ts",
-    "generate:speakable": "npx tsx scripts/bulk-generate-speakable.ts",
-    "generate:links": "npx tsx scripts/bulk-generate-links.ts",
-    "generate:sitemap": "node scripts/generate-sitemap.js",
-    "validate:content": "node scripts/validate-content-headings.js && node scripts/validate-content-images.js && node scripts/validate-frontmatter.js",
-    "lint:headings": "node scripts/lint-headings.js",
-    "check:scores": "node scripts/check-ai-scores.js",
-    "check:links": "node scripts/check-external-links.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
