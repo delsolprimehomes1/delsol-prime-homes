@@ -8,6 +8,19 @@
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
 
+# Static HTML versions for AI crawlers (pre-rendered, no JS required)
+/static/qa/*
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: public, max-age=86400, s-maxage=604800
+  X-Robots-Tag: all, max-image-preview:large, max-snippet:-1
+  Vary: User-Agent
+
+/static/blog/*
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: public, max-age=86400, s-maxage=604800
+  X-Robots-Tag: all, max-image-preview:large, max-snippet:-1
+  Vary: User-Agent
+
 # AI Discovery Endpoints - Enable CORS and optimize caching
 /api/ai-feed.json
   Access-Control-Allow-Origin: *

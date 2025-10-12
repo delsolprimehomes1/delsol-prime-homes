@@ -1,32 +1,42 @@
 # Enhanced crawl budget management for AI/LLM optimization
+# Static HTML versions for AI crawlers available at /static/qa/ and /static/blog/
+
 User-agent: Googlebot
 Allow: /
+Allow: /static/
 Crawl-delay: 1
 
 User-agent: Bingbot  
 Allow: /
+Allow: /static/
 Crawl-delay: 1
 
-# AI/LLM Crawlers - Priority Access
+# AI/LLM Crawlers - Priority Access to Static HTML
 User-agent: GPTBot
 Allow: /
+Allow: /static/
 Crawl-delay: 1
 
 User-agent: ChatGPT-User
 Allow: /
+Allow: /static/
 
 User-agent: CCBot
 Allow: /
+Allow: /static/
 Crawl-delay: 1
 
 User-agent: anthropic-ai
 Allow: /
+Allow: /static/
 
 User-agent: ClaudeBot
 Allow: /
+Allow: /static/
 
 User-agent: Claude-Web
 Allow: /
+Allow: /static/
 
 # Voice Assistant Crawlers
 User-agent: Applebot
@@ -58,6 +68,10 @@ Sitemap: https://delsolprimehomes.com/ai-training-sitemap.xml
 Allow: /api/qa/*.json
 Allow: /content/qa/*.md
 Allow: /schemas/*.json
+
+# Static HTML versions (no JavaScript required - AI crawler friendly)
+Allow: /static/qa/*.html
+Allow: /static/blog/*.html
 
 # Priority crawling paths
 # QA content optimized for LLM citation
