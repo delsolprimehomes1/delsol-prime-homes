@@ -12,10 +12,10 @@ serve(async (req) => {
   }
 
   try {
-    const { articleId, articleType, content, topic } = await req.json();
+    const { articleId, articleType, content, topic, language } = await req.json();
     
-    if (!articleId || !articleType || !content) {
-      throw new Error('Missing required fields: articleId, articleType, content');
+    if (!articleId || !articleType || !content || !language) {
+      throw new Error('Missing required fields: articleId, articleType, content, language');
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -43,16 +43,18 @@ serve(async (req) => {
     // Fetch related QA articles with topic matching
     const { data: relatedQAArticles } = await supabase
       .from('qa_articles')
-      .select('id, slug, title, topic, funnel_stage, tags, excerpt, content')
+      .select('id, slug, title, topic, funnel_stage, tags, excerpt, content, language')
       .eq('published', true)
+      .eq('language', language)
       .neq('id', articleId)
       .limit(50);
 
     // Fetch related blog posts
     const { data: relatedBlogPosts } = await supabase
       .from('blog_posts')
-      .select('id, slug, title, category_key, funnel_stage, tags, excerpt, content')
+      .select('id, slug, title, category_key, funnel_stage, tags, excerpt, content, language')
       .eq('published', true)
+      .eq('language', language)
       .neq('id', articleId)
       .limit(50);
 
@@ -92,6 +94,11 @@ serve(async (req) => {
     console.log(`Found ${relatedArticles.length} related articles for internal linking`);
 
     const systemPrompt = `You are an expert SEO content strategist for a Costa del Sol real estate website.
+
+ARTICLE LANGUAGE: ${language.toUpperCase()}
+
+CRITICAL REQUIREMENT: All suggested links MUST be to articles in ${language.toUpperCase()} language ONLY.
+Do NOT suggest links to articles in other languages under any circumstances.
 
 Analyze this article content and identify opportunities for internal linking to related articles.
 

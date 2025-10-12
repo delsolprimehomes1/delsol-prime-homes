@@ -20,6 +20,7 @@ interface Article {
   type: 'blog' | 'qa';
   topic?: string;
   funnel_stage?: string;
+  language: string;
   external_link_count: number;
   internal_link_count: number;
   ai_score?: number;
@@ -144,14 +145,14 @@ export default function LinkManager() {
     try {
       const { data: blogs, error: blogsError } = await supabase
         .from('blog_posts')
-        .select('id, title, slug, content, category_key, ai_score')
+        .select('id, title, slug, content, category_key, ai_score, language')
         .eq('published', true);
 
       if (blogsError) throw blogsError;
 
       const { data: qaArticles, error: qaError } = await supabase
         .from('qa_articles')
-        .select('id, title, slug, content, topic, funnel_stage, ai_score')
+        .select('id, title, slug, content, topic, funnel_stage, ai_score, language')
         .eq('published', true);
 
       if (qaError) throw qaError;
@@ -171,6 +172,7 @@ export default function LinkManager() {
         content: blog.content,
         type: 'blog' as const,
         topic: blog.category_key,
+        language: blog.language,
         ai_score: blog.ai_score,
         external_link_count: externalLinks?.filter(l => l.article_id === blog.id && l.article_type === 'blog').length || 0,
         internal_link_count: internalLinks?.filter(l => l.source_article_id === blog.id && l.source_article_type === 'blog').length || 0,
@@ -184,6 +186,7 @@ export default function LinkManager() {
         type: 'qa' as const,
         topic: qa.topic,
         funnel_stage: qa.funnel_stage,
+        language: qa.language,
         ai_score: qa.ai_score,
         external_link_count: externalLinks?.filter(l => l.article_id === qa.id && l.article_type === 'qa').length || 0,
         internal_link_count: internalLinks?.filter(l => l.source_article_id === qa.id && l.source_article_type === 'qa').length || 0,
@@ -337,7 +340,8 @@ export default function LinkManager() {
             articleId: article.id,
             articleType: article.type,
             content: article.content,
-            topic: article.topic
+            topic: article.topic,
+            language: article.language
           }
         })
       ]);
