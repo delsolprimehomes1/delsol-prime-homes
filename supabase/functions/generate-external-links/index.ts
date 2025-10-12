@@ -98,10 +98,10 @@ serve(async (req) => {
   }
 
   try {
-    const { articleId, articleType, content, topic } = await req.json();
+    const { articleId, articleType, content, topic, language } = await req.json();
     
-    if (!articleId || !articleType || !content) {
-      throw new Error('Missing required fields: articleId, articleType, content');
+    if (!articleId || !articleType || !content || !language) {
+      throw new Error('Missing required fields: articleId, articleType, content, language');
     }
 
     const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
@@ -122,7 +122,15 @@ serve(async (req) => {
     const systemPrompt = `You are an expert SEO content researcher specializing in real estate and Costa del Sol region.
 Your task is to find ${targetLinks} highly authoritative, recent external links that are TOPICALLY RELEVANT to the article subject.
 
+ARTICLE LANGUAGE: ${language.toUpperCase()}
 ARTICLE TOPIC: ${topic}
+
+LANGUAGE MATCHING REQUIREMENTS:
+- Prioritize sources in ${language.toUpperCase()} language when available
+- For English: International sources (BBC, Reuters, official EU sites)
+- For Spanish: Spanish national sources (El País, official .es government sites)
+- For Dutch/German/French: Prefer EU sources and international English sources when native sources unavailable
+- Official government sites (.gov, .gob.es, europa.eu) are acceptable in any language as they're authoritative
 
 PRIORITY SOURCES (in order):
 1. Government & Official Sites (.gov, .es official tourism, Spanish property registries)
@@ -150,13 +158,15 @@ TOPIC VALIDATION:
 
 Return ONLY valid JSON.`;
 
-    const userPrompt = `Article Topic: ${topic}
+    const userPrompt = `Article Language: ${language.toUpperCase()}
+Article Topic: ${topic}
 Article Type: ${articleType}
 
 Content Excerpt (first 2000 characters):
 ${content.substring(0, 2000)}
 
 CRITICAL: All links must be TOPICALLY RELEVANT to "${topic}"
+LANGUAGE PRIORITY: Prefer ${language} sources when available, otherwise authoritative international sources
 
 Find ${targetLinks} authoritative external links that:
 1. Directly relate to the article's topic: ${topic}

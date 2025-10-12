@@ -332,7 +332,8 @@ export default function LinkManager() {
             articleId: article.id,
             articleType: article.type,
             content: article.content,
-            topic: article.topic
+            topic: article.topic,
+            language: article.language
           }
         }),
         supabase.functions.invoke('generate-internal-links', {
