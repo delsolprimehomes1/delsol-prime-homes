@@ -4,13 +4,28 @@ export default async function handler() {
   const currentDate = new Date().toISOString().split('T')[0];
   
   const locations = ['marbella', 'estepona', 'fuengirola', 'benalmadena', 'mijas'];
+  const propertyTypes = ['villas', 'apartments'];
   
-  const urlEntries = locations.map(location => `  <url>
-    <loc>${baseUrl}/location/${location}</loc>
+  // Generate main location pages (e.g., /marbella)
+  const mainLocationUrls = locations.map(location => `  <url>
+    <loc>${baseUrl}/${location}</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>`).join('\n');
+  </url>`);
+  
+  // Generate property type pages (e.g., /marbella/villas)
+  const propertyTypeUrls = locations.flatMap(location => 
+    propertyTypes.map(type => `  <url>
+    <loc>${baseUrl}/${location}/${type}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>`)
+  );
+  
+  // Combine all URLs
+  const urlEntries = [...mainLocationUrls, ...propertyTypeUrls].join('\n');
 
   const sitemapXML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
