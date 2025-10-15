@@ -15,10 +15,12 @@ export const MultilingualSEOHead: React.FC<MultilingualSEOHeadProps> = ({
   availableLanguages,
   alternateUrls
 }) => {
-  // Generate canonical URL from frontmatter or default
+  // Generate canonical URL - self-referencing for each language version
   const canonicalUrl = article.seo?.canonical || 
     article.canonical_url ||
-    `https://delsolprimehomes.com/qa/${article.slug}`;
+    (currentLanguage === 'en'
+      ? `https://delsolprimehomes.com/qa/${article.slug}`
+      : `https://delsolprimehomes.com/${currentLanguage}/qa/${article.slug}`);
   
   // Generate hreflang links from frontmatter or default
   const customHreflangLinks = article.seo?.hreflang || [];

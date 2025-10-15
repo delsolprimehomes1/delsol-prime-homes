@@ -15,6 +15,7 @@ import BookViewing from "./pages/BookViewing";
 import QAHub from "./pages/FAQ";
 import QA from "./pages/QA";
 import QAPost from "./pages/QAPost";
+import LocationPage from "./pages/LocationPage";
 import ContentManager from "./pages/ContentManager";
 import ClusterTracker from "./pages/ClusterTracker";
 import QACategoryMigration from "./pages/QACategoryMigration";
@@ -59,6 +60,10 @@ const App = () => (
               <Route path="/qa/:slug" element={<QAPost />} />
               <Route path="/:lang/qa/:slug" element={<QAPost />} />
               <Route path="/:lang/qa" element={<QAHub />} />
+              
+              {/* Location-specific landing pages */}
+              <Route path="/:location(marbella|estepona|fuengirola|benalmadena|mijas)" element={<LocationPage />} />
+              <Route path="/:location(marbella|estepona|fuengirola|benalmadena|mijas)/:propertyType(villas|apartments)" element={<LocationPage />} />
               <Route path="/content-manager" element={<ContentManager />} />
               <Route path="/scheduled-content" element={<ScheduledContent />} />
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />
@@ -78,24 +83,6 @@ const App = () => (
           <Route path="/admin/speakable-generator" element={<SpeakableAnswerGenerator />} />
           <Route path="/admin/ai-discovery-test" element={<AIDiscoveryTestDashboard />} />
           <Route path="/admin/ai-score-improvement" element={<AIScoreImprovement />} />
-              
-              {/* Location-specific landing pages for enhanced SEO */}
-              <Route path="/marbella" element={<QAHub />} />
-              <Route path="/marbella/villas" element={<QAHub />} />
-              <Route path="/marbella/apartments" element={<QAHub />} />
-              <Route path="/estepona" element={<QAHub />} />
-              <Route path="/estepona/villas" element={<QAHub />} />
-              <Route path="/estepona/apartments" element={<QAHub />} />
-              <Route path="/fuengirola" element={<QAHub />} />
-              <Route path="/fuengirola/villas" element={<QAHub />} />
-              <Route path="/fuengirola/apartments" element={<QAHub />} />
-              <Route path="/benalmadena" element={<QAHub />} />
-              <Route path="/benalmadena/villas" element={<QAHub />} />
-              <Route path="/benalmadena/apartments" element={<QAHub />} />
-              <Route path="/mijas" element={<QAHub />} />
-              <Route path="/mijas/villas" element={<QAHub />} />
-              <Route path="/mijas/apartments" element={<QAHub />} />
-              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
