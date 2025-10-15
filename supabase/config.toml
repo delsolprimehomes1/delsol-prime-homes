@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.batch-generate-speakable]
 verify_jwt = false
+
+[functions.generate-160-summary]
+verify_jwt = false

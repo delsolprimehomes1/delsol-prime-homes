@@ -30,6 +30,7 @@ import BlogBuilderPage from "./pages/BlogBuilder";
 import MarkdownManagerPage from "./pages/MarkdownManager";
 import Phase1TestDashboard from "./pages/Phase1TestDashboard";
 import Phase2EEATDashboard from "./pages/Phase2EEATDashboard";
+import Phase2BulkOptimization from "./pages/Phase2BulkOptimization";
 import LinkManager from "./pages/LinkManager";
 import AIScoreImprovement from "./pages/AIScoreImprovement";
 import ScheduledContent from "./pages/ScheduledContent";
@@ -79,6 +80,7 @@ const App = () => (
           <Route path="/admin/ai-test" element={<AIOptimizationTest />} />
           <Route path="/admin/phase1-test" element={<Phase1TestDashboard />} />
           <Route path="/admin/phase2-eeat" element={<Phase2EEATDashboard />} />
+          <Route path="/admin/phase2-bulk" element={<Phase2BulkOptimization />} />
           <Route path="/admin/link-manager" element={<LinkManager />} />
           <Route path="/admin/bulk-optimize" element={<BulkOptimize />} />
           <Route path="/admin/speakable-generator" element={<SpeakableAnswerGenerator />} />

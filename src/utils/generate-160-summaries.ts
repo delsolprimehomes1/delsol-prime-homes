@@ -11,6 +11,8 @@ export async function generate160SummariesBatch(batchSize: number = 50): Promise
   const { data: articles, error: fetchError } = await supabase
     .from('qa_articles')
     .select('id, title, excerpt, speakable_answer, seo')
+    .neq('language', 'en')
+    .is('seo->metaDescription', null)
     .limit(batchSize);
 
   if (fetchError || !articles) {
