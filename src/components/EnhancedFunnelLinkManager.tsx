@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -255,7 +255,8 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
     return suggestions.filter(s => !isRejected(sourceId, s.targetId));
   };
 
-  const getHighConfidenceCount = (): number => {
+  // Memoize the high confidence count to avoid recalculating on every render
+  const highConfidenceCount = useMemo(() => {
     let count = 0;
     for (const article of filteredArticles) {
       const articleSuggestions = getSuggestionsForArticle(article);
@@ -263,7 +264,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
       count += filteredSuggestions.filter(s => s.confidence >= 90).length;
     }
     return count;
-  };
+  }, [filteredArticles, articles, rejectedSuggestions]);
 
   useEffect(() => {
     fetchArticles();
@@ -416,7 +417,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
               <Badge variant="outline" className="justify-center">
                 {filteredArticles.length} Articles
               </Badge>
-              {getHighConfidenceCount() > 0 && (
+              {highConfidenceCount > 0 && (
                 <Button
                   variant="default"
                   size="sm"
@@ -425,7 +426,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
                   className="flex items-center gap-1"
                 >
                   <CheckCheck className="w-4 h-4" />
-                  {bulkApplying ? 'Applying...' : `Apply ${getHighConfidenceCount()} High Confidence`}
+                  {bulkApplying ? 'Applying...' : `Apply ${highConfidenceCount} High Confidence`}
                 </Button>
               )}
             </div>
