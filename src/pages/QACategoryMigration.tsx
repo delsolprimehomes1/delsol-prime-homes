@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -36,7 +37,12 @@ export default function QACategoryMigration() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: QA Category Migration - Internal Tool</title>
+      </Helmet>
+      <div className="min-h-screen bg-background">
       <Navbar />
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -191,6 +197,7 @@ export default function QACategoryMigration() {
           </Card>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -67,9 +68,12 @@ export default function AIOptimizationTest() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      {/* Header */}
-      <div className="mb-8">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: AI Optimization Test - Internal Tool</title>
+      </Helmet>
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
         <div className="flex items-center gap-3 mb-4">
           <Zap className="w-8 h-8 text-primary" />
           <h1 className="text-3xl font-bold">AI Optimization Test</h1>
@@ -280,6 +284,6 @@ export default function AIOptimizationTest() {
           </AlertDescription>
         </Alert>
       )}
-    </div>
+    </>
   );
 }

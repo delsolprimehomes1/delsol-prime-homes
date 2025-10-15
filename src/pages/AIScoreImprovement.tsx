@@ -187,9 +187,13 @@ const AIScoreImprovement = () => {
   };
 
   if (loading) {
-    return (
-      <>
-        <Navbar />
+  return (
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: AI Score Improvement - Internal Tool</title>
+      </Helmet>
+      <Navbar />
         <div className="min-h-screen pt-20 bg-background flex items-center justify-center">
           <p className="text-muted-foreground">Loading AI score data...</p>
         </div>

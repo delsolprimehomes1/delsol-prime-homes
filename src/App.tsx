@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { I18nWrapper } from './components/I18nWrapper';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -51,12 +51,14 @@ const App = () => (
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/:lang/blog/:slug" element={<BlogPost />} />
-              <Route path="/faq" element={<QAHub />} />
+              {/* Redirect /faq to /qa (301 redirect) */}
+              <Route path="/faq" element={<Navigate to="/qa" replace />} />
+              <Route path="/:lang/faq" element={<Navigate to="/:lang/qa" replace />} />
+              
               <Route path="/qa" element={<QAHub />} />
               <Route path="/qa/:slug" element={<QAPost />} />
               <Route path="/:lang/qa/:slug" element={<QAPost />} />
               <Route path="/:lang/qa" element={<QAHub />} />
-              <Route path="/:lang/faq" element={<QAHub />} />
               <Route path="/content-manager" element={<ContentManager />} />
               <Route path="/scheduled-content" element={<ScheduledContent />} />
               <Route path="/ai-optimization" element={<AIOptimizationDashboard />} />

@@ -126,7 +126,7 @@ const QAHub = () => {
         <title>{t('qa.title')} - Costa del Sol Property Guide | DelSolPrimeHomes</title>
         <meta name="description" content={t('qa.description')} />
         <meta name="keywords" content="Costa del Sol Q&A, property buying questions, expat guide Spain, UK buyers, detailed property advice" />
-        <link rel="canonical" href={`https://delsolprimehomes.com${currentLanguage === 'en' ? '/faq' : `/${currentLanguage}/faq`}`} />
+        <link rel="canonical" href={`https://delsolprimehomes.com${currentLanguage === 'en' ? '/qa' : `/${currentLanguage}/qa`}`} />
         
         {/* Enhanced FAQPage JSON-LD with Speakable Support */}
         <script type="application/ld+json">

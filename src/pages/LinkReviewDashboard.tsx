@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -149,8 +150,13 @@ export default function LinkReviewDashboard() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: Link Review Dashboard - Internal Tool</title>
+      </Helmet>
+      <div className="container mx-auto py-8 px-4">
+        <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">External Link Review Dashboard</h1>
         <p className="text-muted-foreground">Review and approve AI-generated external links</p>
       </div>
@@ -342,6 +348,7 @@ export default function LinkReviewDashboard() {
           ))
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

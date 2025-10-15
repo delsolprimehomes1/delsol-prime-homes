@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +59,12 @@ export default function Phase2EEATDashboard() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: Phase 2 E-E-A-T Dashboard - Internal Tool</title>
+      </Helmet>
+      <div className="container mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Phase 2: E-E-A-T Enhancement</h1>
@@ -393,6 +399,7 @@ export default function Phase2EEATDashboard() {
           </Alert>
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }

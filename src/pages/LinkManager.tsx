@@ -620,7 +620,12 @@ export default function LinkManager() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: Link Manager - Internal Tool</title>
+      </Helmet>
+      <div className="min-h-screen bg-background">
       <Helmet>
         <title>AI Link Manager | DelSol Prime Homes</title>
         <meta name="robots" content="noindex, nofollow" />
@@ -924,6 +929,7 @@ export default function LinkManager() {
           onRepairComplete={handleRepairComplete}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
