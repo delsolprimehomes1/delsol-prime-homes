@@ -138,7 +138,12 @@ export default function PreLaunchValidation() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin: Pre-Launch Validation - Internal Tool</title>
+      </Helmet>
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
