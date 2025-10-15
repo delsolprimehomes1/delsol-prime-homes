@@ -49,6 +49,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [topics, setTopics] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<Map<string, SmartSuggestion[]>>(new Map());
   const [rejectedSuggestions, setRejectedSuggestions] = useState<RejectedSuggestion[]>([]);
@@ -58,7 +59,16 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
 
   const fetchArticles = async () => {
     try {
-      const { data, error } = await supabase
+      setError(null);
+      console.log('Starting to fetch articles...');
+      
+      // Create timeout promise
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout after 15 seconds')), 15000)
+      );
+      
+      // Create fetch promise
+      const fetchPromise = supabase
         .from('qa_articles')
         .select(`
           id, title, slug, topic, funnel_stage, 
@@ -70,8 +80,17 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
         .order('topic')
         .order('title');
 
-      if (error) throw error;
+      // Race between timeout and fetch
+      const result = await Promise.race([fetchPromise, timeoutPromise]);
+      const { data, error } = result as { data: EnhancedArticle[] | null; error: any };
 
+      if (error) {
+        console.error('Supabase query error:', error);
+        throw error;
+      }
+
+      console.log(`Successfully fetched ${data?.length || 0} articles`);
+      
       setArticles(data || []);
       setFilteredArticles(data || []);
       
@@ -81,8 +100,10 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
       // Generate smart suggestions
       await generateSmartSuggestions(data || []);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load articles';
       console.error('Error fetching articles:', error);
-      toast.error('Failed to load articles');
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -327,7 +348,33 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="p-6">Loading enhanced funnel manager...</div>;
+    return (
+      <Card>
+        <CardContent className="p-12 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading enhanced funnel manager...</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Fetching 1,073+ articles from database...
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-12 text-center">
+          <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
+          <h3 className="font-semibold text-lg mb-2">Failed to Load</h3>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={fetchArticles}>
+            <ArrowRight className="w-4 h-4 mr-2" />
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
