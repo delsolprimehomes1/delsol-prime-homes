@@ -1,0 +1,49 @@
+name: Generate and Update Sitemaps
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'supabase/**'
+      - 'src/pages/api/*-sitemap.xml.ts'
+  schedule:
+    # Run daily at 3 AM UTC to regenerate sitemaps
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-sitemaps:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Trigger sitemap rebuild via edge function
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"trigger":"github-action","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' \
+            $SUPABASE_URL/functions/v1/rebuild-sitemaps
+      
+      - name: Verify sitemap endpoints
+        run: |
+          echo "Checking sitemap endpoints..."
+          curl -f https://delsolprimehomes.com/api/sitemap.xml || echo "Main sitemap check failed"
+          curl -f https://delsolprimehomes.com/api/qa-sitemap.xml || echo "QA sitemap check failed"
+          curl -f https://delsolprimehomes.com/api/blog-sitemap.xml || echo "Blog sitemap check failed"
+          curl -f https://delsolprimehomes.com/api/sitemap-ai.xml || echo "AI sitemap check failed"
+          curl -f https://delsolprimehomes.com/api/location-sitemap.xml || echo "Location sitemap check failed"

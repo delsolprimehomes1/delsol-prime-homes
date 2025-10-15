@@ -34,6 +34,7 @@ import LinkManager from "./pages/LinkManager";
 import AIScoreImprovement from "./pages/AIScoreImprovement";
 import ScheduledContent from "./pages/ScheduledContent";
 import BulkOptimize from "./pages/BulkOptimize";
+import AIDiscoveryMonitoring from "./pages/AIDiscoveryMonitoring";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,7 @@ const App = () => (
           <Route path="/admin/speakable-generator" element={<SpeakableAnswerGenerator />} />
           <Route path="/admin/ai-discovery-test" element={<AIDiscoveryTestDashboard />} />
           <Route path="/admin/ai-score-improvement" element={<AIScoreImprovement />} />
+          <Route path="/admin/ai-discovery-monitoring" element={<AIDiscoveryMonitoring />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

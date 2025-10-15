@@ -59,10 +59,11 @@ Allow: /
 Crawl-delay: 3
 
 # Enhanced sitemaps for AI discovery
-Sitemap: https://delsolprimehomes.com/sitemap.xml
-Sitemap: https://delsolprimehomes.com/qa-sitemap.xml
-Sitemap: https://delsolprimehomes.com/blog-sitemap.xml
-Sitemap: https://delsolprimehomes.com/ai-training-sitemap.xml
+Sitemap: https://delsolprimehomes.com/api/sitemap.xml
+Sitemap: https://delsolprimehomes.com/api/qa-sitemap.xml
+Sitemap: https://delsolprimehomes.com/api/blog-sitemap.xml
+Sitemap: https://delsolprimehomes.com/api/sitemap-ai.xml
+Sitemap: https://delsolprimehomes.com/api/location-sitemap.xml
 
 # AI-specific endpoints
 Allow: /api/qa/*.json
