@@ -38,6 +38,16 @@ User-agent: Claude-Web
 Allow: /
 Allow: /static/
 
+User-agent: Google-Extended
+Allow: /
+Allow: /static/
+Crawl-delay: 1
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /static/
+Crawl-delay: 1
+
 # Voice Assistant Crawlers
 User-agent: Applebot
 Allow: /
