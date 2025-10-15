@@ -51,7 +51,6 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [topics, setTopics] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<Map<string, SmartSuggestion[]>>(new Map());
   const [rejectedSuggestions, setRejectedSuggestions] = useState<RejectedSuggestion[]>([]);
   const [previewArticle, setPreviewArticle] = useState<EnhancedArticle | null>(null);
   const [editingCTA, setEditingCTA] = useState<EnhancedArticle | null>(null);
@@ -96,9 +95,6 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
       
       const uniqueTopics = [...new Set((data || []).map(a => a.topic))];
       setTopics(uniqueTopics);
-
-      // Generate smart suggestions
-      await generateSmartSuggestions(data || []);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load articles';
       console.error('Error fetching articles:', error);
@@ -109,48 +105,39 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
     }
   };
 
-  const generateSmartSuggestions = async (articlesData: EnhancedArticle[]) => {
-    const newSuggestions = new Map<string, SmartSuggestion[]>();
+  // Generate suggestions on-demand for a single article (lazy loading)
+  const getSuggestionsForArticle = (article: EnhancedArticle): SmartSuggestion[] => {
+    if (article.funnel_stage === 'TOFU' && !article.points_to_mofu_id) {
+      const mofuOptions = articles.filter(a => 
+        a.funnel_stage === 'MOFU' && 
+        (a.topic === article.topic || a.topic === 'general')
+      );
 
-    for (const article of articlesData) {
-      if (article.funnel_stage === 'TOFU' && !article.points_to_mofu_id) {
-        const mofuOptions = articlesData.filter(a => 
-          a.funnel_stage === 'MOFU' && 
-          (a.topic === article.topic || a.topic === 'general')
-        );
+      return mofuOptions.map(mofu => ({
+        targetId: mofu.id,
+        title: mofu.title,
+        topic: mofu.topic,
+        confidence: mofu.topic === article.topic ? 95 : 60,
+        reason: mofu.topic === article.topic ? 'Perfect topic match' : 'General fallback option'
+      })).sort((a, b) => b.confidence - a.confidence).slice(0, 3);
+    } 
+    
+    if (article.funnel_stage === 'MOFU' && !article.points_to_bofu_id) {
+      const bofuOptions = articles.filter(a => 
+        a.funnel_stage === 'BOFU' && 
+        (a.topic === article.topic || a.topic === 'general')
+      );
 
-        const suggestions: SmartSuggestion[] = mofuOptions.map(mofu => ({
-          targetId: mofu.id,
-          title: mofu.title,
-          topic: mofu.topic,
-          confidence: mofu.topic === article.topic ? 95 : 60,
-          reason: mofu.topic === article.topic ? 'Perfect topic match' : 'General fallback option'
-        })).sort((a, b) => b.confidence - a.confidence);
-
-        if (suggestions.length > 0) {
-          newSuggestions.set(article.id, suggestions.slice(0, 3));
-        }
-      } else if (article.funnel_stage === 'MOFU' && !article.points_to_bofu_id) {
-        const bofuOptions = articlesData.filter(a => 
-          a.funnel_stage === 'BOFU' && 
-          (a.topic === article.topic || a.topic === 'general')
-        );
-
-        const suggestions: SmartSuggestion[] = bofuOptions.map(bofu => ({
-          targetId: bofu.id,
-          title: bofu.title,
-          topic: bofu.topic,
-          confidence: bofu.topic === article.topic ? 95 : 60,
-          reason: bofu.topic === article.topic ? 'Perfect topic match' : 'General fallback option'
-        })).sort((a, b) => b.confidence - a.confidence);
-
-        if (suggestions.length > 0) {
-          newSuggestions.set(article.id, suggestions.slice(0, 3));
-        }
-      }
+      return bofuOptions.map(bofu => ({
+        targetId: bofu.id,
+        title: bofu.title,
+        topic: bofu.topic,
+        confidence: bofu.topic === article.topic ? 95 : 60,
+        reason: bofu.topic === article.topic ? 'Perfect topic match' : 'General fallback option'
+      })).sort((a, b) => b.confidence - a.confidence).slice(0, 3);
     }
-
-    setSuggestions(newSuggestions);
+    
+    return [];
   };
 
   const linkArticles = async (sourceId: string, targetId: string, linkType: 'mofu' | 'bofu', notes?: string) => {
@@ -234,12 +221,10 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
     let appliedCount = 0;
     
     try {
-      for (const [sourceId, articleSuggestions] of suggestions.entries()) {
-        const article = articles.find(a => a.id === sourceId);
-        if (!article) continue;
-
+      for (const article of articles) {
+        const articleSuggestions = getSuggestionsForArticle(article);
         const highConfidenceSuggestions = articleSuggestions.filter(
-          s => s.confidence >= 90 && !isRejected(sourceId, s.targetId)
+          s => s.confidence >= 90 && !isRejected(article.id, s.targetId)
         );
 
         if (highConfidenceSuggestions.length > 0) {
@@ -247,7 +232,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
           const linkType = article.funnel_stage === 'TOFU' ? 'mofu' : 'bofu';
           
           await linkArticles(
-            sourceId, 
+            article.id, 
             topSuggestion.targetId, 
             linkType, 
             `Bulk auto-applied: ${topSuggestion.reason}`
@@ -257,7 +242,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
       }
 
       toast.success(`Successfully applied ${appliedCount} high-confidence suggestions`);
-      fetchArticles(); // Refresh to show updated links
+      fetchArticles();
     } catch (error) {
       console.error('Error in bulk apply:', error);
       toast.error('Failed to apply some suggestions');
@@ -272,8 +257,9 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
 
   const getHighConfidenceCount = (): number => {
     let count = 0;
-    for (const [sourceId, articleSuggestions] of suggestions.entries()) {
-      const filteredSuggestions = getFilteredSuggestions(sourceId, articleSuggestions);
+    for (const article of filteredArticles) {
+      const articleSuggestions = getSuggestionsForArticle(article);
+      const filteredSuggestions = getFilteredSuggestions(article.id, articleSuggestions);
       count += filteredSuggestions.filter(s => s.confidence >= 90).length;
     }
     return count;
@@ -452,7 +438,7 @@ export const EnhancedFunnelLinkManager: React.FC = () => {
         {filteredArticles.map((article) => {
           const linkedArticle = getLinkedArticle(article);
           const targetArticles = getTargetArticles(article.funnel_stage, article.topic);
-          const allSuggestions = suggestions.get(article.id) || [];
+          const allSuggestions = getSuggestionsForArticle(article);
           const articleSuggestions = getFilteredSuggestions(article.id, allSuggestions);
           const alignmentColor = getTopicAlignmentColor(article);
           
